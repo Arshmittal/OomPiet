@@ -299,11 +299,5 @@ def serve_html():
 
 if __name__ == '__main__':
     # Create static folder if it doesn't exist
-    if not os.path.exists('static'):
-        os.makedirs('static')
     
-  
-    
-    # Development server
-    debug_mode = MODE == 'development'
-    app.run(host='0.0.0.0', port=5000, debug=debug_mode)
+    app.run(host='0.0.0.0', port=5000)
