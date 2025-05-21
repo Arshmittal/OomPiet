@@ -5,3 +5,4 @@ pymongo
 werkzeug
 bson
 flask-cors
+requests
