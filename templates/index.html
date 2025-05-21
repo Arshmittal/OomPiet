@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Assistant Platform</title>
+    <style>
+       /* Color Palette Variables */
+:root {
+    /* Primary Colors */
+    --primary-green: #3db54b;
+    --primary-green-80: #63c36e;
+    --primary-green-60: #89d191;
+    --primary-green-40: #aee0b4;
+    --primary-green-20: #d6efd8;
+    --primary-blue: #1d78a3;
+    --primary-blue-80: #4a93b5;
+    --primary-blue-60: #77aec8;
+    --primary-blue-40: #a5cadb;
+    --primary-blue-20: #d2e4ed;
+    
+    /* Secondary Colors */
+    --secondary-teal: #00abaf;
+    --secondary-teal-80: #33bcbf;
+    --secondary-teal-60: #66cdcf;
+    --secondary-teal-40: #99dedf;
+    --secondary-teal-20: #cceeef;
+    --secondary-dark-green: #0c734d;
+    --secondary-dark-green-80: #3c8f70;
+    --secondary-dark-green-60: #6bab93;
+    --secondary-dark-green-40: #9bc7b6;
+    --secondary-dark-green-20: #cae3d9;
+    --secondary-navy: #163c66;
+    --secondary-navy-80: #456385;
+    --secondary-navy-60: #748aa3;
+    --secondary-navy-40: #a2b0c2;
+    --secondary-navy-20: #d1d8e0;
+    
+    /* Neutrals */
+    --neutral-dark: #333333;
+    --neutral-medium: #666666;
+    --neutral-light: #999999;
+    --neutral-lighter: #cccccc;
+    --neutral-lightest: #f5f7fa;
+    
+    /* Utility Colors */
+    --white: #ffffff;
+    --black: #000000;
+    --success: var(--primary-green);
+    --info: var(--primary-blue);
+    --warning: #f0ad4e;
+    --danger: #d9534f;
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--neutral-lightest);
+    color: var(--neutral-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--white);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--secondary-navy);
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    height: 32px;
+    margin-right: 10px;
+}
+
+.navbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-80);
+}
+
+.btn-secondary {
+    background-color: var(--primary-green);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-green-80);
+}
+
+.btn img {
+    margin-right: 8px;
+    height: 18px;
+}
+
+/* Profile Dropdown */
+.profile-container {
+    position: relative;
+    display: none; /* Hidden by default, shown after login */
+}
+
+.profile-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-blue);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    display: none;
+    z-index: 10;
+}
+
+.profile-dropdown.show {
+    display: block;
+}
+
+.profile-dropdown-item {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--neutral-dark);
+    transition: background-color 0.2s;
+}
+
+.profile-dropdown-item:hover {
+    background-color: var(--neutral-lightest);
+}
+
+.profile-dropdown-item i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.profile-info {
+    padding: 15px;
+    border-bottom: 1px solid var(--neutral-lighter);
+}
+
+.profile-info .profile-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.profile-info .profile-email {
+    font-size: 0.9rem;
+    color: var(--neutral-medium);
+    word-break: break-all;
+}
+
+/* Main Content and Auth Container */
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.auth-container {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Auth Tabs */
+.auth-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--neutral-lighter);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 1rem;
+    text-align: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--neutral-medium);
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.auth-tab.active {
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
+}
+
+.auth-tab:hover {
+    color: var(--primary-blue);
+}
+
+/* Auth Forms */
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.auth-header h2 {
+    font-size: 1.5rem;
+    color: var(--neutral-dark);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: var(--neutral-medium);
+    font-size: 0.9rem;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--neutral-dark);
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--neutral-lighter);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.form-group.error input {
+    border-color: var(--danger);
+}
+
+/* Password Toggle */
+.password-group {
+    position: relative;
+}
+
+.password-group .password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--neutral-medium);
+    padding: 5px;
+}
+
+.password-group .password-toggle:hover {
+    color: var(--primary-blue);
+}
+
+/* Form Options */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.form-options label {
+    display: flex;
+    align-items: center;
+    color: var(--neutral-medium);
+    cursor: pointer;
+}
+
+.form-options input[type="checkbox"] {
+    margin-right: 0.5rem;
+    width: auto;
+}
+
+.form-options a {
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+.form-options a:hover {
+    text-decoration: underline;
+}
+
+/* Submit Buttons */
+.btn-submit {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-blue-80);
+}
+
+.btn-submit:disabled {
+    background-color: var(--neutral-lighter);
+    cursor: not-allowed;
+}
+
+/* Divider */
+.divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+    color: var(--neutral-medium);
+    font-size: 0.9rem;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--neutral-lighter);
+    z-index: 1;
+}
+
+.divider span {
+    background-color: var(--white);
+    padding: 0 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Google Login Button */
+.btn-google {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--neutral-lighter);
+    border-radius: 5px;
+    background-color: var(--white);
+    color: var(--neutral-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.btn-google:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-color: var(--neutral-light);
+}
+
+.btn-google img {
+    margin-right: 10px;
+    height: 20px;
+}
+
+/* Error Message */
+.error-message {
+    background-color: #ffeaea;
+    color: var(--danger);
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    border: 1px solid #fecaca;
+}
+
+/* Success Message */
+.success-message {
+    background-color: #eafaf1;
+    color: var(--success);
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    border: 1px solid #a7f3d0;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    border: 5px solid var(--neutral-lighter);
+    border-top: 5px solid var(--primary-blue);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .auth-container {
+        padding: 1.5rem;
+    }
+    
+    .navbar {
+        padding: 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>OomPiet</span>
+        </div>
+        
+        <div class="navbar-buttons">
+            <!-- Chat button (only shown when logged in) -->
+            <a href="/chat" class="btn btn-secondary" id="chat-button" style="display: none;">
+                 Go to Chat
+            </a>
+
+            <!-- Profile dropdown (shown when logged in) -->
+            <div class="profile-container" id="profile-container">
+                <button class="profile-button" id="profile-button">
+                    <img src="/static/default-profile.png" alt="Profile" class="profile-image" id="profile-image">
+                </button>
+                
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-name">User Name</div>
+                        <div class="profile-email" id="profile-email">user@example.com</div>
+                    </div>
+                   
+                    <a href="#" class="profile-dropdown-item" id="logout-button">
+                      Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Auth Container (shown when not logged in) -->
+        <div class="auth-container" id="auth-container">
+            <!-- Auth Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="signin-tab">Sign In</button>
+                <button class="auth-tab" id="signup-tab">Sign Up</button>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div id="message-container"></div>
+
+            <!-- Sign In Form -->
+            <form class="auth-form active" id="signin-form">
+                <div class="auth-header">
+                    <h2>Sign in</h2>
+                    <p>Log in to unlock tailored content and stay connected with your community</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="signin-email">Email</label>
+                    <input type="email" id="signin-email" placeholder="Email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="signin-password">Password</label>
+                    <div class="password-group">
+                        <input type="password" id="signin-password" placeholder="Password" required>
+                        <button type="button" class="password-toggle" data-target="signin-password">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" id="keep-signed-in">
+                        Keep me signed in
+                    </label>
+                    <a href="#" id="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-submit">Sign in</button>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <a href="/login" class="btn-google">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
+                    Continue with Google
+                </a>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form class="auth-form" id="signup-form">
+                <div class="auth-header">
+                    <h2>Sign up</h2>
+                    <p>Create your account to unlock tailored content and stay connected</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <div class="password-group">
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                        <button type="button" class="password-toggle" data-target="signup-password">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <div class="password-group">
+                        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                        <button type="button" class="password-toggle" data-target="signup-confirm-password">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Sign up</button>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <a href="/login" class="btn-google">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
+                    Continue with Google
+                </a>
+            </form>
+        </div>
+
+        <!-- Welcome message for logged in users -->
+        <div class="welcome-container" id="welcome-container" style="display: none;">
+            <h1>Welcome to OomDiet!</h1>
+            <p>You're successfully logged in. Click "Go to Chat" to start using our AI assistant.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const authContainer = document.getElementById('auth-container');
+            const welcomeContainer = document.getElementById('welcome-container');
+            const chatButton = document.getElementById('chat-button');
+            const profileContainer = document.getElementById('profile-container');
+            const signinTab = document.getElementById('signin-tab');
+            const signupTab = document.getElementById('signup-tab');
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+            const messageContainer = document.getElementById('message-container');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            const profileButton = document.getElementById('profile-button');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const logoutButton = document.getElementById('logout-button');
+            const profileImage = document.getElementById('profile-image');
+            const profileName = document.getElementById('profile-name');
+            const profileEmail = document.getElementById('profile-email');
+
+            // Check login status on page load
+            checkLoginStatus();
+
+            // Tab switching
+            signinTab.addEventListener('click', () => switchTab('signin'));
+            signupTab.addEventListener('click', () => switchTab('signup'));
+
+            // Password toggle
+            document.querySelectorAll('.password-toggle').forEach(button => {
+                button.addEventListener('click', togglePassword);
+            });
+
+            // Form submissions
+            signinForm.addEventListener('submit', handleSignin);
+            signupForm.addEventListener('submit', handleSignup);
+
+            // Profile dropdown
+            if (profileButton) {
+                profileButton.addEventListener('click', function() {
+                    profileDropdown.classList.toggle('show');
+                });
+            }
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (profileButton && !profileButton.contains(e.target) && 
+                    profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+
+            // Functions
+            function switchTab(tab) {
+                const tabs = [signinTab, signupTab];
+                const forms = [signinForm, signupForm];
+
+                tabs.forEach(t => t.classList.remove('active'));
+                forms.forEach(f => f.classList.remove('active'));
+
+                if (tab === 'signin') {
+                    signinTab.classList.add('active');
+                    signinForm.classList.add('active');
+                } else {
+                    signupTab.classList.add('active');
+                    signupForm.classList.add('active');
+                }
+
+                clearMessages();
+            }
+
+            function togglePassword(e) {
+                const targetId = e.target.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    e.target.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    e.target.textContent = '👁️';
+                }
+            }
+
+            function handleSignup(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+                // Validation
+                if (password !== confirmPassword) {
+                    showError('Passwords do not match');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters long');
+                    return;
+                }
+
+                showLoading();
+
+                fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    if (data.success) {
+                        showSuccess('Account created successfully! Please sign in.');
+                        switchTab('signin');
+                        // Pre-fill email
+                        document.getElementById('signin-email').value = email;
+                    } else {
+                        showError(data.error || 'Failed to create account');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Signup error:', error);
+                    showError('An error occurred. Please try again.');
+                });
+            }
+
+            function handleSignin(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('signin-email').value;
+                const password = document.getElementById('signin-password').value;
+
+                showLoading();
+
+                fetch('/api/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    if (data.success) {
+                        showLoggedInState();
+                        updateProfileUI(data.user);
+                    } else {
+                        showError(data.error || 'Invalid email or password');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Signin error:', error);
+                    showError('An error occurred. Please try again.');
+                });
+            }
+
+            function checkLoginStatus() {
+                fetch('/check-login-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            showLoggedInState();
+                            fetchUserProfile();
+                        } else {
+                            showLoggedOutState();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking login status:', error);
+                        showLoggedOutState();
+                    });
+            }
+
+            function fetchUserProfile() {
+                fetch('/api/user-profile')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch user profile');
+                        }
+                        return response.json();
+                    })
+                    .then(user => {
+                        updateProfileUI(user);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user profile:', error);
+                        updateProfileUI({
+                            name: 'User',
+                            email: 'user@example.com',
+                            picture: '/static/default-profile.png'
+                        });
+                    });
+            }
+
+            function updateProfileUI(user) {
+                if (profileName) profileName.textContent = user.name || 'User';
+                if (profileEmail) profileEmail.textContent = user.email || 'user@example.com';
+                if (profileImage) profileImage.src = user.picture || '/static/default-profile.png';
+            }
+
+            function showLoggedInState() {
+                authContainer.style.display = 'none';
+                welcomeContainer.style.display = 'block';
+                chatButton.style.display = 'inline-flex';
+                profileContainer.style.display = 'block';
+            }
+
+            function showLoggedOutState() {
+                authContainer.style.display = 'block';
+                welcomeContainer.style.display = 'none';
+                chatButton.style.display = 'none';
+                profileContainer.style.display = 'none';
+            }
+
+            function logout() {
+                showLoading();
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        showLoggedOutState();
+                        hideLoading();
+                        showSuccess('Logged out successfully');
+                    } else {
+                        throw new Error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                    hideLoading();
+                    showError('Logout failed. Please try again.');
+                });
+            }
+
+            function showLoading() {
+                if (loadingSpinner) loadingSpinner.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+            }
+
+            function showError(message) {
+                clearMessages();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                messageContainer.appendChild(errorDiv);
+            }
+
+            function showSuccess(message) {
+                clearMessages();
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.textContent = message;
+                messageContainer.appendChild(successDiv);
+            }
+
+            function clearMessages() {
+                messageContainer.innerHTML = '';
+            }
+
+            // Forgot password handler
+            document.getElementById('forgot-password').addEventListener('click', function(e) {
+                e.preventDefault();
+                showError('Password reset functionality will be implemented soon.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+flask
+authlib
+python-dotenv
+pymongo
+werkzeug
+bson
+flask-cors

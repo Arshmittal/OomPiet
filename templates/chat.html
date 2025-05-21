@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Assistant - Chat</title>
+    <style>
+        /* Color palette */
+       /* Color palette */
+:root {
+    /* Primary Colors */
+    --primary-green: #3db54b;
+    --primary-green-80: #63c36e;
+    --primary-green-60: #89d191;
+    --primary-green-40: #aee0b4;
+    --primary-green-20: #d6efd8;
+    
+    /* Changed from blue to orange */
+    --primary-orange: #e67e22; /* Main orange color */
+    --primary-orange-80: #eb9950;
+    --primary-orange-60: #f0b47d;
+    --primary-orange-40: #f5cfab;
+    --primary-orange-20: #fae9d8;
+   
+    /* Secondary Colors */
+    --secondary-teal: #00abaf;
+    --secondary-teal-80: #33bcbf;
+    --secondary-teal-60: #66cdcf;
+    --secondary-teal-40: #99dedf;
+    --secondary-teal-20: #cceeef;
+    --secondary-dark-green: #0c734d;
+    --secondary-dark-green-80: #3c8f70;
+    --secondary-dark-green-60: #6bab93;
+    --secondary-dark-green-40: #9bc7b6;
+    --secondary-dark-green-20: #cae3d9;
+    
+    /* Changed from navy to darker orange */
+    --secondary-dark-orange: #d35400;
+    --secondary-dark-orange-80: #dc7633;
+    --secondary-dark-orange-60: #e59866;
+    --secondary-dark-orange-40: #edbb99;
+    --secondary-dark-orange-20: #f6ddcc;
+   
+    /* Neutrals */
+    --neutral-dark: #333333;
+    --neutral-medium: #666666;
+    --neutral-light: #999999;
+    --neutral-lighter: #cccccc;
+    --neutral-lightest: #f5f7fa;
+   
+    /* Utility Colors */
+    --white: #ffffff;
+    --black: #000000;
+    --success: var(--primary-green);
+    --info: var(--primary-orange); /* Changed from blue to orange */
+    --warning: #f0ad4e;
+    --danger: #d9534f;
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--neutral-lightest);
+    color: var(--neutral-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--white);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--secondary-dark-orange); /* Changed from navy to dark orange */
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    height: 32px;
+    margin-right: 10px;
+}
+
+.navbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-orange); /* Changed from blue to orange */
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-orange-80); /* Changed from blue to orange */
+}
+
+.btn-secondary {
+    background-color: var(--primary-green);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-green-80);
+}
+
+.btn img {
+    margin-right: 8px;
+    height: 18px;
+}
+
+/* Profile Dropdown */
+.profile-container {
+    position: relative;
+    display: none; /* Hidden by default, shown after login */
+}
+
+.profile-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-orange); /* Changed from blue to orange */
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    display: none;
+    z-index: 10;
+}
+
+.profile-dropdown.show {
+    display: block;
+}
+
+.profile-dropdown-item {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--neutral-dark);
+    transition: background-color 0.2s;
+}
+
+.profile-dropdown-item:hover {
+    background-color: var(--neutral-lightest);
+}
+
+.profile-dropdown-item i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.profile-info {
+    padding: 15px;
+    border-bottom: 1px solid var(--neutral-lighter);
+}
+
+.profile-info .profile-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.profile-info .profile-email {
+    font-size: 0.9rem;
+    color: var(--neutral-medium);
+    word-break: break-all;
+}
+
+/* Main content area */
+.main-content {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Chat container */
+.chat-container {
+    max-width: 1170px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
+}
+
+.chat-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--neutral-lighter);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chat-header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--secondary-dark-orange); /* Changed from navy to dark orange */
+}
+
+.chat-header-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--neutral-medium);
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--success);
+}
+
+/* Character image styling */
+.character-container {
+    position: absolute;
+    right: 50px;
+    top: 20px;
+    z-index: 10;
+    width: 110px;
+    text-align: center;
+}
+
+.character-image {
+    width: 100%;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--neutral-medium);
+    background-color: var(--neutral-lightest);
+}
+
+.character-title {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--neutral-medium);
+    background-color: var(--white);
+    padding: 4px 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 60vh;
+    max-height: 60vh;
+}
+
+.message {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 80%;
+}
+
+.message-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--primary-orange-20); /* Changed from blue to orange */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: var(--primary-orange); /* Changed from blue to orange */
+    flex-shrink: 0;
+}
+
+.message-user .message-avatar {
+    background-color: var(--primary-green-20);
+    color: var(--primary-green);
+}
+
+.message-content {
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    background-color: var(--primary-orange-20); /* Changed from blue to orange */
+    color: var(--neutral-dark);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.message-user .message-content {
+    background-color: var(--primary-green-20);
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: var(--neutral-light);
+    margin-top: 0.25rem;
+    text-align: right;
+}
+
+.message-user .message-time {
+    text-align: left;
+}
+
+.chat-input-container {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--neutral-lighter);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--neutral-lighter);
+    border-radius: 24px;
+    font-size: 0.95rem;
+    resize: none;
+    min-height: 48px;
+    max-height: 120px;
+    overflow-y: auto;
+    outline: none;
+}
+
+.chat-input:focus {
+    border-color: var(--primary-orange); /* Changed from blue to orange */
+}
+
+.chat-send-btn {
+    background-color: var(--primary-green);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.chat-send-btn:hover {
+    background-color: var(--primary-green-80);
+}
+
+.chat-send-btn:disabled {
+    background-color: var(--neutral-lighter);
+    cursor: not-allowed;
+}
+
+/* Loading spinner for whole page */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--neutral-lighter);
+    border-top: 5px solid var(--primary-orange); /* Changed from blue to orange */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Chat loading indicator */
+.chat-loading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.chat-loading-indicator {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.chat-loading-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-orange); /* Changed from blue to orange */
+    border-radius: 50%;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.chat-loading-dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.chat-loading-dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(0.5); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .message {
+        max-width: 90%;
+    }
+    
+    .character-container {
+        position: relative;
+        top: 0;
+        right: 0;
+        width: 80px;
+        margin: 0 auto 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-header-status {
+        display: none;
+    }
+    
+    .message {
+        max-width: 95%;
+    }
+    
+    .character-container {
+        width: 60px;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Page loading spinner -->
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>OomPiet</span>
+        </div>
+        
+        <div class="navbar-buttons">
+            <div id="not-logged-in-buttons">
+                <button class="btn btn-primary" id="login-button">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
+                    Login with Google
+                </button>
+            </div>
+            
+            <!-- Profile dropdown (shown when logged in) -->
+            <div class="profile-container" id="profile-container">
+                <button class="profile-button" id="profile-button">
+                    <img src="/static/default-profile.png" alt="Profile" class="profile-image" id="profile-image">
+                </button>
+                
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-name">User Name</div>
+                        <div class="profile-email" id="profile-email">user@example.com</div>
+                    </div>
+                   
+                    <a href="#" class="profile-dropdown-item" id="logout-button">
+                      Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-title">Assistant</div>
+            </div>
+            
+            <!-- Character Image -->
+            <div class="character-container">
+                <img src="/static/character.PNG" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
+                <div class="character-title">Assistant</div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chat-messages">
+                <!-- Assistant Message -->
+                <div class="message">
+                    <div class="message-avatar">OP</div>
+                    <div>
+                        <div class="message-content">
+                            Hello! I'm your Geotechnical Engineering Assistant. Ask me any questions about soil mechanics, foundation engineering, or other geotechnical concepts.
+                        </div>
+                        <div class="message-time">12:00 PM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <textarea class="chat-input" id="chat-input" placeholder="Type your message here..." rows="1"></textarea>
+                <button class="chat-send-btn" id="chat-send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Profile dropdown functionality
+            const loginButton = document.getElementById('login-button');
+            const profileButton = document.getElementById('profile-button');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const logoutButton = document.getElementById('logout-button');
+            const profileContainer = document.getElementById('profile-container');
+            const notLoggedInButtons = document.getElementById('not-logged-in-buttons');
+            const profileImage = document.getElementById('profile-image');
+            const profileName = document.getElementById('profile-name');
+            const profileEmail = document.getElementById('profile-email');
+            const chatInput = document.getElementById('chat-input');
+            const chatSendBtn = document.getElementById('chat-send-btn');
+            const chatMessages = document.getElementById('chat-messages');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            // Add this to your JavaScript after the document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the character image from the one you provided
+    const characterImage = document.getElementById('character-image');
+    if (characterImage) {
+        // Replace this URL with the actual URL where you'll host the image
+        // Or use a data URL for embedding directly
+        characterImage.src = "/static/geo-engineer-character.jpg";
+    }
+});
+            // API endpoint configuration
+            const RAG_API_ENDPOINT = process.env.RAG_API_ENDPOINT;
+            
+            checkLoginStatus();
+            
+            // Event Listeners
+            if (loginButton) {
+                loginButton.addEventListener('click', function() {
+                    showPageLoading();
+                    window.location.href = '/login';
+                });
+            }
+            
+            if (profileButton) {
+                profileButton.addEventListener('click', function() {
+                    profileDropdown.classList.toggle('show');
+                });
+            }
+            
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (profileButton && !profileButton.contains(e.target) && 
+                    profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+            
+            // Functions
+            function checkLoginStatus() {
+                fetch('/check-login-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            // User is logged in
+                            showLoggedInState();
+                            fetchUserProfile();
+                        } else {
+                            // User is not logged in
+                            showLoggedOutState();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking login status:', error);
+                        showLoggedOutState(); // Default to logged out on error
+                    });
+                    
+                // Hide loading spinner after checking login status
+                hidePageLoading();
+            }
+            
+            function fetchUserProfile() {
+                fetch('/api/user-profile')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch user profile');
+                        }
+                        return response.json();
+                    })
+                    .then(user => {
+                        updateProfileUI(user);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user profile:', error);
+                        // If we can't get the profile but user is logged in, show generic profile
+                        updateProfileUI({
+                            name: 'User',
+                            email: 'user@example.com',
+                            picture: '/static/default-profile.png'
+                        });
+                    });
+            }
+            
+            function updateProfileUI(user) {
+                if (profileName) profileName.textContent = user.name || 'User';
+                if (profileEmail) profileEmail.textContent = user.email || 'user@example.com';
+                if (profileImage) profileImage.src = user.picture || '/static/default-profile.png';
+            }
+            
+            function showLoggedInState() {
+                if (profileContainer) profileContainer.style.display = 'block';
+                if (notLoggedInButtons) notLoggedInButtons.style.display = 'none';
+            }
+            
+            function showLoggedOutState() {
+                if (profileContainer) profileContainer.style.display = 'none';
+                if (notLoggedInButtons) notLoggedInButtons.style.display = 'block';
+            }
+            
+            function logout() {
+                showPageLoading();
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        throw new Error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                    hidePageLoading();
+                    alert('Logout failed. Please try again.');
+                });
+            }
+            
+            // Page loading spinner - use for page navigation/transitions
+            function showPageLoading() {
+                if (loadingSpinner) loadingSpinner.style.display = 'flex';
+            }
+            
+            function hidePageLoading() {
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+            }
+            function getUserInitials(name) {
+    if (!name) return 'U';
+    
+    // Split the name by spaces and get first two words
+    const nameParts = name.split(' ');
+    
+    if (nameParts.length === 1) {
+        // If only one name, return first two letters
+        return nameParts[0].substring(0, 2).toUpperCase();
+    } else {
+        // If multiple names, return first letter of first two names
+        return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
+    }
+}
+            // Chat-specific loading indicator
+            function showChatLoading() {
+    // Create chat loading indicator
+    const loadingHTML = `
+        <div class="message" id="loading-message">
+            <div class="message-avatar">OP</div>
+            <div>
+                <div class="message-content chat-loading">
+                    <div class="chat-loading-indicator">
+                        <div class="chat-loading-dot"></div>
+                        <div class="chat-loading-dot"></div>
+                        <div class="chat-loading-dot"></div>
+                    </div>
+                    <span>Thinking...</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    chatMessages.insertAdjacentHTML('beforeend', loadingHTML);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+            
+            function hideChatLoading() {
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+            }
+            
+            // Mock API response for development without backend
+            // Remove this in production and implement the real API endpoints
+            if (!window.fetch) {
+                window.fetch = function(url, options) {
+                    return new Promise((resolve, reject) => {
+                        if (url === '/check-login-status') {
+                            resolve({
+                                json: () => Promise.resolve({ loggedIn: false })
+                            });
+                        } else if (url === '/api/user-profile') {
+                            resolve({
+                                ok: true,
+                                json: () => Promise.resolve({
+                                    name: 'Test User',
+                                    email: 'test@example.com',
+                                    picture: '/static/default-profile.png'
+                                })
+                            });
+                        } else if (url === '/logout' && options.method === 'POST') {
+                            resolve({
+                                ok: true
+                            });
+                        } else {
+                            reject(new Error('Not implemented'));
+                        }
+                    });
+                };
+            }
+          
+            // Auto-resize chat input
+            chatInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                
+                // Enable/disable send button based on input
+                chatSendBtn.disabled = !this.value.trim();
+            });
+            
+            // Handle enter key press
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Send message function
+            chatSendBtn.addEventListener('click', sendMessage);
+            
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                // Add message to chat
+                const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const userMessageHTML = `
+    <div class="message message-user">
+        <div class="message-avatar">${getUserInitials(profileName ? profileName.textContent : 'U')}</div>
+        <div>
+            <div class="message-content">
+                ${escapeHtml(message)}
+            </div>
+            <div class="message-time">${currentTime}</div>
+        </div>
+    </div>
+`;
+                
+                chatMessages.insertAdjacentHTML('beforeend', userMessageHTML);
+                
+                // Clear input
+                chatInput.value = '';
+                chatInput.style.height = 'auto';
+                chatSendBtn.disabled = true;
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Show loading indicator in chat
+                showChatLoading();
+                
+                // Call the RAG API
+                callRagApi(message);
+            }
+            
+            function callRagApi(query) {
+                // Prepare the request body
+                const requestBody = {
+                    query: query,
+                    top_k: 5,           // Default number of chunks to retrieve
+                    max_tokens: 4096     // Default max tokens for Claude response
+                };
+                
+                // Call the API
+                fetch(RAG_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Remove loading indicator
+                    hideChatLoading();
+                    
+                    // Process the response
+                    displayAssistantResponse(data.answer);
+                })
+                .catch(error => {
+                    console.error('Error calling RAG API:', error);
+                    // Remove loading indicator
+                    hideChatLoading();
+                    
+                    // Display error message to user
+                    displayAssistantResponse('I apologize, but I encountered an error processing your request. Please try again later.');
+                });
+            }
+            
+            function displayAssistantResponse(message) {
+    const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    const assistantMessageHTML = `
+        <div class="message">
+            <div class="message-avatar">OP</div>
+            <div>
+                <div class="message-content">
+                    ${message.replace(/\n/g, '<br>')}
+                </div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        </div>
+    `;
+    
+    chatMessages.insertAdjacentHTML('beforeend', assistantMessageHTML);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+         
+            
+            // Helper function to escape HTML
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+         
+        });
+    </script>
+    
+</body>
+</html>
