@@ -337,13 +337,24 @@ body {
 }
 
 .message-content {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.8rem;
     border-radius: 18px;
     background-color: var(--primary-orange-20); /* Changed from blue to orange */
     color: var(--neutral-dark);
     font-size: 0.95rem;
     line-height: 1.5;
+
+    /* ✅ Fix text wrapping and overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+
+    /* ✅ Ensure block elements (like <h1>, <ul>) stay inside */
+    display: block;
+    max-width: 100%;
+    box-sizing: border-box;
 }
+
 
 .message-user .message-content {
     background-color: var(--primary-green-20);
@@ -627,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
             // API endpoint configuration
-            const RAG_API_ENDPOINT = "https://difybackend.onrender.com/rag";
+            const RAG_API_ENDPOINT = "http://127.0.0.1:8000/rag";
             
             checkLoginStatus();
             
