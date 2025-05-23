@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Assistant - Chat</title>
     <style>
-        /* Color palette */
-       /* Color palette */
+  
+                            @import url('https://fonts.cdnfonts.com/css/pabasing');
 :root {
     /* Primary Colors */
     --primary-green: #3db54b;
@@ -86,12 +86,15 @@ body {
     z-index: 100;
 }
 
-.navbar-brand {
-    font-size: 1.5rem;
+.navbar-brand span {
+    font-size: 2.1rem;
     font-weight: 600;
+    font-family: 'Pabasing', sans-serif;
     color: var(--secondary-dark-orange); /* Changed from navy to dark orange */
     display: flex;
     align-items: center;
+
+    /* Changed to Poppins font (closest to Pabasic available) */
 }
 
 .navbar-brand img {
@@ -273,23 +276,21 @@ body {
     right: 50px;
     top: 20px;
     z-index: 10;
-    width: 110px;
+    width: 130px;
     text-align: center;
 }
 
 .character-image {
     width: 100%;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--neutral-medium);
-    background-color: var(--neutral-lightest);
+ 
 }
-
 .character-title {
     margin-top: 0.5rem;
-    font-size: 0.8rem;
+    font-size: 1.3rem;
     color: var(--neutral-medium);
     background-color: var(--white);
+    font-family: 'Pabasing', sans-serif;
     padding: 4px 8px;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -298,6 +299,8 @@ body {
 .chat-messages {
     flex: 1;
     padding: 1.5rem;
+    padding-right: 50px; /* Add padding to avoid overlap with character image */
+    padding-top: 70px; /* Add top padding to provide space below character image */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -316,6 +319,7 @@ body {
 .message-user {
     align-self: flex-end;
     flex-direction: row-reverse;
+    margin-right: 0; /* Remove any right margin for user messages */
 }
 
 .message-avatar {
@@ -397,7 +401,7 @@ body {
 }
 
 .chat-send-btn {
-    background-color: var(--primary-green);
+    background-color: var(--primary-orange);
     color: white;
     width: 48px;
     height: 48px;
@@ -412,7 +416,7 @@ body {
 }
 
 .chat-send-btn:hover {
-    background-color: var(--primary-green-80);
+    background-color: var(--primary-orange-20);
 }
 
 .chat-send-btn:disabled {
@@ -489,7 +493,7 @@ body {
     }
     
     .navbar-brand {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
     
     .btn {
@@ -512,6 +516,11 @@ body {
         width: 80px;
         margin: 0 auto 1rem;
     }
+    
+    .chat-messages {
+        padding-right: 1.5rem; /* Reset padding on mobile */
+        padding-top: 1.5rem; /* Reset top padding on mobile */
+    }
 }
 
 @media (max-width: 480px) {
@@ -525,6 +534,11 @@ body {
     
     .character-container {
         width: 60px;
+    }
+    
+    .chat-messages {
+        padding-right: 1.5rem; /* Reset padding on mobile */
+        padding-top: 1.5rem; /* Reset top padding on mobile */
     }
 }
     </style>
@@ -572,15 +586,11 @@ body {
     <!-- Main Content -->
     <div class="main-content">
         <div class="chat-container">
-            <!-- Chat Header -->
-            <div class="chat-header">
-                <div class="chat-header-title">Assistant</div>
-            </div>
-            
+           
             <!-- Character Image -->
             <div class="character-container">
                 <img src="/static/character.PNG" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
-                <div class="character-title">Assistant</div>
+                <div class="character-title">OomPiet</div>
             </div>
             
             <!-- Chat Messages -->
@@ -590,7 +600,8 @@ body {
                     <div class="message-avatar">OP</div>
                     <div>
                         <div class="message-content">
-                            Hello! I'm your Geotechnical Engineering Assistant. Ask me any questions about soil mechanics, foundation engineering, or other geotechnical concepts.
+                            Hallo daar! Ek's Piet, a geotechnical engineer who has been mastering the art of tailings dam engineering since the first mining boom.  I've learnt many lessons during my journey and want to continue to shape safer, more sustainable practices in the future. 
+Ask me a question and I'll guide you in the right direction.
                         </div>
                         <div class="message-time">12:00 PM</div>
                     </div>
@@ -609,7 +620,6 @@ body {
             </div>
         </div>
     </div>
-    
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -638,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
             // API endpoint configuration
-            const RAG_API_ENDPOINT = "https://difybackend.onrender.com/rag";
+            const RAG_API_ENDPOINT = "http://20.199.79.110:8000/rag";
             
             checkLoginStatus();
             
