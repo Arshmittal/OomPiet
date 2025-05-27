@@ -72,7 +72,32 @@ body {
     display: flex;
     flex-direction: column;
 }
+/* Add this CSS to your existing styles for the streaming cursor animation */
 
+.streaming-cursor {
+    animation: blink 1s infinite;
+    color: var(--primary-orange);
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Optional: Add a typing indicator style */
+.typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-style: italic;
+    color: var(--neutral-medium);
+}
+
+.typing-indicator::before {
+    content: "✍️";
+    animation: pulse 1.5s infinite;
+}
 /* Navigation Bar */
 .navbar {
     display: flex;
@@ -901,13 +926,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 callRagApi(message);
             }
             
-            function callRagApi(query) {
+// Replace the existing callRagApi and displayAssistantResponse functions with these:
+
+function callRagApi(query) {
     console.log("Calling RAG API with query:", query);
 
     const requestBody = {
         query: query,
         top_k: 5,
         max_tokens: 4096
+        // No streaming parameter needed - backend stays the same
     };
 
     console.log("Request body:", requestBody);
@@ -933,13 +961,231 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
         console.log("API response data:", data);
         hideChatLoading();
-        displayAssistantResponse(data.answer);
+        // Use the new streaming display function
+        displayAssistantResponseWithStreaming(data.answer);
+    })
+    .catch(error => {
+        console.error('Error calling RAG API:', error);
+        hideChatLoading();
+        displayErrorMessage("Sorry, I'm having trouble connecting right now. Please try again.");
     });
-
-    // ⚠️ No catch block — errors will bubble up and appear in the browser or Vercel logs
 }
 
-            
+function displayAssistantResponseWithStreaming(message) {
+    const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const messageId = 'assistant-message-' + Date.now();
+    
+    // Create the message container
+    const assistantMessageHTML = `
+        <div class="message" id="${messageId}">
+            <div class="message-avatar">OP</div>
+            <div>
+                <div class="message-content" id="${messageId}-content">
+                    <span class="streaming-cursor">|</span>
+                </div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        </div>
+    `;
+    
+    chatMessages.insertAdjacentHTML('beforeend', assistantMessageHTML);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Start the streaming simulation
+    simulateTyping(messageId, message);
+}
+
+function simulateTyping(messageId, fullText) {
+    const contentElement = document.getElementById(`${messageId}-content`);
+    if (!contentElement) return;
+    
+    let currentIndex = 0;
+    let displayedText = '';
+    
+    // Configuration for typing speed
+    const baseDelay = 10; // Very fast
+const punctuationDelay = 10; // Reduced pause after punctuation
+const spaceDelay = 5; // Reduced pause after spaces
+    
+    function typeNextCharacter() {
+        if (currentIndex >= fullText.length) {
+            // Typing complete - remove cursor
+            contentElement.innerHTML = fullText.replace(/\n/g, '<br>');
+            return;
+        }
+        
+        const currentChar = fullText[currentIndex];
+        displayedText += currentChar;
+        
+        // Update the display with cursor
+        contentElement.innerHTML = displayedText.replace(/\n/g, '<br>') + '<span class="streaming-cursor">|</span>';
+        
+        // Auto-scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        currentIndex++;
+        
+        // Calculate delay for next character
+        let delay = baseDelay;
+        
+        // Add extra delay after punctuation
+        if (['.', '!', '?', ';', ':'].includes(currentChar)) {
+            delay += punctuationDelay;
+        }
+        // Add small delay after commas and spaces
+        else if ([',', ' '].includes(currentChar)) {
+            delay += spaceDelay;
+        }
+        // Add random variation for more natural feel
+        delay += Math.random() * 20 - 10; // ±10ms variation
+        
+        setTimeout(typeNextCharacter, Math.max(delay, 10)); // Minimum 10ms delay
+    }
+    
+    // Start typing
+    typeNextCharacter();
+}
+
+// Alternative version with word-by-word streaming (smoother for long texts)
+function simulateTypingByWords(messageId, fullText) {
+    const contentElement = document.getElementById(`${messageId}-content`);
+    if (!contentElement) return;
+    
+    // Split text into words while preserving spaces and line breaks
+    const words = fullText.split(/(\s+|\n)/);
+    let currentWordIndex = 0;
+    let displayedText = '';
+    
+    function typeNextWord() {
+        if (currentWordIndex >= words.length) {
+            // Typing complete - remove cursor
+            contentElement.innerHTML = fullText.replace(/\n/g, '<br>');
+            return;
+        }
+        
+        const currentWord = words[currentWordIndex];
+        displayedText += currentWord;
+        
+        // Update the display with cursor
+        contentElement.innerHTML = displayedText.replace(/\n/g, '<br>') + '<span class="streaming-cursor">|</span>';
+        
+        // Auto-scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        currentWordIndex++;
+        
+        // Calculate delay based on word length and content
+        let delay = 50 + (currentWord.length * 10); // Base delay + word length
+        
+        // Add extra delay after sentences
+        if (currentWord.includes('.') || currentWord.includes('!') || currentWord.includes('?')) {
+            delay += 300;
+        }
+        // Add delay after commas
+        else if (currentWord.includes(',')) {
+            delay += 100;
+        }
+        
+        setTimeout(typeNextWord, delay);
+    }
+    
+    // Start typing
+    typeNextWord();
+}
+
+// Enhanced version with configurable speed
+function simulateTypingWithSpeed(messageId, fullText, speed = 'normal') {
+    const contentElement = document.getElementById(`${messageId}-content`);
+    if (!contentElement) return;
+    
+    // Speed configurations
+    const speedConfigs = {
+        slow: { base: 80, punctuation: 400, space: 100 },
+        normal: { base: 30, punctuation: 200, space: 50 },
+        fast: { base: 15, punctuation: 100, space: 25 },
+        instant: { base: 5, punctuation: 20, space: 10 }
+    };
+    
+    const config = speedConfigs[speed] || speedConfigs.normal;
+    
+    let currentIndex = 0;
+    let displayedText = '';
+    
+    function typeNextCharacter() {
+        if (currentIndex >= fullText.length) {
+            // Typing complete - remove cursor
+            contentElement.innerHTML = fullText.replace(/\n/g, '<br>');
+            return;
+        }
+        
+        const currentChar = fullText[currentIndex];
+        displayedText += currentChar;
+        
+        // Update the display with cursor
+        contentElement.innerHTML = displayedText.replace(/\n/g, '<br>') + '<span class="streaming-cursor">|</span>';
+        
+        // Auto-scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        currentIndex++;
+        
+        // Calculate delay for next character
+        let delay = config.base;
+        
+        if (['.', '!', '?', ';', ':'].includes(currentChar)) {
+            delay += config.punctuation;
+        } else if ([',', ' '].includes(currentChar)) {
+            delay += config.space;
+        }
+        
+        // Add small random variation
+        delay += Math.random() * 10 - 5;
+        
+        setTimeout(typeNextCharacter, Math.max(delay, 5));
+    }
+    
+    typeNextCharacter();
+}
+
+function displayErrorMessage(errorText) {
+    const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    const errorMessageHTML = `
+        <div class="message">
+            <div class="message-avatar">OP</div>
+            <div>
+                <div class="message-content">
+                    <span style="color: var(--danger);">${errorText}</span>
+                </div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+        </div>
+    `;
+    
+    chatMessages.insertAdjacentHTML('beforeend', errorMessageHTML);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Optional: Add a function to allow users to skip the animation and show full response immediately
+function skipTypingAnimation(messageId, fullText) {
+    const contentElement = document.getElementById(`${messageId}-content`);
+    if (contentElement) {
+        contentElement.innerHTML = fullText.replace(/\n/g, '<br>');
+    }
+}
+
+// You can also add a click handler to allow users to skip the typing animation
+// Just add this to your event listeners:
+/*
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.message-content') && e.target.closest('.message-content').querySelector('.streaming-cursor')) {
+        const messageElement = e.target.closest('.message');
+        const messageId = messageElement.id;
+        // Skip animation - you'd need to store the full text somewhere accessible
+        // This is just an example of how you could implement it
+    }
+});
+*/
             function displayAssistantResponse(message) {
     const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
