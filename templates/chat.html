@@ -904,16 +904,14 @@ document.addEventListener('DOMContentLoaded', function() {
             function callRagApi(query) {
     console.log("Calling RAG API with query:", query);
 
-    // Prepare the request body
     const requestBody = {
         query: query,
-        top_k: 5,           // Default number of chunks to retrieve
-        max_tokens: 4096    // Default max tokens for Claude response
+        top_k: 5,
+        max_tokens: 4096
     };
 
     console.log("Request body:", requestBody);
 
-    // Call the API
     fetch(RAG_API_ENDPOINT, {
         method: 'POST',
         headers: {
@@ -926,28 +924,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!response.ok) {
             return response.text().then(text => {
                 console.error("Error response body:", text);
-                throw new Error('API request failed with status ' + response.status);
+                // Let the error propagate naturally
+                throw new Error('API request failed with status ' + response.status + ' - ' + text);
             });
         }
         return response.json();
     })
     .then(data => {
         console.log("API response data:", data);
-
-        // Remove loading indicator
         hideChatLoading();
-
-        // Process the response
         displayAssistantResponse(data.answer);
     })
+    // Optional: leave this to observe all unhandled errors (log only, no fallback UI)
     .catch(error => {
-        console.error('Error calling RAG API:', error);
-
-        // Remove loading indicator
+        console.error('Raw error from RAG API:', error);
         hideChatLoading();
-
-        // Display error message to user
-        displayAssistantResponse('I apologize, but I encountered an error processing your request. Please try again later.');
+        throw error;  // Let the browser show the uncaught error
     });
 }
 
