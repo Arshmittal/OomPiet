@@ -1,4 +1,5 @@
 import re
+from bson import ObjectId
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_from_directory
 from authlib.integrations.flask_client import OAuth
 import os
@@ -9,7 +10,6 @@ from datetime import datetime, timedelta
 from werkzeug.middleware.proxy_fix import ProxyFix
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
-from bson import ObjectId
 import json
 from flask_cors import CORS
 
@@ -55,7 +55,7 @@ google = oauth.register(
     }
 )
 
-# JSON Encoder for ObjectId
+
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
