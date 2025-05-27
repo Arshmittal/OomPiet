@@ -924,7 +924,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!response.ok) {
             return response.text().then(text => {
                 console.error("Error response body:", text);
-                // Let the error propagate naturally
                 throw new Error('API request failed with status ' + response.status + ' - ' + text);
             });
         }
@@ -934,13 +933,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("API response data:", data);
         hideChatLoading();
         displayAssistantResponse(data.answer);
-    })
-    // Optional: leave this to observe all unhandled errors (log only, no fallback UI)
-    .catch(error => {
-        console.error('Raw error from RAG API:', error);
-        hideChatLoading();
-        throw error;  // Let the browser show the uncaught error
     });
+
+    // ⚠️ No catch block — errors will bubble up and appear in the browser or Vercel logs
 }
 
             
