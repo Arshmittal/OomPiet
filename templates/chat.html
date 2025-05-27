@@ -648,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
             // API endpoint configuration
-            const RAG_API_ENDPOINT = "http://20.199.79.110:8000/rag";
+            const RAG_API_ENDPOINT = "https://20.199.79.110:8000/rag";
             
             checkLoginStatus();
             
@@ -917,7 +917,8 @@ document.addEventListener('DOMContentLoaded', function() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        mode: "cors"
     })
     .then(response => {
         console.log("Received response status:", response.status);
