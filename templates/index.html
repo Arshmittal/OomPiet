@@ -89,7 +89,7 @@ body {
     color: var(--secondary-navy);
     display: flex;
     align-items: center;
-    font-family: 'Pabasing', sans-serif;
+    font-family:  sans-serif;
 }
 
 .navbar-brand img {
@@ -517,6 +517,104 @@ body {
         font-size: 0.9rem;
     }
 }
+
+/* Expert selection styles */
+.experts-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+.welcome-section {
+    text-align: left;
+    margin-bottom: 3rem;
+}
+
+.welcome-section h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--neutral-dark);
+}
+
+.experts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.expert-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: 1px solid var(--neutral-lighter);
+}
+
+.expert-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.expert-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    object-fit: cover;
+}
+
+.expert-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--neutral-dark);
+}
+
+.expert-title {
+    font-size: 0.9rem;
+    color: var(--neutral-medium);
+}
+
+.coming-soon {
+    position: relative;
+}
+
+.coming-soon::after {
+    content: "Coming Soon";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.coming-soon:hover::after {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .welcome-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .experts-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .expert-card {
+        padding: 1.5rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -527,7 +625,7 @@ body {
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <span>OomPiet</span>
+            <span>mentormate</span>
         </div>
         
         <div class="navbar-buttons">
@@ -656,10 +754,30 @@ body {
             </form>
         </div>
 
-        <!-- Welcome message for logged in users -->
-        <div class="welcome-container" id="welcome-container" style="display: none;">
-            <h1>Welcome to OomPiet!</h1>
-            <p>You're successfully logged in. Click "Go to Chat" to start using our AI assistant.</p>
+        <!-- Expert selection container (shown when logged in) -->
+        <div class="experts-container" id="experts-container" style="display: none;">
+            <div class="welcome-section">
+                <h1>Welcome, choose your expert!</h1>
+            </div>
+            <div class="experts-grid">
+                <div class="expert-card" onclick="window.location.href='/chat'">
+                    <img src="/static/character.PNG" alt="Oom Piet" class="expert-image">
+                    <div class="expert-name">Oom Piet</div>
+                    <div class="expert-title">Geotechnical tailings engineer</div>
+                </div>
+
+                <div class="expert-card coming-soon">
+                    <img src="/static/character3.png" alt="Sylvia" class="expert-image">
+                    <div class="expert-name">Sylvia</div>
+                    <div class="expert-title">Water expert</div>
+                </div>
+
+                <div class="expert-card coming-soon">
+                    <img src="/static/charcater2.png" alt="Solomon" class="expert-image">
+                    <div class="expert-name">Solomon</div>
+                    <div class="expert-title">Concrete specialist</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -838,6 +956,10 @@ body {
                         if (data.loggedIn) {
                             showLoggedInState();
                             fetchUserProfile();
+                            // Ensure we're on the index page
+                            if (window.location.pathname !== '/') {
+                                window.location.href = '/';
+                            }
                         } else {
                             showLoggedOutState();
                         }
@@ -876,17 +998,21 @@ body {
             }
 
             function showLoggedInState() {
-                authContainer.style.display = 'none';
-                welcomeContainer.style.display = 'block';
-                chatButton.style.display = 'inline-flex';
-                profileContainer.style.display = 'block';
+                if (authContainer) authContainer.style.display = 'none';
+                if (document.getElementById('experts-container')) {
+                    document.getElementById('experts-container').style.display = 'block';
+                }
+                if (chatButton) chatButton.style.display = 'none';
+                if (profileContainer) profileContainer.style.display = 'block';
             }
 
             function showLoggedOutState() {
-                authContainer.style.display = 'block';
-                welcomeContainer.style.display = 'none';
-                chatButton.style.display = 'none';
-                profileContainer.style.display = 'none';
+                if (authContainer) authContainer.style.display = 'block';
+                if (document.getElementById('experts-container')) {
+                    document.getElementById('experts-container').style.display = 'none';
+                }
+                if (chatButton) chatButton.style.display = 'none';
+                if (profileContainer) profileContainer.style.display = 'none';
             }
 
             function logout() {

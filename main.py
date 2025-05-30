@@ -1,6 +1,6 @@
 import re
 from bson import ObjectId
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_from_directory
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_from_directory, make_response
 from authlib.integrations.flask_client import OAuth
 import os
 import logging
@@ -41,6 +41,7 @@ client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000, connectTimeoutMS=
 db = client["geotech_db"]
 users_collection = db["users"]
 dashboard_stats_collection = db["dashboard_stats"]
+feedback_collection = db["feedback"]  # Add new collection for feedback
 
 # Initialize OAuth
 oauth = OAuth(app)
@@ -233,7 +234,8 @@ def google_callback():
             "name": user_info.get("name", "User"),
             "email": user_info["email"],
             "picture": user_info.get("picture", "/static/default-profile.png"),
-            "last_login": datetime.utcnow()
+            "last_login": datetime.utcnow(),
+            "auth_method": "google"  # Add auth method
         }
 
         # Update user or create if doesn't exist
@@ -250,13 +252,15 @@ def google_callback():
         # Set session
         session.permanent = True
         session['user'] = user_data
+        session.modified = True  # Ensure session is saved
 
+        app.logger.info(f"Google login successful for user: {user_data['email']}")
         return redirect(url_for('index'))
 
     except Exception as e:
         app.logger.error(f"Error in Google callback: {str(e)}")
         session.clear()
-        return render_template('error.html', error="Authentication failed. Please try again.")
+        return redirect(url_for('index'))
 
 @app.route('/check-login-status')
 def check_login_status():
@@ -286,6 +290,57 @@ def chat():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/api/feedback', methods=['POST', 'OPTIONS'])
+@login_required
+def submit_feedback():
+    # Handle preflight request
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response
+
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "No data provided"}), 400
+
+        user = session.get('user')
+        if not user:
+            return jsonify({"success": False, "error": "User not authenticated"}), 401
+        
+        feedback_data = {
+            "message_id": data.get('message_id'),
+            "content": data.get('content'),
+            "is_positive": data.get('is_positive'),
+            "user_email": user.get('email'),
+            "timestamp": datetime.utcnow(),
+            "user_agent": request.headers.get('User-Agent')
+        }
+        
+        # Validate required fields
+        if not all(key in feedback_data for key in ['message_id', 'content', 'is_positive']):
+            return jsonify({"success": False, "error": "Missing required fields"}), 400
+        
+        # Insert feedback into MongoDB
+        feedback_collection.insert_one(feedback_data)
+        
+        # Update dashboard stats
+        dashboard_stats_collection.update_one(
+            {"user_email": user.get('email')},
+            {
+                "$inc": {"total_feedback": 1},
+                "$set": {"last_active": datetime.utcnow()}
+            }
+        )
+        
+        return jsonify({"success": True, "message": "Feedback submitted successfully"})
+        
+    except Exception as e:
+        app.logger.error(f"Error submitting feedback: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # Serve the home page HTML file
 @app.route('/static/<path:path>')
