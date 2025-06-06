@@ -1291,12 +1291,25 @@ document.addEventListener('click', function(e) {
                 const selectedButton = feedbackContainer.querySelector(isPositive ? '.positive' : '.negative');
                 selectedButton.classList.add('selected');
                 
-                // Get the message content
+                // Get the message content (assistant's response)
                 const messageContent = document.getElementById(`${messageId}-content`).textContent;
+                
+                // Get the user's query by finding the previous user message
+                const messageElement = document.getElementById(messageId);
+                let userQuery = '';
+                let currentElement = messageElement.previousElementSibling;
+                while (currentElement) {
+                    if (currentElement.classList.contains('message-user')) {
+                        userQuery = currentElement.querySelector('.message-content').textContent;
+                        break;
+                    }
+                    currentElement = currentElement.previousElementSibling;
+                }
                 
                 console.log('Sending feedback to server:', {
                     message_id: messageId,
                     content: messageContent,
+                    query: userQuery,
                     is_positive: isPositive
                 });
 
@@ -1311,6 +1324,7 @@ document.addEventListener('click', function(e) {
                     body: JSON.stringify({
                         message_id: messageId,
                         content: messageContent,
+                        query: userQuery,
                         is_positive: isPositive,
                         timestamp: new Date().toISOString()
                     })

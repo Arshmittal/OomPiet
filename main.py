@@ -314,6 +314,7 @@ def submit_feedback():
         feedback_data = {
             "message_id": data.get('message_id'),
             "content": data.get('content'),
+            "query" :data.get('query', '').strip(),  # Add query field with empty string as default
             "is_positive": data.get('is_positive'),
             "user_email": user.get('email'),
             "timestamp": datetime.utcnow(),
@@ -321,7 +322,7 @@ def submit_feedback():
         }
         
         # Validate required fields
-        if not all(key in feedback_data for key in ['message_id', 'content', 'is_positive']):
+        if not all(key in feedback_data for key in ['message_id', 'content', 'is_positive', 'query']):
             return jsonify({"success": False, "error": "Missing required fields"}), 400
         
         # Insert feedback into MongoDB
