@@ -29,7 +29,7 @@ MODE = os.getenv('MODE', 'development')
 # Qdrant Configuration is handled by a separate backend service
 
 # File Upload Configuration
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+UPLOAD_FOLDER = '/tmp/uploads'
 ALLOWED_EXTENSIONS = set()  # Empty set to allow all file types
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
 
