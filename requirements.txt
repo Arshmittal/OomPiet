@@ -5,7 +5,3 @@ python-dotenv==1.0.0
 pymongo==4.5.0
 werkzeug
 flask-cors
-langchain-community
-qdrant-client
-sentence-transformers
-pypdf

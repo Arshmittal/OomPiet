@@ -540,7 +540,7 @@ body {
         <div class="upload-container">
             <div class="upload-header">
                 <h1>Upload Documents</h1>
-                <p>Upload PDF documents to enhance your assistant's knowledge base</p>
+                <p>Upload documents to enhance your assistant's knowledge base</p>
             </div>
             
             <div class="upload-form">
@@ -550,8 +550,8 @@ body {
                         <h3>Drag & Drop Files Here</h3>
                         <p>or</p>
                         <label for="file-input" class="btn-browse">Browse Files</label>
-                        <input type="file" id="file-input" class="file-input" accept=".pdf" multiple>
-                        <p class="mt-2">Supported formats: PDF</p>
+                        <input type="file" id="file-input" class="file-input" multiple>
+                        <p class="mt-2">All file formats supported</p>
                     </div>
                 </div>
                 
@@ -680,16 +680,11 @@ body {
             function handleFiles(e) {
                 const files = e.target.files;
                 
-                // Filter for PDF files
-                const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
-                
-                if (pdfFiles.length === 0) {
-                    showError('Please select PDF files only.');
-                    return;
-                }
+                // Convert FileList to Array
+                const fileArray = Array.from(files);
                 
                 // Add to selected files
-                selectedFiles = [...selectedFiles, ...pdfFiles];
+                selectedFiles = [...selectedFiles, ...fileArray];
                 
                 // Update UI
                 updateFileList();
@@ -757,46 +752,78 @@ body {
                 progressContainer.style.display = 'block';
                 uploadButton.disabled = true;
                 
-                // Create FormData
-                const formData = new FormData();
-                selectedFiles.forEach(file => {
-                    formData.append('files', file);
-                });
+                // Process files one by one
+                let filesProcessed = 0;
+                let filesSucceeded = 0;
+                const totalFiles = selectedFiles.length;
                 
-                // Create and configure request
-                const xhr = new XMLHttpRequest();
-                
-                xhr.upload.addEventListener('progress', function(e) {
-                    if (e.lengthComputable) {
-                        const percentComplete = Math.round((e.loaded / e.total) * 100);
-                        progress.style.width = percentComplete + '%';
-                        progressPercentage.textContent = percentComplete + '%';
-                    }
-                });
-                
-                xhr.addEventListener('load', function() {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        showSuccess(`Successfully uploaded ${selectedFiles.length} document(s).`);
-                        
-                        // Reset
+                function uploadNextFile(index) {
+                    if (index >= totalFiles) {
+                        // All files processed
+                        showSuccess(`Successfully uploaded ${filesSucceeded} out of ${totalFiles} document(s).`);
                         selectedFiles = [];
                         updateFileList();
                         progressContainer.style.display = 'none';
-                    } else {
-                        showError('Upload failed. Please try again.');
                         uploadButton.disabled = false;
+                        return;
                     }
-                });
+                    
+                    const file = selectedFiles[index];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('source_name', file.name);
+                    
+                    // Update progress
+                    const percentComplete = Math.round((index / totalFiles) * 100);
+                    progress.style.width = percentComplete + '%';
+                    progressPercentage.textContent = percentComplete + '%';
+                    
+                    // Update status text
+                    document.getElementById('progress-status').textContent = 
+                        `Uploading file ${index + 1}/${totalFiles}`;
+                    
+                    // Use fetch API with mode: 'cors' to handle CORS
+                    fetch('https://oompiet.space/upload', {
+                        method: 'POST',
+                        body: formData,
+                        mode: 'cors'
+                        // Don't set Content-Type header as it will be set automatically with the correct boundary for FormData
+                    })
+                    .then(response => {
+                        filesProcessed++;
+                        
+                        if (response.ok) {
+                            return response.json().then(data => {
+                                filesSucceeded++;
+                                console.log(`File uploaded: ${file.name}, Chunks added: ${data.chunks_added}`);
+                            });
+                        } else {
+                            return response.json().catch(() => {
+                                // If response is not JSON
+                                throw new Error(`Error uploading ${file.name}: Status ${response.status}`);
+                            }).then(data => {
+                                // If response is JSON with error
+                                throw new Error(`Error uploading ${file.name}: ${data.error || 'Unknown error'}`);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error.message);
+                        showError(error.message);
+                    })
+                    .finally(() => {
+                        // Update progress
+                        const newPercentComplete = Math.round((filesProcessed / totalFiles) * 100);
+                        progress.style.width = newPercentComplete + '%';
+                        progressPercentage.textContent = newPercentComplete + '%';
+                        
+                        // Process next file
+                        uploadNextFile(index + 1);
+                    });
+                }
                 
-                xhr.addEventListener('error', function() {
-                    showError('A network error occurred. Please try again.');
-                    uploadButton.disabled = false;
-                });
-                
-                // Send request
-                xhr.open('POST', '/upload-documents', true);
-                xhr.send(formData);
+                // Start uploading files
+                uploadNextFile(0);
             }
             
             function showSuccess(message) {

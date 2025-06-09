@@ -13,11 +13,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from qdrant_client import QdrantClient
-from qdrant_client.http.models import Distance, VectorParams
-from langchain_community.vectorstores import Qdrant
 
 # Load environment variables
 load_dotenv()
@@ -31,18 +26,16 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')  # Default for developme
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
 MODE = os.getenv('MODE', 'development')
 
-# Qdrant Configuration
-QDRANT_URL = os.getenv('QDRANT_URL', 'https://53d84a77-d8a0-4d6f-8439-512188cbe4d7.eu-west-1-0.aws.cloud.qdrant.io')
-QDRANT_API_KEY = os.getenv('QDRANT_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.hc1_ug3Px_WZH1tmNrd1K4MBUmjMuIybVIVolQBHy9U')
-COLLECTION_NAME = os.getenv('COLLECTION_NAME', 'dify_docs')
+# Qdrant Configuration is handled by a separate backend service
 
 # File Upload Configuration
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-ALLOWED_EXTENSIONS = {'pdf'}
+ALLOWED_EXTENSIONS = set()  # Empty set to allow all file types
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
 
 app = Flask(__name__, static_folder='static')
-CORS(app)
+# Configure CORS to allow requests from any origin
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.secret_key = SECRET_KEY
 app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
@@ -62,12 +55,7 @@ dashboard_stats_collection = db["dashboard_stats"]
 feedback_collection = db["feedback"]
 documents_collection = db["documents"]  # Collection for uploaded documents
 
-# Qdrant Setup
-qdrant_client = QdrantClient(
-    url=QDRANT_URL,
-    api_key=QDRANT_API_KEY,
-    timeout=60.0
-)
+# Qdrant Setup is handled by a separate backend service
 
 # Create uploads directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -122,37 +110,12 @@ def is_valid_email(email):
     return re.match(pattern, email) is not None
 
 def allowed_file(filename):
+    # If ALLOWED_EXTENSIONS is empty, allow all file types
+    if not ALLOWED_EXTENSIONS:
+        return True
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def process_pdf_for_qdrant(file_path, user_email):
-    """Process a PDF file and upload its content to Qdrant"""
-    try:
-        # Load and split the PDF
-        loader = PyPDFLoader(file_path)
-        pages = loader.load_and_split()
-        
-        # Add user metadata to each page
-        for page in pages:
-            page.metadata['uploaded_by'] = user_email
-            page.metadata['upload_date'] = datetime.utcnow().isoformat()
-            page.metadata['source_file'] = os.path.basename(file_path)
-        
-        # Initialize embedding model
-        embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        
-        # Upload to Qdrant
-        Qdrant.from_documents(
-            documents=pages,
-            embedding=embedding_model,
-            url=QDRANT_URL,
-            api_key=QDRANT_API_KEY,
-            collection_name=COLLECTION_NAME
-        )
-        
-        return True, len(pages)
-    except Exception as e:
-        app.logger.error(f"Error processing PDF for Qdrant: {str(e)}")
-        return False, str(e)
+# PDF processing is handled by a separate backend service
 
 # Routes
 @app.route('/')
@@ -358,87 +321,7 @@ def dashboard():
 def upload_page():
     return render_template('upload.html')
 
-@app.route('/upload-documents', methods=['POST'])
-@login_required
-def upload_documents():
-    try:
-        user = session.get('user')
-        if not user:
-            return jsonify({"success": False, "error": "User not authenticated"}), 401
-        
-        # Check if files were uploaded
-        if 'files[]' not in request.files and 'files' not in request.files:
-            return jsonify({"success": False, "error": "No files uploaded"}), 400
-        
-        # Get files from request
-        files = request.files.getlist('files[]') if 'files[]' in request.files else request.files.getlist('files')
-        
-        if not files or len(files) == 0 or files[0].filename == '':
-            return jsonify({"success": False, "error": "No files selected"}), 400
-        
-        uploaded_files = []
-        
-        for file in files:
-            if file and allowed_file(file.filename):
-                # Secure the filename
-                filename = secure_filename(file.filename)
-                
-                # Create a unique filename with timestamp
-                timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-                unique_filename = f"{timestamp}_{filename}"
-                
-                # Save file to upload folder
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-                file.save(file_path)
-                
-                # Process file for Qdrant
-                success, result = process_pdf_for_qdrant(file_path, user.get('email'))
-                
-                # Store document info in MongoDB
-                doc_info = {
-                    "original_filename": filename,
-                    "stored_filename": unique_filename,
-                    "file_path": file_path,
-                    "file_size": os.path.getsize(file_path),
-                    "upload_date": datetime.utcnow(),
-                    "uploaded_by": user.get('email'),
-                    "processed_status": "success" if success else "failed",
-                    "pages_processed": result if success else 0,
-                    "error_message": "" if success else result
-                }
-                
-                documents_collection.insert_one(doc_info)
-                
-                uploaded_files.append({
-                    "filename": filename,
-                    "status": "success" if success else "failed",
-                    "message": f"Processed {result} pages" if success else f"Error: {result}"
-                })
-            else:
-                uploaded_files.append({
-                    "filename": file.filename if file else "Unknown",
-                    "status": "failed",
-                    "message": "Invalid file type. Only PDF files are allowed."
-                })
-        
-        # Update dashboard stats
-        dashboard_stats_collection.update_one(
-            {"user_email": user.get('email')},
-            {
-                "$inc": {"total_documents": len([f for f in uploaded_files if f["status"] == "success"])},
-                "$set": {"last_active": datetime.utcnow()}
-            }
-        )
-        
-        return jsonify({
-            "success": True,
-            "message": f"Successfully processed {len([f for f in uploaded_files if f['status'] == 'success'])} out of {len(files)} files",
-            "files": uploaded_files
-        })
-        
-    except Exception as e:
-        app.logger.error(f"Error uploading documents: {str(e)}")
-        return jsonify({"success": False, "error": str(e)}), 500
+# The upload-documents endpoint is handled by a separate backend service
 
 @app.route('/api/feedback', methods=['POST', 'OPTIONS'])
 @login_required
