@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Documents - Smart Assistant Platform</title>
+    <style>
+       /* Color Palette Variables */
+       @import url('https://fonts.cdnfonts.com/css/pabasing');
+
+:root {
+    /* Primary Colors */
+    --primary-green: #3db54b;
+    --primary-green-80: #63c36e;
+    --primary-green-60: #89d191;
+    --primary-green-40: #aee0b4;
+    --primary-green-20: #d6efd8;
+    --primary-blue: #1d78a3;
+    --primary-blue-80: #4a93b5;
+    --primary-blue-60: #77aec8;
+    --primary-blue-40: #a5cadb;
+    --primary-blue-20: #d2e4ed;
+    
+    /* Secondary Colors */
+    --secondary-teal: #00abaf;
+    --secondary-teal-80: #33bcbf;
+    --secondary-teal-60: #66cdcf;
+    --secondary-teal-40: #99dedf;
+    --secondary-teal-20: #cceeef;
+    --secondary-dark-green: #0c734d;
+    --secondary-dark-green-80: #3c8f70;
+    --secondary-dark-green-60: #6bab93;
+    --secondary-dark-green-40: #9bc7b6;
+    --secondary-dark-green-20: #cae3d9;
+    --secondary-navy: #163c66;
+    --secondary-navy-80: #456385;
+    --secondary-navy-60: #748aa3;
+    --secondary-navy-40: #a2b0c2;
+    --secondary-navy-20: #d1d8e0;
+    
+    /* Neutrals */
+    --neutral-dark: #333333;
+    --neutral-medium: #666666;
+    --neutral-light: #999999;
+    --neutral-lighter: #cccccc;
+    --neutral-lightest: #f5f7fa;
+    
+    /* Utility Colors */
+    --white: #ffffff;
+    --black: #000000;
+    --success: var(--primary-green);
+    --info: var(--primary-blue);
+    --warning: #f0ad4e;
+    --danger: #d9534f;
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--neutral-lightest);
+    color: var(--neutral-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--white);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand span {
+    font-size: 2.1rem;
+    font-weight: 600;
+    color: var(--secondary-navy);
+    display: flex;
+    align-items: center;
+    font-family:  sans-serif;
+}
+
+.navbar-brand img {
+    height: 32px;
+    margin-right: 10px;
+}
+
+.navbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-80);
+}
+
+.btn-secondary {
+    background-color: var(--primary-green);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-green-80);
+}
+
+.btn img {
+    margin-right: 8px;
+    height: 18px;
+}
+
+/* Profile Dropdown */
+.profile-container {
+    position: relative;
+}
+
+.profile-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-blue);
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--white);
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    display: none;
+    z-index: 10;
+}
+
+.profile-dropdown.show {
+    display: block;
+}
+
+.profile-dropdown-item {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--neutral-dark);
+    transition: background-color 0.2s;
+}
+
+.profile-dropdown-item:hover {
+    background-color: var(--neutral-lightest);
+}
+
+.profile-dropdown-item i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.profile-info {
+    padding: 15px;
+    border-bottom: 1px solid var(--neutral-lighter);
+}
+
+.profile-info .profile-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.profile-info .profile-email {
+    font-size: 0.9rem;
+    color: var(--neutral-medium);
+    word-break: break-all;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+}
+
+.upload-container {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    margin-top: 2rem;
+}
+
+.upload-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.upload-header h1 {
+    font-size: 1.8rem;
+    color: var(--neutral-dark);
+    margin-bottom: 0.5rem;
+}
+
+.upload-header p {
+    color: var(--neutral-medium);
+    font-size: 1rem;
+}
+
+/* Upload Form */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.upload-area {
+    border: 2px dashed var(--neutral-lighter);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: var(--neutral-lightest);
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: var(--primary-blue);
+    background-color: var(--primary-blue-20);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+.upload-text h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--neutral-dark);
+}
+
+.upload-text p {
+    color: var(--neutral-medium);
+    margin-bottom: 1rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.btn-browse {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 500;
+}
+
+.btn-browse:hover {
+    background-color: var(--primary-blue-80);
+}
+
+/* File List */
+.file-list {
+    margin-top: 1.5rem;
+}
+
+.file-list-header {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--neutral-dark);
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--neutral-lightest);
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.file-icon {
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+}
+
+.file-name {
+    font-weight: 500;
+    color: var(--neutral-dark);
+}
+
+.file-size {
+    color: var(--neutral-medium);
+    font-size: 0.9rem;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-remove {
+    color: var(--danger);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+
+.btn-remove:hover {
+    color: #c82333;
+}
+
+/* Submit Button */
+.btn-submit {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-blue-80);
+}
+
+.btn-submit:disabled {
+    background-color: var(--neutral-lighter);
+    cursor: not-allowed;
+}
+
+/* Progress Bar */
+.progress-container {
+    margin-top: 1rem;
+    display: none;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: var(--neutral-lighter);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--primary-blue);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--neutral-medium);
+}
+
+/* Status Messages */
+.status-message {
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+    display: none;
+}
+
+.status-success {
+    background-color: var(--primary-green-20);
+    color: var(--primary-green);
+    border: 1px solid var(--primary-green-40);
+}
+
+.status-error {
+    background-color: #ffeaea;
+    color: var(--danger);
+    border: 1px solid #fecaca;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    border: 5px solid var(--neutral-lighter);
+    border-top: 5px solid var(--primary-blue);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .upload-container {
+        padding: 1.5rem;
+    }
+    
+    .navbar {
+        padding: 1rem;
+    }
+    
+    .navbar-brand span {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .upload-area {
+        padding: 1.5rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>mentormate</span>
+        </div>
+        
+        <div class="navbar-buttons">
+            <!-- Chat button -->
+            <a href="/chat" class="btn btn-secondary">
+                 Go to Chat
+            </a>
+            
+            <!-- Upload button (active) -->
+            <a href="/upload" class="btn btn-primary" style="background-color: var(--primary-blue-80);">
+                 Upload Documents
+            </a>
+
+            <!-- Profile dropdown -->
+            <div class="profile-container" id="profile-container">
+                <button class="profile-button" id="profile-button">
+                    <img src="/static/default-profile.png" alt="Profile" class="profile-image" id="profile-image">
+                </button>
+                
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-name">User Name</div>
+                        <div class="profile-email" id="profile-email">user@example.com</div>
+                    </div>
+                   
+                    <a href="#" class="profile-dropdown-item" id="logout-button">
+                      Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="upload-container">
+            <div class="upload-header">
+                <h1>Upload Documents</h1>
+                <p>Upload PDF documents to enhance your assistant's knowledge base</p>
+            </div>
+            
+            <div class="upload-form">
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">
+                        <h3>Drag & Drop Files Here</h3>
+                        <p>or</p>
+                        <label for="file-input" class="btn-browse">Browse Files</label>
+                        <input type="file" id="file-input" class="file-input" accept=".pdf" multiple>
+                        <p class="mt-2">Supported formats: PDF</p>
+                    </div>
+                </div>
+                
+                <div class="file-list" id="file-list" style="display: none;">
+                    <div class="file-list-header">Selected Files:</div>
+                    <div id="file-items"></div>
+                </div>
+                
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-percentage">0%</span>
+                        <span id="progress-status">Uploading...</span>
+                    </div>
+                </div>
+                
+                <div class="status-message status-success" id="success-message"></div>
+                <div class="status-message status-error" id="error-message"></div>
+                
+                <button class="btn-submit" id="upload-button" disabled>Upload Documents</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const profileButton = document.getElementById('profile-button');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const profileName = document.getElementById('profile-name');
+            const profileEmail = document.getElementById('profile-email');
+            const profileImage = document.getElementById('profile-image');
+            const logoutButton = document.getElementById('logout-button');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            
+            // Upload Elements
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const fileList = document.getElementById('file-list');
+            const fileItems = document.getElementById('file-items');
+            const uploadButton = document.getElementById('upload-button');
+            const progressContainer = document.getElementById('progress-container');
+            const progress = document.getElementById('progress');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Selected files array
+            let selectedFiles = [];
+            
+            // Check if user is logged in
+            checkLoginStatus();
+            
+            // Toggle profile dropdown
+            if (profileButton) {
+                profileButton.addEventListener('click', function() {
+                    profileDropdown.classList.toggle('show');
+                });
+            }
+            
+            // Close dropdown when clicking outside
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.profile-button') && !event.target.matches('.profile-image')) {
+                    if (profileDropdown.classList.contains('show')) {
+                        profileDropdown.classList.remove('show');
+                    }
+                }
+            });
+            
+            // Logout functionality
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // File upload functionality
+            if (uploadArea) {
+                // Prevent default drag behaviors
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
+                    document.body.addEventListener(eventName, preventDefaults, false);
+                });
+                
+                // Highlight drop area when item is dragged over it
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, highlight, false);
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, unhighlight, false);
+                });
+                
+                // Handle dropped files
+                uploadArea.addEventListener('drop', handleDrop, false);
+                
+                // Handle selected files
+                fileInput.addEventListener('change', handleFiles, false);
+                
+                // Upload button click
+                uploadButton.addEventListener('click', uploadFiles);
+            }
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                uploadArea.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                uploadArea.classList.remove('dragover');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles({ target: { files } });
+            }
+            
+            function handleFiles(e) {
+                const files = e.target.files;
+                
+                // Filter for PDF files
+                const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+                
+                if (pdfFiles.length === 0) {
+                    showError('Please select PDF files only.');
+                    return;
+                }
+                
+                // Add to selected files
+                selectedFiles = [...selectedFiles, ...pdfFiles];
+                
+                // Update UI
+                updateFileList();
+                
+                // Reset file input
+                fileInput.value = '';
+            }
+            
+            function updateFileList() {
+                if (selectedFiles.length > 0) {
+                    fileList.style.display = 'block';
+                    fileItems.innerHTML = '';
+                    
+                    selectedFiles.forEach((file, index) => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        
+                        const fileSize = formatFileSize(file.size);
+                        
+                        fileItem.innerHTML = `
+                            <div class="file-info">
+                                <span class="file-icon">📄</span>
+                                <span class="file-name">${file.name}</span>
+                                <span class="file-size">${fileSize}</span>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn-remove" data-index="${index}">×</button>
+                            </div>
+                        `;
+                        
+                        fileItems.appendChild(fileItem);
+                    });
+                    
+                    // Add event listeners to remove buttons
+                    document.querySelectorAll('.btn-remove').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            selectedFiles.splice(index, 1);
+                            updateFileList();
+                        });
+                    });
+                    
+                    // Enable upload button
+                    uploadButton.disabled = false;
+                } else {
+                    fileList.style.display = 'none';
+                    uploadButton.disabled = true;
+                }
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function uploadFiles() {
+                if (selectedFiles.length === 0) return;
+                
+                // Show progress
+                progressContainer.style.display = 'block';
+                uploadButton.disabled = true;
+                
+                // Create FormData
+                const formData = new FormData();
+                selectedFiles.forEach(file => {
+                    formData.append('files', file);
+                });
+                
+                // Create and configure request
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progress.style.width = percentComplete + '%';
+                        progressPercentage.textContent = percentComplete + '%';
+                    }
+                });
+                
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        showSuccess(`Successfully uploaded ${selectedFiles.length} document(s).`);
+                        
+                        // Reset
+                        selectedFiles = [];
+                        updateFileList();
+                        progressContainer.style.display = 'none';
+                    } else {
+                        showError('Upload failed. Please try again.');
+                        uploadButton.disabled = false;
+                    }
+                });
+                
+                xhr.addEventListener('error', function() {
+                    showError('A network error occurred. Please try again.');
+                    uploadButton.disabled = false;
+                });
+                
+                // Send request
+                xhr.open('POST', '/upload-documents', true);
+                xhr.send(formData);
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            function showLoading() {
+                loadingSpinner.style.display = 'flex';
+            }
+            
+            function hideLoading() {
+                loadingSpinner.style.display = 'none';
+            }
+            
+            function checkLoginStatus() {
+                showLoading();
+                fetch('/check-login-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.loggedIn) {
+                            fetchUserProfile();
+                        } else {
+                            // Redirect to login page if not logged in
+                            window.location.href = '/';
+                        }
+                        hideLoading();
+                    })
+                    .catch(error => {
+                        console.error('Error checking login status:', error);
+                        // Redirect to login page on error
+                        window.location.href = '/';
+                        hideLoading();
+                    });
+            }
+            
+            function fetchUserProfile() {
+                fetch('/api/user-profile')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch user profile');
+                        }
+                        return response.json();
+                    })
+                    .then(user => {
+                        updateUserProfile(user);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user profile:', error);
+                    });
+            }
+            
+            function updateUserProfile(user) {
+                if (profileName) profileName.textContent = user.name || 'User';
+                if (profileEmail) profileEmail.textContent = user.email || 'user@example.com';
+                if (profileImage) profileImage.src = user.picture || '/static/default-profile.png';
+            }
+            
+            function logout() {
+                showLoading();
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        throw new Error('Logout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during logout:', error);
+                    hideLoading();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
