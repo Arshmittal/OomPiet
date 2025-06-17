@@ -436,6 +436,12 @@ body {
     border: 1px solid #fecaca;
 }
 
+.status-warning {
+    background-color: #fff8e6;
+    color: var(--warning);
+    border: 1px solid #feebc8;
+}
+
 /* Loading Spinner */
 .loading-spinner {
     display: none;
@@ -572,6 +578,7 @@ body {
                 
                 <div class="status-message status-success" id="success-message"></div>
                 <div class="status-message status-error" id="error-message"></div>
+                <div class="status-message status-warning" id="warning-message"></div>
                 
                 <button class="btn-submit" id="upload-button" disabled>Upload Documents</button>
             </div>
@@ -600,6 +607,7 @@ body {
             const progressPercentage = document.getElementById('progress-percentage');
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
+            const warningMessage = document.getElementById('warning-message');
             
             // Selected files array
             let selectedFiles = [];
@@ -752,6 +760,10 @@ body {
                 progressContainer.style.display = 'block';
                 uploadButton.disabled = true;
                 
+                // Reset progress bar to 0%
+                progress.style.width = '0%';
+                progressPercentage.textContent = '0%';
+                
                 // Process files one by one
                 let filesProcessed = 0;
                 let filesSucceeded = 0;
@@ -759,12 +771,24 @@ body {
                 
                 function uploadNextFile(index) {
                     if (index >= totalFiles) {
-                        // All files processed
-                        showSuccess(`Successfully uploaded ${filesSucceeded} out of ${totalFiles} document(s).`);
+                        // All files processed - set progress to 100%
+                        progress.style.width = '100%';
+                        progressPercentage.textContent = '100%';
+                        
+                        // Show success message
+                        if (filesSucceeded === totalFiles) {
+                            showSuccess(`Successfully uploaded ${filesSucceeded} document(s).`);
+                        } else {
+                            showSuccess(`Uploaded ${filesSucceeded} out of ${totalFiles} document(s). Check warnings for details.`);
+                        }
                         selectedFiles = [];
                         updateFileList();
-                        progressContainer.style.display = 'none';
-                        uploadButton.disabled = false;
+                        
+                        // Hide progress after a short delay to ensure user sees 100%
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            uploadButton.disabled = false;
+                        }, 500);
                         return;
                     }
                     
@@ -773,8 +797,8 @@ body {
                     formData.append('file', file);
                     formData.append('source_name', file.name);
                     
-                    // Update progress
-                    const percentComplete = Math.round((index / totalFiles) * 100);
+                    // Update progress based on files processed so far
+                    const percentComplete = Math.round((filesProcessed / totalFiles) * 100);
                     progress.style.width = percentComplete + '%';
                     progressPercentage.textContent = percentComplete + '%';
                     
@@ -795,7 +819,23 @@ body {
                         if (response.ok) {
                             return response.json().then(data => {
                                 filesSucceeded++;
-                                console.log(`File uploaded: ${file.name}, Chunks added: ${data.chunks_added}`);
+                                
+                                // Log the response data
+                                console.log(`File upload response:`, data);
+                                
+                                // Check if chunks were added
+                                if (data.chunks_added === 0) {
+                                    console.warn(`File uploaded: ${file.name}, but no chunks were added. Message: ${data.message || 'No message provided'}`);
+                                    // We'll still count this as a success but with a warning
+                                    showWarning(`${file.name}: ${data.message || 'File uploaded but no content was extracted.'}`);
+                                } else {
+                                    console.log(`File uploaded: ${file.name}, Chunks added: ${data.chunks_added}`);
+                                }
+                                
+                                // If there's a specific message from the server, log it
+                                if (data.message) {
+                                    console.log(`Server message: ${data.message}`);
+                                }
                             });
                         } else {
                             return response.json().catch(() => {
@@ -803,7 +843,7 @@ body {
                                 throw new Error(`Error uploading ${file.name}: Status ${response.status}`);
                             }).then(data => {
                                 // If response is JSON with error
-                                throw new Error(`Error uploading ${file.name}: ${data.error || 'Unknown error'}`);
+                                throw new Error(`Error uploading ${file.name}: ${data.error || data.message || 'Unknown error'}`);
                             });
                         }
                     })
@@ -812,7 +852,7 @@ body {
                         showError(error.message);
                     })
                     .finally(() => {
-                        // Update progress
+                        // Update progress - ensure we're showing accurate progress
                         const newPercentComplete = Math.round((filesProcessed / totalFiles) * 100);
                         progress.style.width = newPercentComplete + '%';
                         progressPercentage.textContent = newPercentComplete + '%';
@@ -830,6 +870,7 @@ body {
                 successMessage.textContent = message;
                 successMessage.style.display = 'block';
                 errorMessage.style.display = 'none';
+                // Don't hide warning messages as they might contain important info about specific files
                 
                 setTimeout(() => {
                     successMessage.style.display = 'none';
@@ -840,9 +881,22 @@ body {
                 errorMessage.textContent = message;
                 errorMessage.style.display = 'block';
                 successMessage.style.display = 'none';
+                warningMessage.style.display = 'none';
                 
                 setTimeout(() => {
                     errorMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            function showWarning(message) {
+                const warningMessage = document.getElementById('warning-message');
+                warningMessage.textContent = message;
+                warningMessage.style.display = 'block';
+                
+                // Don't hide other messages as they might be relevant
+                
+                setTimeout(() => {
+                    warningMessage.style.display = 'none';
                 }, 5000);
             }
             
