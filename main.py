@@ -316,10 +316,10 @@ def chat():
 def dashboard():
     return render_template('dashboard.html')
 
-#@app.route('/upload')
-#@login_required
-#def upload_page():
-    #return render_template('upload.html')
+@app.route('/upload')
+@login_required
+def upload_page():
+    return render_template('upload.html')
 
 # The upload-documents endpoint is handled by a separate backend service
 
