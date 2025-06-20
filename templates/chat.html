@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Assistant - Chat</title>
+    <!-- MathJax for rendering mathematical equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        options: {
+            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            ignoreHtmlClass: 'tex2jax_ignore',
+            processHtmlClass: 'tex2jax_process'
+        },
+        startup: {
+            pageReady: function() {
+                return MathJax.startup.defaultPageReady().then(function() {
+                    console.log('MathJax initial typesetting complete');
+                });
+            }
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
   
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
@@ -509,6 +534,25 @@ body {
 @keyframes pulse {
     0%, 100% { transform: scale(0.5); opacity: 0.5; }
     50% { transform: scale(1); opacity: 1; }
+}
+
+/* Math expression styles */
+.message-content .math {
+    display: inline-block;
+    margin: 0 0.2em;
+    vertical-align: middle;
+}
+
+.message-content .MathJax {
+    font-size: 1.1em !important;
+}
+
+.message-content .math-block {
+    display: block;
+    margin: 1em 0;
+    text-align: center;
+    overflow-x: auto;
+    max-width: 100%;
 }
 
 /* Responsive styles */
@@ -1066,15 +1110,25 @@ function simulateTyping(messageId, fullText) {
     const contentElement = document.getElementById(`${messageId}-content`);
     if (!contentElement) return;
     
+    // Process text to identify and protect math expressions
+    const processedText = processMathExpressions(fullText);
+    
     // Split text into chunks (roughly line-sized)
-    const chunks = fullText.split(/([.!?]\s+|\n+)/);
+    const chunks = processedText.split(/([.!?]\s+|\n+)/);
     let currentIndex = 0;
     let displayedText = '';
     
     function typeNextChunk() {
         if (currentIndex >= chunks.length) {
-            // Typing complete - remove cursor
-            contentElement.innerHTML = fullText.replace(/\n/g, '<br>');
+            // Typing complete - remove cursor and render math
+            contentElement.innerHTML = processedText.replace(/\n/g, '<br>');
+            
+            // Render math expressions after typing is complete
+            if (window.MathJax) {
+                MathJax.typesetPromise([contentElement]).catch(err => {
+                    console.error('MathJax error:', err);
+                });
+            }
             return;
         }
         
@@ -1243,15 +1297,31 @@ document.addEventListener('click', function(e) {
     }
 });
 */
-            function displayAssistantResponse(message) {
+            // Process math expressions in text
+function processMathExpressions(text) {
+    // First, let's identify and protect inline math expressions with $ signs
+    let processedText = text.replace(/\$([^$]+)\$/g, function(match, p1) {
+        return '\\(' + p1 + '\\)';
+    });
+    
+    // Then, identify and protect block math expressions with $$ signs
+    processedText = processedText.replace(/\$\$([^$]+)\$\$/g, function(match, p1) {
+        return '\\[' + p1 + '\\]';
+    });
+    
+    return processedText;
+}
+
+function displayAssistantResponse(message) {
     const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const processedMessage = processMathExpressions(message);
     
     const assistantMessageHTML = `
         <div class="message">
             <div class="message-avatar">OP</div>
             <div>
                 <div class="message-content">
-                    ${message.replace(/\n/g, '<br>')}
+                    ${processedMessage.replace(/\n/g, '<br>')}
                 </div>
                 <div class="message-time">${currentTime}</div>
             </div>
@@ -1260,18 +1330,59 @@ document.addEventListener('click', function(e) {
     
     chatMessages.insertAdjacentHTML('beforeend', assistantMessageHTML);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Render math expressions
+    if (window.MathJax) {
+        const lastMessage = chatMessages.lastElementChild;
+        if (lastMessage) {
+            const contentElement = lastMessage.querySelector('.message-content');
+            if (contentElement) {
+                MathJax.typesetPromise([contentElement]).catch(err => {
+                    console.error('MathJax error:', err);
+                });
+            }
+        }
+    }
 }
 
          
             
-            // Helper function to escape HTML
+            // Helper function to escape HTML while preserving math expressions
             function escapeHtml(unsafe) {
-                return unsafe
+                // Store math expressions temporarily
+                const mathExpressions = [];
+                
+                // Replace math expressions with placeholders
+                let textWithPlaceholders = unsafe;
+                
+                // Replace inline math expressions ($...$)
+                textWithPlaceholders = textWithPlaceholders.replace(/\$([^$]+)\$/g, function(match) {
+                    const index = mathExpressions.length;
+                    mathExpressions.push(match);
+                    return `__MATH_EXPR_${index}__`;
+                });
+                
+                // Replace block math expressions ($$...$$)
+                textWithPlaceholders = textWithPlaceholders.replace(/\$\$([^$]+)\$\$/g, function(match) {
+                    const index = mathExpressions.length;
+                    mathExpressions.push(match);
+                    return `__MATH_EXPR_${index}__`;
+                });
+                
+                // Escape HTML in the text with placeholders
+                const escapedText = textWithPlaceholders
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
                     .replace(/"/g, "&quot;")
                     .replace(/'/g, "&#039;");
+                
+                // Restore math expressions
+                const finalText = escapedText.replace(/__MATH_EXPR_(\d+)__/g, function(match, index) {
+                    return mathExpressions[parseInt(index)];
+                });
+                
+                return finalText;
             }
          
             // Add feedback handling function
