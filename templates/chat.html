@@ -768,7 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
             // API endpoint configuration
-            const RAG_API_ENDPOINT = "https://oompiet.space/rag";
+            const RAG_API_ENDPOINT = "http://127.0.0.1:8000";
             
             checkLoginStatus();
             
@@ -930,10 +930,11 @@ document.addEventListener('DOMContentLoaded', function() {
 }
             
             function hideChatLoading() {
-                const loadingMessage = document.getElementById('loading-message');
-                if (loadingMessage) {
-                    loadingMessage.remove();
-                }
+                // Find and remove all loading message elements
+                const loadingMessages = document.querySelectorAll('#loading-message');
+                loadingMessages.forEach(element => {
+                    element.remove();
+                });
             }
             
             // Mock API response for development without backend
@@ -1018,52 +1019,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 showChatLoading();
                 
                 // Call the RAG API
-                callRagApi(message);
+                callRAGAPI(message);
             }
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
 
-function callRagApi(query) {
-    console.log("Calling RAG API with query:", query);
+async function callRAGAPI(userQuery) {
+    try {
+        // Removed duplicate showChatLoading() call here
+        // The loading indicator is already shown in the sendMessage function
 
-    const requestBody = {
-        query: query,
-        top_k: 5,
-        max_tokens: 4096
-        // No streaming parameter needed - backend stays the same
-    };
+        const userResponse = await fetch("/api/user-profile");
+        if (!userResponse.ok) throw new Error("Not logged in");
+        const user = await userResponse.json();
 
-    console.log("Request body:", requestBody);
+        const BASE_URL = "https://oompiet.space";   // ✅ fixed here
+        const user_plan = "free";               // ✅ static plan
+        const RAG_API_ENDPOINT = user_plan === "premium"
+            ? `${BASE_URL}/rag`
+            : `${BASE_URL}/hybrid_rag`;
 
-    fetch(RAG_API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody),
-        mode: "cors"
-    })
-    .then(response => {
+        const requestBody = {
+            query: userQuery,
+            user_id: user.email,
+            top_k: 5,
+            max_tokens: 4096
+        };
+
+        const response = await fetch(RAG_API_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody),
+            mode: "cors"
+        });
+
         console.log("Received response status:", response.status);
         if (!response.ok) {
-            return response.text().then(text => {
-                console.error("Error response body:", text);
-                throw new Error('API request failed with status ' + response.status + ' - ' + text);
-            });
+            const text = await response.text();
+            throw new Error('API request failed with status ' + response.status + ' - ' + text);
         }
-        return response.json();
-    })
-    .then(data => {
+
+        const data = await response.json();
         console.log("API response data:", data);
+
+        // Make sure we remove any existing loading indicators
         hideChatLoading();
-        // Use the new streaming display function
         displayAssistantResponseWithStreaming(data.answer);
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error calling RAG API:', error);
+        // Make sure we remove any existing loading indicators
         hideChatLoading();
         displayErrorMessage("Sorry, I'm having trouble connecting right now. Please try again.");
-    });
+    }
 }
 
 function displayAssistantResponseWithStreaming(message) {
