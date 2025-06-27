@@ -12,7 +12,6 @@ from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
 
 # Load environment variables
 load_dotenv()
@@ -26,23 +25,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')  # Default for developme
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
 MODE = os.getenv('MODE', 'development')
 
-# Qdrant Configuration is handled by a separate backend service
-
-# File Upload Configuration
-UPLOAD_FOLDER = '/tmp/uploads'
-ALLOWED_EXTENSIONS = set()  # Empty set to allow all file types
-MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
-
 app = Flask(__name__, static_folder='static')
-# Configure CORS to allow requests from any origin
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 app.secret_key = SECRET_KEY
 app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = MODE == 'production'  # True in production
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
 app.logger.setLevel(logging.INFO)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -52,13 +41,7 @@ client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000, connectTimeoutMS=
 db = client["geotech_db"]
 users_collection = db["users"]
 dashboard_stats_collection = db["dashboard_stats"]
-feedback_collection = db["feedback"]
-documents_collection = db["documents"]  # Collection for uploaded documents
-
-# Qdrant Setup is handled by a separate backend service
-
-# Create uploads directory if it doesn't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+feedback_collection = db["feedback"]  # Add new collection for feedback
 
 # Initialize OAuth
 oauth = OAuth(app)
@@ -108,14 +91,6 @@ def initialize_new_user_dashboard_stats(email):
 def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
-
-def allowed_file(filename):
-    # If ALLOWED_EXTENSIONS is empty, allow all file types
-    if not ALLOWED_EXTENSIONS:
-        return True
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# PDF processing is handled by a separate backend service
 
 # Routes
 @app.route('/')
@@ -315,13 +290,6 @@ def chat():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
-
-@app.route('/upload')
-@login_required
-def upload_page():
-    return render_template('upload.html')
-
-# The upload-documents endpoint is handled by a separate backend service
 
 @app.route('/api/feedback', methods=['POST', 'OPTIONS'])
 @login_required

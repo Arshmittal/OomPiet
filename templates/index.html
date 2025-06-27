@@ -633,11 +633,6 @@ body {
             <a href="/chat" class="btn btn-secondary" id="chat-button" style="display: none;">
                  Go to Chat
             </a>
-            
-            <!-- Upload button (only shown when logged in)
-            <a href="/upload" class="btn btn-primary" id="upload-button" style="display: none;">
-                 Upload Documents
-            </a>-->
 
             <!-- Profile dropdown (shown when logged in) -->
             <div class="profile-container" id="profile-container">
@@ -1008,8 +1003,6 @@ body {
                     document.getElementById('experts-container').style.display = 'block';
                 }
                 if (chatButton) chatButton.style.display = 'none';
-                const uploadButton = document.getElementById('upload-button');
-                if (uploadButton) uploadButton.style.display = 'flex';
                 if (profileContainer) profileContainer.style.display = 'block';
             }
 
@@ -1019,8 +1012,6 @@ body {
                     document.getElementById('experts-container').style.display = 'none';
                 }
                 if (chatButton) chatButton.style.display = 'none';
-                const uploadButton = document.getElementById('upload-button');
-                if (uploadButton) uploadButton.style.display = 'none';
                 if (profileContainer) profileContainer.style.display = 'none';
             }
 

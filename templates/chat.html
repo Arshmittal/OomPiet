@@ -4,31 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Assistant - Chat</title>
-    <!-- MathJax for rendering mathematical equations -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script>
-    MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            processEscapes: true,
-            processEnvironments: true
-        },
-        options: {
-            skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            ignoreHtmlClass: 'tex2jax_ignore',
-            processHtmlClass: 'tex2jax_process'
-        },
-        startup: {
-            pageReady: function() {
-                return MathJax.startup.defaultPageReady().then(function() {
-                    console.log('MathJax initial typesetting complete');
-                });
-            }
-        }
-    };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
   
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
@@ -536,25 +511,6 @@ body {
     50% { transform: scale(1); opacity: 1; }
 }
 
-/* Math expression styles */
-.message-content .math {
-    display: inline-block;
-    margin: 0 0.2em;
-    vertical-align: middle;
-}
-
-.message-content .MathJax {
-    font-size: 1.1em !important;
-}
-
-.message-content .math-block {
-    display: block;
-    margin: 1em 0;
-    text-align: center;
-    overflow-x: auto;
-    max-width: 100%;
-}
-
 /* Responsive styles */
 @media (max-width: 768px) {
     .navbar {
@@ -661,9 +617,41 @@ body {
     font-style: italic;
     display: none;
 }
+
+.api-mode-btn.selected {
+    background: var(--primary-orange, #e67e22);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+}
+.api-mode-btn {
+    background: #fff;
+    color: var(--primary-orange, #e67e22);
+    border: 1px solid var(--primary-orange, #e67e22);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.api-mode-btn:not(.selected):hover {
+    background: var(--primary-orange-20, #fae9d8);
+}
+#chat-main-content {
+  display: none;
+}
     </style>
 </head>
 <body>
+    <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
+    <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:center;justify-content:center;">
+      <div style="background:#fff;padding:2rem 2.5rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.15);text-align:center;min-width:260px;">
+        <h2 style="margin-bottom:1.5rem;">Choose your plan</h2>
+        <button id="modal-free-btn" class="api-mode-btn selected" style="padding:0.7rem 2.5rem;margin-right:1rem;">Free</button>
+        <button id="modal-premium-btn" class="api-mode-btn" style="padding:0.7rem 2.5rem;">Premium</button>
+      </div>
+    </div>
+    
+    <!-- Only this is hidden initially -->
+    <div id="chat-main-content" style="display:none;">
     <!-- Page loading spinner -->
     <div class="loading-spinner">
         <div class="spinner"></div>
@@ -740,6 +728,7 @@ Ask me a question and I'll guide you in the right direction.
             </div>
         </div>
     </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -768,7 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
             // API endpoint configuration
-            const RAG_API_ENDPOINT = "http://127.0.0.1:8000";
+            const RAG_API_ENDPOINT = "https://oompiet.space/rag";
             
             checkLoginStatus();
             
@@ -930,11 +919,10 @@ document.addEventListener('DOMContentLoaded', function() {
 }
             
             function hideChatLoading() {
-                // Find and remove all loading message elements
-                const loadingMessages = document.querySelectorAll('#loading-message');
-                loadingMessages.forEach(element => {
-                    element.remove();
-                });
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
             }
             
             // Mock API response for development without backend
@@ -1019,60 +1007,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 showChatLoading();
                 
                 // Call the RAG API
-                callRAGAPI(message);
+                callRagApi(message);
             }
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
 
-async function callRAGAPI(userQuery) {
-    try {
-        // Removed duplicate showChatLoading() call here
-        // The loading indicator is already shown in the sendMessage function
+function callRagApi(query) {
+    if (!apiMode) {
+        alert('Please select Free or Premium first.');
+        return;
+    }
+    const endpoint = apiMode === 'premium'
+        ? 'https://oompiet.space/rag'
+        : 'https://oompiet.space/hybrid_rag'; // Example hybrid endpoint
 
-        const userResponse = await fetch("/api/user-profile");
-        if (!userResponse.ok) throw new Error("Not logged in");
-        const user = await userResponse.json();
+    const requestBody = {
+        query: query,
+        top_k: 5,
+        max_tokens: 4096
+    };
+    if (apiMode === 'free') {
+        // Use logged-in user's email if available, else fallback
+        requestBody.user_id = window.currentUserId || 'demo-user';
+    }
 
-        const BASE_URL = "https://oompiet.space";   // ✅ fixed here
-        const user_plan = "free";               // ✅ static plan
-        const RAG_API_ENDPOINT = user_plan === "premium"
-            ? `${BASE_URL}/rag`
-            : `${BASE_URL}/hybrid_rag`;
-
-        const requestBody = {
-            query: userQuery,
-            user_id: user.email,
-            top_k: 5,
-            max_tokens: 4096
-        };
-
-        const response = await fetch(RAG_API_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody),
-            mode: "cors"
-        });
-
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody),
+        mode: "cors"
+    })
+    .then(response => {
         console.log("Received response status:", response.status);
         if (!response.ok) {
-            const text = await response.text();
-            throw new Error('API request failed with status ' + response.status + ' - ' + text);
+            return response.text().then(text => {
+                console.error("Error response body:", text);
+                throw new Error('API request failed with status ' + response.status + ' - ' + text);
+            });
         }
-
-        const data = await response.json();
+        return response.json();
+    })
+    .then(data => {
         console.log("API response data:", data);
-
-        // Make sure we remove any existing loading indicators
         hideChatLoading();
+        // Use the new streaming display function
         displayAssistantResponseWithStreaming(data.answer);
-    } catch (error) {
-        console.error('Error calling RAG API:', error);
-        // Make sure we remove any existing loading indicators
+    })
+    .catch(error => {
+        console.error('Error calling API:', error);
         hideChatLoading();
         displayErrorMessage("Sorry, I'm having trouble connecting right now. Please try again.");
-    }
+    });
 }
 
 function displayAssistantResponseWithStreaming(message) {
@@ -1119,25 +1106,15 @@ function simulateTyping(messageId, fullText) {
     const contentElement = document.getElementById(`${messageId}-content`);
     if (!contentElement) return;
     
-    // Process text to identify and protect math expressions
-    const processedText = processMathExpressions(fullText);
-    
     // Split text into chunks (roughly line-sized)
-    const chunks = processedText.split(/([.!?]\s+|\n+)/);
+    const chunks = fullText.split(/([.!?]\s+|\n+)/);
     let currentIndex = 0;
     let displayedText = '';
     
     function typeNextChunk() {
         if (currentIndex >= chunks.length) {
-            // Typing complete - remove cursor and render math
-            contentElement.innerHTML = processedText.replace(/\n/g, '<br>');
-            
-            // Render math expressions after typing is complete
-            if (window.MathJax) {
-                MathJax.typesetPromise([contentElement]).catch(err => {
-                    console.error('MathJax error:', err);
-                });
-            }
+            // Typing complete - remove cursor
+            contentElement.innerHTML = fullText.replace(/\n/g, '<br>');
             return;
         }
         
@@ -1306,31 +1283,15 @@ document.addEventListener('click', function(e) {
     }
 });
 */
-            // Process math expressions in text
-function processMathExpressions(text) {
-    // First, let's identify and protect inline math expressions with $ signs
-    let processedText = text.replace(/\$([^$]+)\$/g, function(match, p1) {
-        return '\\(' + p1 + '\\)';
-    });
-    
-    // Then, identify and protect block math expressions with $$ signs
-    processedText = processedText.replace(/\$\$([^$]+)\$\$/g, function(match, p1) {
-        return '\\[' + p1 + '\\]';
-    });
-    
-    return processedText;
-}
-
-function displayAssistantResponse(message) {
+            function displayAssistantResponse(message) {
     const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    const processedMessage = processMathExpressions(message);
     
     const assistantMessageHTML = `
         <div class="message">
             <div class="message-avatar">OP</div>
             <div>
                 <div class="message-content">
-                    ${processedMessage.replace(/\n/g, '<br>')}
+                    ${message.replace(/\n/g, '<br>')}
                 </div>
                 <div class="message-time">${currentTime}</div>
             </div>
@@ -1339,59 +1300,18 @@ function displayAssistantResponse(message) {
     
     chatMessages.insertAdjacentHTML('beforeend', assistantMessageHTML);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Render math expressions
-    if (window.MathJax) {
-        const lastMessage = chatMessages.lastElementChild;
-        if (lastMessage) {
-            const contentElement = lastMessage.querySelector('.message-content');
-            if (contentElement) {
-                MathJax.typesetPromise([contentElement]).catch(err => {
-                    console.error('MathJax error:', err);
-                });
-            }
-        }
-    }
 }
 
          
             
-            // Helper function to escape HTML while preserving math expressions
+            // Helper function to escape HTML
             function escapeHtml(unsafe) {
-                // Store math expressions temporarily
-                const mathExpressions = [];
-                
-                // Replace math expressions with placeholders
-                let textWithPlaceholders = unsafe;
-                
-                // Replace inline math expressions ($...$)
-                textWithPlaceholders = textWithPlaceholders.replace(/\$([^$]+)\$/g, function(match) {
-                    const index = mathExpressions.length;
-                    mathExpressions.push(match);
-                    return `__MATH_EXPR_${index}__`;
-                });
-                
-                // Replace block math expressions ($$...$$)
-                textWithPlaceholders = textWithPlaceholders.replace(/\$\$([^$]+)\$\$/g, function(match) {
-                    const index = mathExpressions.length;
-                    mathExpressions.push(match);
-                    return `__MATH_EXPR_${index}__`;
-                });
-                
-                // Escape HTML in the text with placeholders
-                const escapedText = textWithPlaceholders
+                return unsafe
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
                     .replace(/"/g, "&quot;")
                     .replace(/'/g, "&#039;");
-                
-                // Restore math expressions
-                const finalText = escapedText.replace(/__MATH_EXPR_(\d+)__/g, function(match, index) {
-                    return mathExpressions[parseInt(index)];
-                });
-                
-                return finalText;
             }
          
             // Add feedback handling function
@@ -1470,6 +1390,41 @@ function displayAssistantResponse(message) {
             };
          
         });
+
+        let apiMode = null; // Not set until user chooses
+
+        window.addEventListener('DOMContentLoaded', function() {
+            // Modal logic for Free/Premium selection
+            const modal = document.getElementById('api-mode-modal');
+            const chatMain = document.getElementById('chat-main-content');
+            const freeBtn = document.getElementById('modal-free-btn');
+            const premiumBtn = document.getElementById('modal-premium-btn');
+            if (freeBtn && premiumBtn && modal && chatMain) {
+                freeBtn.addEventListener('click', function() {
+                    apiMode = 'free';
+                    modal.style.display = 'none';
+                    chatMain.style.display = 'block';
+                });
+                premiumBtn.addEventListener('click', function() {
+                    apiMode = 'premium';
+                    modal.style.display = 'none';
+                    chatMain.style.display = 'block';
+                });
+            }
+        });
+
+        // Fetch the logged-in user's email on page load
+        window.currentUserId = null;
+        fetch('/api/user-profile')
+          .then(res => res.ok ? res.json() : null)
+          .then(user => {
+            if (user && user.email) {
+              window.currentUserId = user.email;
+            }
+          })
+          .catch(() => {
+            window.currentUserId = null;
+          });
     </script>
     
 </body>
