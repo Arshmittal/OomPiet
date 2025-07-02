@@ -286,6 +286,11 @@ def logout():
 def chat():
     return render_template('chat.html')
 
+@app.route('/upload')
+@login_required
+def upload():
+    return render_template('upload.html')
+
 @app.route('/dashboard')
 @login_required
 def dashboard():

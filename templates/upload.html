@@ -753,6 +753,15 @@ body {
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
             
+            // UUID generator for file_id
+            function generateUUID() {
+                // Simple UUID v4 generator
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            
             function uploadFiles() {
                 if (selectedFiles.length === 0) return;
                 
@@ -764,105 +773,101 @@ body {
                 progress.style.width = '0%';
                 progressPercentage.textContent = '0%';
                 
-                // Process files one by one
                 let filesProcessed = 0;
                 let filesSucceeded = 0;
                 const totalFiles = selectedFiles.length;
+                let totalChunks = 0;
+                let chunksUploaded = 0;
+                let chunkProgressMap = [];
+                
+                // Pre-calculate total chunks for all files
+                selectedFiles.forEach(file => {
+                    const chunkSize = 750 * 1024; // 750KB
+                    const numChunks = Math.ceil(file.size / chunkSize);
+                    totalChunks += numChunks;
+                    chunkProgressMap.push(numChunks);
+                });
+                
+                function uploadFileChunks(file, fileIndex, onComplete) {
+                    const chunkSize = 750 * 1024; // 750KB
+                    const numChunks = Math.ceil(file.size / chunkSize);
+                    const fileId = generateUUID();
+                    let chunkNumber = 1;
+                    
+                    function uploadChunk(start) {
+                        if (start >= file.size) {
+                            onComplete();
+                            return;
+                        }
+                        const end = Math.min(start + chunkSize, file.size);
+                        const chunk = file.slice(start, end);
+                        const formData = new FormData();
+                        formData.append('file', chunk, file.name);
+                        formData.append('chunk_number', chunkNumber);
+                        formData.append('total_chunks', numChunks);
+                        formData.append('file_id', fileId);
+                        formData.append('source_name', file.name);
+                        
+                        // Update status text
+                        document.getElementById('progress-status').textContent = 
+                            `Uploading ${file.name} (chunk ${chunkNumber}/${numChunks})`;
+                        
+                        fetch('https://oompiet.space/upload', {
+                            method: 'POST',
+                            body: formData,
+                            mode: 'cors'
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().catch(() => {
+                                    throw new Error(`Error uploading chunk ${chunkNumber} of ${file.name}: Status ${response.status}`);
+                                }).then(data => {
+                                    throw new Error(`Error uploading chunk ${chunkNumber} of ${file.name}: ${data.error || data.message || 'Unknown error'}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Optionally handle chunk response
+                        })
+                        .catch(error => {
+                            console.error(error.message);
+                            showError(error.message);
+                        })
+                        .finally(() => {
+                            chunksUploaded++;
+                            // Update progress bar
+                            const percentComplete = Math.round((chunksUploaded / totalChunks) * 100);
+                            progress.style.width = percentComplete + '%';
+                            progressPercentage.textContent = percentComplete + '%';
+                            chunkNumber++;
+                            uploadChunk(start + chunkSize);
+                        });
+                    }
+                    uploadChunk(0);
+                }
                 
                 function uploadNextFile(index) {
                     if (index >= totalFiles) {
                         // All files processed - set progress to 100%
                         progress.style.width = '100%';
                         progressPercentage.textContent = '100%';
-                        
-                        // Show success message
-                        if (filesSucceeded === totalFiles) {
-                            showSuccess(`Successfully uploaded ${filesSucceeded} document(s).`);
-                        } else {
-                            showSuccess(`Uploaded ${filesSucceeded} out of ${totalFiles} document(s). Check warnings for details.`);
-                        }
+                        showSuccess(`Successfully uploaded all document(s).`);
                         selectedFiles = [];
                         updateFileList();
-                        
-                        // Hide progress after a short delay to ensure user sees 100%
                         setTimeout(() => {
                             progressContainer.style.display = 'none';
                             uploadButton.disabled = false;
                         }, 500);
                         return;
                     }
-                    
                     const file = selectedFiles[index];
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('source_name', file.name);
-                    
-                    // Update progress based on files processed so far
-                    const percentComplete = Math.round((filesProcessed / totalFiles) * 100);
-                    progress.style.width = percentComplete + '%';
-                    progressPercentage.textContent = percentComplete + '%';
-                    
-                    // Update status text
-                    document.getElementById('progress-status').textContent = 
-                        `Uploading file ${index + 1}/${totalFiles}`;
-                    
-                    // Use fetch API with mode: 'cors' to handle CORS
-                    fetch('https://oompiet.space/upload', {
-                        method: 'POST',
-                        body: formData,
-                        mode: 'cors'
-                        // Don't set Content-Type header as it will be set automatically with the correct boundary for FormData
-                    })
-                    .then(response => {
+                    uploadFileChunks(file, index, () => {
                         filesProcessed++;
-                        
-                        if (response.ok) {
-                            return response.json().then(data => {
-                                filesSucceeded++;
-                                
-                                // Log the response data
-                                console.log(`File upload response:`, data);
-                                
-                                // Check if chunks were added
-                                if (data.chunks_added === 0) {
-                                    console.warn(`File uploaded: ${file.name}, but no chunks were added. Message: ${data.message || 'No message provided'}`);
-                                    // We'll still count this as a success but with a warning
-                                    showWarning(`${file.name}: ${data.message || 'File uploaded but no content was extracted.'}`);
-                                } else {
-                                    console.log(`File uploaded: ${file.name}, Chunks added: ${data.chunks_added}`);
-                                }
-                                
-                                // If there's a specific message from the server, log it
-                                if (data.message) {
-                                    console.log(`Server message: ${data.message}`);
-                                }
-                            });
-                        } else {
-                            return response.json().catch(() => {
-                                // If response is not JSON
-                                throw new Error(`Error uploading ${file.name}: Status ${response.status}`);
-                            }).then(data => {
-                                // If response is JSON with error
-                                throw new Error(`Error uploading ${file.name}: ${data.error || data.message || 'Unknown error'}`);
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error.message);
-                        showError(error.message);
-                    })
-                    .finally(() => {
-                        // Update progress - ensure we're showing accurate progress
-                        const newPercentComplete = Math.round((filesProcessed / totalFiles) * 100);
-                        progress.style.width = newPercentComplete + '%';
-                        progressPercentage.textContent = newPercentComplete + '%';
-                        
-                        // Process next file
+                        filesSucceeded++;
                         uploadNextFile(index + 1);
                     });
                 }
-                
-                // Start uploading files
                 uploadNextFile(0);
             }
             
