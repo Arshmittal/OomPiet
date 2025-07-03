@@ -511,6 +511,11 @@ body {
     50% { transform: scale(1); opacity: 1; }
 }
 
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .navbar {
@@ -545,6 +550,26 @@ body {
     .chat-messages {
         padding-right: 1.5rem; /* Reset padding on mobile */
         padding-top: 1.5rem; /* Reset top padding on mobile */
+    }
+    
+    /* Plan selection modal responsive styles */
+    #api-mode-modal > div {
+        padding: 1.5rem;
+        width: 95%;
+        max-width: 100%;
+    }
+    
+    #api-mode-modal h2 {
+        font-size: 1.5rem;
+    }
+    
+    #api-mode-modal p {
+        font-size: 0.9rem;
+    }
+    
+    #free-plan-card, #premium-plan-card {
+        min-width: 100%;
+        margin-bottom: 1rem;
     }
 }
 
@@ -642,11 +667,37 @@ body {
 </head>
 <body>
     <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
-    <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:center;justify-content:center;">
-      <div style="background:#fff;padding:2rem 2.5rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.15);text-align:center;min-width:260px;">
-        <h2 style="margin-bottom:1.5rem;">Choose your plan</h2>
-        <button id="modal-free-btn" class="api-mode-btn selected" style="padding:0.7rem 2.5rem;margin-right:1rem;">Free</button>
-        <button id="modal-premium-btn" class="api-mode-btn" style="padding:0.7rem 2.5rem;">Premium</button>
+    <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
+      <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:90%;animation:fadeIn 0.5s ease-out;">
+        <h2 style="margin-bottom:1rem;color:var(--secondary-dark-orange);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
+        <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1rem;">Select the plan that best suits your needs</p>
+        
+        <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-bottom:1.5rem;">
+          <!-- Free Plan Card -->
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-orange-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card" onclick="document.getElementById('modal-free-btn').click()">
+            <h3 style="color:var(--primary-orange);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
+            <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Basic features with limited usage</p>
+            <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
+              <li style="margin-bottom:0.5rem;">Standard responses</li>
+              <li style="margin-bottom:0.5rem;">Basic knowledge base</li>
+              <li>Community support</li>
+            </ul>
+            <button id="modal-free-btn" class="api-mode-btn selected" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;">Select Free</button>
+          </div>
+          
+          <!-- Premium Plan Card -->
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-orange);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-orange-20);position:relative;" id="premium-plan-card" onclick="document.getElementById('modal-premium-btn').click()">
+            <div style="position:absolute;top:-10px;right:20px;background:var(--secondary-dark-orange);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
+            <h3 style="color:var(--secondary-dark-orange);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
+            <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Enhanced features with priority access</p>
+            <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
+              <li style="margin-bottom:0.5rem;">Advanced responses</li>
+              <li style="margin-bottom:0.5rem;">Full knowledge access</li>
+              <li>Priority support</li>
+            </ul>
+            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-orange);color:white;">Select Premium</button>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -1399,16 +1450,111 @@ document.addEventListener('click', function(e) {
             const chatMain = document.getElementById('chat-main-content');
             const freeBtn = document.getElementById('modal-free-btn');
             const premiumBtn = document.getElementById('modal-premium-btn');
+            const freePlanCard = document.getElementById('free-plan-card');
+            const premiumPlanCard = document.getElementById('premium-plan-card');
+            
+            // Add hover effects for plan cards
+            function setupPlanCardInteractions() {
+                if (freePlanCard && premiumPlanCard) {
+                    // Free plan card hover effect
+                    freePlanCard.addEventListener('mouseenter', function() {
+                        this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    
+                    freePlanCard.addEventListener('mouseleave', function() {
+                        this.style.boxShadow = 'none';
+                        this.style.transform = 'translateY(0)';
+                    });
+                    
+                    // Premium plan card hover effect
+                    premiumPlanCard.addEventListener('mouseenter', function() {
+                        this.style.boxShadow = '0 5px 20px rgba(211, 84, 0, 0.2)';
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    
+                    premiumPlanCard.addEventListener('mouseleave', function() {
+                        this.style.boxShadow = 'none';
+                        this.style.transform = 'translateY(0)';
+                    });
+                    
+                    // Highlight selected plan
+                    freeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent triggering the card's click
+                        freePlanCard.style.borderColor = 'var(--primary-orange)';
+                        premiumPlanCard.style.borderColor = 'var(--primary-orange)';
+                        setTimeout(function() {
+                            apiMode = 'free';
+                            modal.style.opacity = '0';
+                            modal.style.transform = 'scale(0.9)';
+                            modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            
+                            setTimeout(function() {
+                                modal.style.display = 'none';
+                                chatMain.style.display = 'block';
+                                // Add entrance animation for chat
+                                chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
+                            }, 300);
+                        }, 400);
+                    });
+                }
+            }
+            
+            // On page load, check if user is premium and show chat directly if so
+            fetch('/api/user-profile')
+              .then(res => res.ok ? res.json() : null)
+              .then(user => {
+                if (user && user.premium) {
+                  apiMode = 'premium';
+                  if (modal) modal.style.display = 'none';
+                  if (chatMain) {
+                    chatMain.style.display = 'block';
+                    chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
+                  }
+                } else {
+                  if (modal) modal.style.display = 'flex';
+                  if (chatMain) chatMain.style.display = 'none';
+                  setupPlanCardInteractions();
+                }
+              })
+              .catch(() => {
+                if (modal) modal.style.display = 'flex';
+                if (chatMain) chatMain.style.display = 'none';
+                setupPlanCardInteractions();
+              });
+              
             if (freeBtn && premiumBtn && modal && chatMain) {
-                freeBtn.addEventListener('click', function() {
-                    apiMode = 'free';
-                    modal.style.display = 'none';
-                    chatMain.style.display = 'block';
-                });
-                premiumBtn.addEventListener('click', function() {
-                    apiMode = 'premium';
-                    modal.style.display = 'none';
-                    chatMain.style.display = 'block';
+                // Premium button click handler
+                premiumBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering the card's click
+                    premiumPlanCard.style.borderColor = 'var(--secondary-dark-orange)';
+                    freePlanCard.style.borderColor = 'var(--primary-orange-20)';
+                    
+                    // Check if user is already premium
+                    fetch('/api/user-profile')
+                      .then(res => res.ok ? res.json() : null)
+                      .then(user => {
+                        if (user && user.premium) {
+                          apiMode = 'premium';
+                          
+                          // Add exit animation
+                          modal.style.opacity = '0';
+                          modal.style.transform = 'scale(0.9)';
+                          modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                          
+                          setTimeout(function() {
+                            modal.style.display = 'none';
+                            chatMain.style.display = 'block';
+                            // Add entrance animation for chat
+                            chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
+                          }, 300);
+                        } else {
+                          window.location.href = '/pay';
+                        }
+                      })
+                      .catch(() => {
+                        window.location.href = '/pay';
+                      });
                 });
             }
         });

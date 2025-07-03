@@ -1,6 +1,6 @@
 import re
 from bson import ObjectId
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_from_directory, make_response
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_from_directory, make_response, flash
 from authlib.integrations.flask_client import OAuth
 import os
 import logging
@@ -12,6 +12,11 @@ from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 from flask_cors import CORS
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from urllib.parse import urlencode
+import requests
 
 # Load environment variables
 load_dotenv()
@@ -22,7 +27,7 @@ API_KEY = os.getenv('API_KEY')
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')  # Default for development
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
+MONGO_URI = os.getenv('MONGO_URI')
 MODE = os.getenv('MODE', 'development')
 
 app = Flask(__name__, static_folder='static')
@@ -56,6 +61,11 @@ google = oauth.register(
     }
 )
 
+SMTP_SERVER = os.getenv('SMTP_SERVER')
+SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
+SMTP_USERNAME = os.getenv('SMTP_USERNAME')
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
+SMTP_FROM = os.getenv('SMTP_FROM', SMTP_USERNAME)
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -91,6 +101,19 @@ def initialize_new_user_dashboard_stats(email):
 def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
+
+# Helper: Verify PayFast ITN signature
+
+def verify_payfast_itn(data):
+    # Remove signature field
+    data_for_sig = {k: v for k, v in data.items() if k != 'signature'}
+    # Sort by key, urlencode
+    pf_data = urlencode(sorted(data_for_sig.items()))
+    # Post back to PayFast for validation
+    response = requests.post('https://sandbox.payfast.co.za/eng/query/validate', data=pf_data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+    if response.text.strip() == 'VALID':
+        return True
+    return False
 
 # Routes
 @app.route('/')
@@ -175,13 +198,14 @@ def signin():
             {'$set': {'last_login': datetime.utcnow()}}
         )
 
-        # Set session
+        # Set session, include premium status if present
         session.permanent = True
         session['user'] = {
             'email': user['email'],
             'name': user['name'],
             'picture': user['picture'],
-            'auth_method': user['auth_method']
+            'auth_method': user['auth_method'],
+            'premium': user.get('premium', False)
         }
 
         app.logger.info(f"User signed in: {email}")
@@ -249,9 +273,18 @@ def google_callback():
         if result.upserted_id:
             initialize_new_user_dashboard_stats(user_data["email"])
 
-        # Set session
+        # Fetch the full user record (including premium status)
+        db_user = users_collection.find_one({"email": user_data["email"]})
+
+        # Set session, include premium status if present
         session.permanent = True
-        session['user'] = user_data
+        session['user'] = {
+            'email': db_user['email'],
+            'name': db_user['name'],
+            'picture': db_user['picture'],
+            'auth_method': db_user['auth_method'],
+            'premium': db_user.get('premium', False)
+        }
         session.modified = True  # Ensure session is saved
 
         app.logger.info(f"Google login successful for user: {user_data['email']}")
@@ -357,6 +390,57 @@ def serve_static(path):
 @app.route('/index.html')
 def serve_html():
     return render_template('index.html')
+
+@app.route('/pay')
+@login_required
+def pay():
+    user = session.get('user')
+    if not user:
+        return redirect(url_for('login'))
+    # You can set amount and item_name dynamically if needed
+    payfast_data = {
+        'merchant_id': '25296103',
+        'merchant_key': 'rbn0vhdzshrbi',
+        'amount': '100.00',
+        'item_name': 'Premium Plan',
+        'name_first': user.get('name', ''),
+        'email_address': user.get('email', ''),
+        'return_url': url_for('pay_success', _external=True),
+        'cancel_url': url_for('pay_cancel', _external=True),
+        'notify_url': url_for('pay_notify', _external=True),
+        'custom_str1': user.get('email', '')
+    }
+    return render_template('payfast_form.html', payfast=payfast_data)
+
+@app.route('/pay/success')
+@login_required
+def pay_success():
+    user = session.get('user')
+    if not user:
+        return redirect(url_for('login'))
+    # Mark user as premium in DB and session
+    users_collection.update_one({'email': user['email']}, {'$set': {'premium': True}})
+    session['user']['premium'] = True
+    flash('Payment successful! You are now a premium user.', 'success')
+    return redirect(url_for('chat'))
+
+@app.route('/pay/cancel')
+@login_required
+def pay_cancel():
+    flash('Payment cancelled.', 'warning')
+    return redirect(url_for('chat'))
+
+@app.route('/pay/notify', methods=['POST'])
+def pay_notify():
+    data = request.form.to_dict()
+    app.logger.info(f"PayFast ITN received: {data}")
+    # Verify signature
+    if not verify_payfast_itn(data):
+        app.logger.warning("Invalid PayFast ITN signature!")
+        return 'Invalid signature', 400
+    if data.get('payment_status') == 'COMPLETE' and data.get('custom_str1'):
+        users_collection.update_one({'email': data['custom_str1']}, {'$set': {'premium': True}})
+    return 'OK', 200
 
 if __name__ == '__main__':
     # Create static folder if it doesn't exist

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PayFast Payment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; height: 100vh; background: #fafafa; }
+        .payfast-box { background: #fff; padding: 2rem 2.5rem; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); text-align: center; }
+        .payfast-box h2 { margin-bottom: 1.5rem; color: #e67e22; }
+        .payfast-box p { color: #666; margin-bottom: 2rem; }
+        .payfast-box button { background: #e67e22; color: #fff; border: none; border-radius: 6px; padding: 0.7rem 2.5rem; font-size: 1.1rem; cursor: pointer; }
+        .payfast-box button:hover { background: #eb9950; }
+    </style>
+</head>
+<body>
+    <div class="payfast-box">
+        <h2>Redirecting to Payment...</h2>
+        <p>Please wait while we redirect you to PayFast to complete your payment.</p>
+        <form id="payfast-form" action="https://www.payfast.co.za/eng/process" method="post">
+            <input type="hidden" name="merchant_id" value="{{ payfast.merchant_id }}">
+            <input type="hidden" name="merchant_key" value="{{ payfast.merchant_key }}">
+            <input type="hidden" name="amount" value="{{ payfast.amount }}">
+            <input type="hidden" name="item_name" value="{{ payfast.item_name }}">
+            <input type="hidden" name="name_first" value="{{ payfast.name_first }}">
+            <input type="hidden" name="email_address" value="{{ payfast.email_address }}">
+            <input type="hidden" name="return_url" value="{{ payfast.return_url }}">
+            <input type="hidden" name="cancel_url" value="{{ payfast.cancel_url }}">
+            <input type="hidden" name="notify_url" value="{{ payfast.notify_url }}">
+            <input type="hidden" name="custom_str1" value="{{ payfast.custom_str1 }}">
+            <button type="submit">Pay Now</button>
+        </form>
+    </div>
+    <script>
+        // Auto-submit the form after a short delay
+        setTimeout(function() {
+            document.getElementById('payfast-form').submit();
+        }, 1200);
+    </script>
+</body>
+</html> 
