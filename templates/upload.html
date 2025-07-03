@@ -580,6 +580,17 @@ body {
                 <div class="status-message status-error" id="error-message"></div>
                 <div class="status-message status-warning" id="warning-message"></div>
                 
+                <!-- Collection Selection Dropdown -->
+                <div style="margin-bottom: 1rem;">
+                    <label for="collection-select" style="font-weight: 500; color: var(--neutral-dark);">Select Qdrant Collection:</label>
+                    <select id="collection-select" style="margin-left: 1rem; padding: 0.4rem 1rem; border-radius: 5px; border: 1px solid var(--neutral-lighter);">
+                        <option value="">-- Choose a collection --</option>
+                        <option value="Concrete_docs">Concrete specialist</option>
+                        <option value="Tailings_engineer_docs">Tailings engineer</option>
+                        <option value="Water_docs">Water expert</option>
+                    </select>
+                </div>
+                
                 <button class="btn-submit" id="upload-button" disabled>Upload Documents</button>
             </div>
         </div>
@@ -608,6 +619,9 @@ body {
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
             const warningMessage = document.getElementById('warning-message');
+            
+            // Collection Selection Elements
+            const collectionSelect = document.getElementById('collection-select');
             
             // Selected files array
             let selectedFiles = [];
@@ -735,13 +749,18 @@ body {
                         });
                     });
                     
-                    // Enable upload button
-                    uploadButton.disabled = false;
+                    // Enable upload button only if collection is selected
+                    uploadButton.disabled = !collectionSelect.value || selectedFiles.length === 0;
                 } else {
                     fileList.style.display = 'none';
                     uploadButton.disabled = true;
                 }
             }
+            
+            // Enable/disable upload button when collection changes
+            collectionSelect.addEventListener('change', function() {
+                uploadButton.disabled = !collectionSelect.value || selectedFiles.length === 0;
+            });
             
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
@@ -764,6 +783,10 @@ body {
             
             function uploadFiles() {
                 if (selectedFiles.length === 0) return;
+                if (!collectionSelect.value) {
+                    showWarning('Please select a collection before uploading.');
+                    return;
+                }
                 
                 // Show progress
                 progressContainer.style.display = 'block';
@@ -807,12 +830,13 @@ body {
                         formData.append('total_chunks', numChunks);
                         formData.append('file_id', fileId);
                         formData.append('source_name', file.name);
+                        formData.append('collection_name', collectionSelect.value);
                         
                         // Update status text
                         document.getElementById('progress-status').textContent = 
                             `Uploading ${file.name} (chunk ${chunkNumber}/${numChunks})`;
                         
-                        fetch('https://oompiet.space/upload', {
+                        fetch('http://127.0.0.1:8000/upload', {
                             method: 'POST',
                             body: formData,
                             mode: 'cors'
