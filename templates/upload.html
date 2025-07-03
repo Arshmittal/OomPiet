@@ -836,7 +836,7 @@ body {
                         document.getElementById('progress-status').textContent = 
                             `Uploading ${file.name} (chunk ${chunkNumber}/${numChunks})`;
                         
-                        fetch('http://127.0.0.1:8000/upload', {
+                        fetch('https://oompiet.space/upload', {
                             method: 'POST',
                             body: formData,
                             mode: 'cors'
