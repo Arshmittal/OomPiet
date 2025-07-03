@@ -397,18 +397,30 @@ def pay():
     user = session.get('user')
     if not user:
         return redirect(url_for('login'))
-    # You can set amount and item_name dynamically if needed
+    
+    # Get plan and amount from query parameters
+    plan = request.args.get('plan', 'monthly')
+    amount = request.args.get('amount', '149.00')
+    
+    # Set item name based on plan
+    if plan == 'annual':
+        item_name = 'Premium Plan - Annual Subscription'
+    else:
+        item_name = 'Premium Plan - Monthly Subscription'
+    
+    # Create PayFast data
     payfast_data = {
         'merchant_id': '25296103',
         'merchant_key': 'rbn0vhdzshrbi',
-        'amount': '100.00',
-        'item_name': 'Premium Plan',
+        'amount': amount,
+        'item_name': item_name,
         'name_first': user.get('name', ''),
         'email_address': user.get('email', ''),
         'return_url': url_for('pay_success', _external=True),
         'cancel_url': url_for('pay_cancel', _external=True),
         'notify_url': url_for('pay_notify', _external=True),
-        'custom_str1': user.get('email', '')
+        'custom_str1': user.get('email', ''),
+        'custom_str2': plan  # Store the plan type for reference
     }
     return render_template('payfast_form.html', payfast=payfast_data)
 
@@ -418,10 +430,39 @@ def pay_success():
     user = session.get('user')
     if not user:
         return redirect(url_for('login'))
-    # Mark user as premium in DB and session
-    users_collection.update_one({'email': user['email']}, {'$set': {'premium': True}})
+    
+    # Get plan from query parameters (in case it was passed back from PayFast)
+    plan = request.args.get('plan', 'monthly')
+    
+    # Calculate subscription end date
+    if plan == 'annual':
+        subscription_end = datetime.utcnow() + timedelta(days=365)
+        plan_display = "annual"
+    else:
+        subscription_end = datetime.utcnow() + timedelta(days=30)
+        plan_display = "monthly"
+    
+    # Mark user as premium in DB with subscription details
+    users_collection.update_one(
+        {'email': user['email']}, 
+        {'$set': {
+            'premium': True,
+            'subscription_plan': plan,
+            'subscription_start': datetime.utcnow(),
+            'subscription_end': subscription_end
+        }}
+    )
+    
+    # Update session
     session['user']['premium'] = True
-    flash('Payment successful! You are now a premium user.', 'success')
+    session['user']['subscription_plan'] = plan
+    
+    # Show appropriate success message
+    if plan == 'annual':
+        flash('Payment successful! You are now a premium user with an annual subscription.', 'success')
+    else:
+        flash('Payment successful! You are now a premium user with a monthly subscription.', 'success')
+    
     return redirect(url_for('chat'))
 
 @app.route('/pay/cancel')
@@ -438,8 +479,33 @@ def pay_notify():
     if not verify_payfast_itn(data):
         app.logger.warning("Invalid PayFast ITN signature!")
         return 'Invalid signature', 400
+    
     if data.get('payment_status') == 'COMPLETE' and data.get('custom_str1'):
-        users_collection.update_one({'email': data['custom_str1']}, {'$set': {'premium': True}})
+        email = data.get('custom_str1')
+        plan = data.get('custom_str2', 'monthly')
+        
+        # Calculate subscription end date
+        if plan == 'annual':
+            # Annual subscription - 1 year from now
+            subscription_end = datetime.utcnow() + timedelta(days=365)
+        else:
+            # Monthly subscription - 1 month from now
+            subscription_end = datetime.utcnow() + timedelta(days=30)
+        
+        # Update user record with premium status, plan type, and subscription end date
+        users_collection.update_one(
+            {'email': email}, 
+            {'$set': {
+                'premium': True,
+                'subscription_plan': plan,
+                'subscription_start': datetime.utcnow(),
+                'subscription_end': subscription_end,
+                'payment_amount': data.get('amount', '0.00')
+            }}
+        )
+        
+        app.logger.info(f"User {email} upgraded to premium with {plan} plan")
+    
     return 'OK', 200
 
 if __name__ == '__main__':

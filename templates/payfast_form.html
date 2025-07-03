@@ -5,18 +5,145 @@
     <title>PayFast Payment</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { display: flex; align-items: center; justify-content: center; height: 100vh; background: #fafafa; }
-        .payfast-box { background: #fff; padding: 2rem 2.5rem; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); text-align: center; }
-        .payfast-box h2 { margin-bottom: 1.5rem; color: #e67e22; }
-        .payfast-box p { color: #666; margin-bottom: 2rem; }
-        .payfast-box button { background: #e67e22; color: #fff; border: none; border-radius: 6px; padding: 0.7rem 2.5rem; font-size: 1.1rem; cursor: pointer; }
-        .payfast-box button:hover { background: #eb9950; }
+        @import url('https://fonts.cdnfonts.com/css/pabasing');
+        
+        :root {
+            --primary-orange: #e67e22;
+            --primary-orange-80: #eb9950;
+            --primary-orange-20: #fae9d8;
+            --secondary-dark-orange: #d35400;
+        }
+        
+        body { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            background: #f5f7fa; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .payfast-box { 
+            background: #fff; 
+            padding: 2.5rem; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .payfast-box h2 { 
+            margin-bottom: 1rem; 
+            color: var(--secondary-dark-orange);
+            font-family: 'Pabasing', sans-serif;
+            font-size: 1.8rem;
+        }
+        
+        .payfast-box p { 
+            color: #666; 
+            margin-bottom: 1.5rem; 
+        }
+        
+        .payfast-box button { 
+            background: var(--primary-orange); 
+            color: #fff; 
+            border: none; 
+            border-radius: 8px; 
+            padding: 0.8rem 2.5rem; 
+            font-size: 1.1rem; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .payfast-box button:hover { 
+            background: var(--secondary-dark-orange); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payment-summary {
+            background: #f8f8f8; 
+            border-radius: 12px; 
+            padding: 1.2rem; 
+            margin-bottom: 1.5rem; 
+            text-align: left;
+            border: 1px solid #eee;
+        }
+        
+        .summary-row {
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .summary-total {
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--primary-orange);
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 2px solid #eee;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .payfast-box {
+                padding: 1.5rem;
+                width: 95%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="payfast-box">
         <h2>Redirecting to Payment...</h2>
         <p>Please wait while we redirect you to PayFast to complete your payment.</p>
+        
+        <!-- Payment Summary -->
+        <div class="payment-summary">
+            <div class="summary-row">
+                <span style="font-weight: 600;">Plan:</span>
+                <span>{{ payfast.item_name }}</span>
+            </div>
+            {% if 'Annual' in payfast.item_name %}
+            <div class="summary-row">
+                <span style="font-weight: 600;">Billing:</span>
+                <span>Annually (R129.00/month)</span>
+            </div>
+            <div class="summary-row">
+                <span style="font-weight: 600;">Savings:</span>
+                <span style="color: #3db54b; font-weight: 600;">R240.00/year</span>
+            </div>
+            {% else %}
+            <div class="summary-row">
+                <span style="font-weight: 600;">Billing:</span>
+                <span>Monthly</span>
+            </div>
+            {% endif %}
+            <div class="summary-total">
+                <span>Total:</span>
+                <span>R{{ payfast.amount }}</span>
+            </div>
+        </div>
+        
         <form id="payfast-form" action="https://www.payfast.co.za/eng/process" method="post">
             <input type="hidden" name="merchant_id" value="{{ payfast.merchant_id }}">
             <input type="hidden" name="merchant_key" value="{{ payfast.merchant_key }}">
@@ -28,8 +155,11 @@
             <input type="hidden" name="cancel_url" value="{{ payfast.cancel_url }}">
             <input type="hidden" name="notify_url" value="{{ payfast.notify_url }}">
             <input type="hidden" name="custom_str1" value="{{ payfast.custom_str1 }}">
-            <button type="submit">Pay Now</button>
+            <input type="hidden" name="custom_str2" value="{{ payfast.custom_str2 }}">
+            <button type="submit">Complete Payment</button>
         </form>
+        
+        <p style="margin-top: 1rem; font-size: 0.8rem; color: #999;">You will be redirected to PayFast's secure payment page.</p>
     </div>
     <script>
         // Auto-submit the form after a short delay
