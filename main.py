@@ -319,6 +319,16 @@ def logout():
 def chat():
     return render_template('chat.html')
 
+@app.route('/chat_water')
+@login_required
+def chat_water():
+    return render_template('chat_water.html')
+
+@app.route('/chat_concrete')
+@login_required
+def chat_concrete():
+    return render_template('chat_concrete.html')
+
 @app.route('/upload')
 @login_required
 def upload():

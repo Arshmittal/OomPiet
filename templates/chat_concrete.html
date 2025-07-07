@@ -7,56 +7,38 @@
     <style>
   
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
-:root {
+                            :root {
     /* Primary Colors */
+    --primary-purple: #7c3aed;
+    --primary-purple-80: #a78bfa;
+    --primary-purple-60: #c4b5fd;
+    --primary-purple-40: #ddd6fe;
+    --primary-purple-20: #ede9fe;
     --primary-green: #3db54b;
     --primary-green-80: #63c36e;
     --primary-green-60: #89d191;
     --primary-green-40: #aee0b4;
     --primary-green-20: #d6efd8;
-    
-    /* Changed from blue to orange */
-    --primary-orange: #e67e22; /* Main orange color */
-    --primary-orange-80: #eb9950;
-    --primary-orange-60: #f0b47d;
-    --primary-orange-40: #f5cfab;
-    --primary-orange-20: #fae9d8;
-   
     /* Secondary Colors */
-    --secondary-teal: #00abaf;
-    --secondary-teal-80: #33bcbf;
-    --secondary-teal-60: #66cdcf;
-    --secondary-teal-40: #99dedf;
-    --secondary-teal-20: #cceeef;
-    --secondary-dark-green: #0c734d;
-    --secondary-dark-green-80: #3c8f70;
-    --secondary-dark-green-60: #6bab93;
-    --secondary-dark-green-40: #9bc7b6;
-    --secondary-dark-green-20: #cae3d9;
-    
-    /* Changed from navy to darker orange */
-    --secondary-dark-orange: #d35400;
-    --secondary-dark-orange-80: #dc7633;
-    --secondary-dark-orange-60: #e59866;
-    --secondary-dark-orange-40: #edbb99;
-    --secondary-dark-orange-20: #f6ddcc;
-   
+    --secondary-indigo: #4f46e5;
+    --secondary-indigo-80: #6366f1;
+    --secondary-indigo-60: #818cf8;
+    --secondary-indigo-40: #a5b4fc;
+    --secondary-indigo-20: #c7d2fe;
     /* Neutrals */
     --neutral-dark: #333333;
     --neutral-medium: #666666;
     --neutral-light: #999999;
     --neutral-lighter: #cccccc;
     --neutral-lightest: #f5f7fa;
-   
     /* Utility Colors */
     --white: #ffffff;
     --black: #000000;
     --success: var(--primary-green);
-    --info: var(--primary-orange); /* Changed from blue to orange */
+    --info: var(--primary-purple);
     --warning: #f0ad4e;
     --danger: #d9534f;
 }
-
 /* Reset and base styles */
 * {
     margin: 0;
@@ -76,7 +58,7 @@ body {
 
 .streaming-cursor {
     animation: blink 1s infinite;
-    color: var(--primary-orange);
+    color: var(--primary-purple);
     font-weight: bold;
 }
 
@@ -115,7 +97,7 @@ body {
     font-size: 2.1rem;
     font-weight: 600;
     font-family: 'Pabasing', sans-serif;
-    color: var(--secondary-dark-orange); /* Changed from navy to dark orange */
+    color: var(--secondary-indigo);
     display: flex;
     align-items: center;
 
@@ -147,12 +129,12 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-orange); /* Changed from blue to orange */
+    background-color: var(--primary-purple);
     color: var(--white);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-orange-80); /* Changed from blue to orange */
+    background-color: var(--primary-purple-80);
 }
 
 .btn-secondary {
@@ -188,7 +170,7 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-orange); /* Changed from blue to orange */
+    border: 2px solid var(--primary-purple);
 }
 
 .profile-dropdown {
@@ -277,7 +259,7 @@ body {
 .chat-header-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--secondary-dark-orange); /* Changed from navy to dark orange */
+    color: var(--secondary-indigo);
 }
 
 .chat-header-status {
@@ -351,12 +333,12 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: var(--primary-orange-20); /* Changed from blue to orange */
+    background-color: var(--primary-purple-20);
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 600;
-    color: var(--primary-orange); /* Changed from blue to orange */
+    color: var(--primary-purple);
     flex-shrink: 0;
 }
 
@@ -368,7 +350,7 @@ body {
 .message-content {
     padding: 0.75rem 1.8rem;
     border-radius: 18px;
-    background-color: var(--primary-orange-20); /* Changed from blue to orange */
+    background-color: var(--primary-purple-20);
     color: var(--neutral-dark);
     font-size: 0.95rem;
     line-height: 1.5;
@@ -422,11 +404,11 @@ body {
 }
 
 .chat-input:focus {
-    border-color: var(--primary-orange); /* Changed from blue to orange */
+    border-color: var(--primary-purple);
 }
 
 .chat-send-btn {
-    background-color: var(--primary-orange);
+    background-color: var(--primary-purple);
     color: white;
     width: 48px;
     height: 48px;
@@ -441,7 +423,7 @@ body {
 }
 
 .chat-send-btn:hover {
-    background-color: var(--primary-orange-20);
+    background-color: var(--primary-purple-20);
 }
 
 .chat-send-btn:disabled {
@@ -467,7 +449,7 @@ body {
     width: 50px;
     height: 50px;
     border: 5px solid var(--neutral-lighter);
-    border-top: 5px solid var(--primary-orange); /* Changed from blue to orange */
+    border-top: 5px solid var(--primary-purple);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -488,7 +470,7 @@ body {
 .chat-loading-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--primary-orange); /* Changed from blue to orange */
+    background-color: var(--primary-purple);
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
 }
@@ -644,21 +626,21 @@ body {
 }
 
 .api-mode-btn.selected {
-    background: var(--primary-orange, #e67e22);
+    background: var(--primary-purple, #e67e22);
     color: #fff;
     border: none;
     border-radius: 6px;
 }
 .api-mode-btn {
     background: #fff;
-    color: var(--primary-orange, #e67e22);
-    border: 1px solid var(--primary-orange, #e67e22);
+    color: var(--primary-purple, #e67e22);
+    border: 1px solid var(--primary-purple, #e67e22);
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 .api-mode-btn:not(.selected):hover {
-    background: var(--primary-orange-20, #fae9d8);
+    background: var(--primary-purple-20, #fae9d8);
 }
 #chat-main-content {
   display: none;
@@ -669,13 +651,13 @@ body {
     <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
     <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
       <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:700px;width:95%;animation:fadeIn 0.5s ease-out;">
-        <h2 style="margin-bottom:1rem;color:var(--secondary-dark-orange);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
+        <h2 style="margin-bottom:1rem;color:var(--secondary-indigo);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
         <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1rem;">Select the plan that best suits your needs</p>
         
         <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-bottom:1.5rem;">
           <!-- Free Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--primary-orange-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card" onclick="document.getElementById('modal-free-btn').click()">
-            <h3 style="color:var(--primary-orange);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-purple-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card" onclick="document.getElementById('modal-free-btn').click()">
+            <h3 style="color:var(--primary-purple);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Basic features with limited usage</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
               <li style="margin-bottom:0.5rem;">Standard responses</li>
@@ -686,9 +668,9 @@ body {
           </div>
           
           <!-- Premium Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--primary-orange);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-orange-20);position:relative;" id="premium-plan-card">
-            <div style="position:absolute;top:-10px;right:20px;background:var(--secondary-dark-orange);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
-            <h3 style="color:var(--secondary-dark-orange);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-purple);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-purple-20);position:relative;" id="premium-plan-card">
+            <div style="position:absolute;top:-10px;right:20px;background:var(--secondary-indigo);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
+            <h3 style="color:var(--secondary-indigo);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Enhanced features with priority access</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
               <li style="margin-bottom:0.5rem;">Advanced responses</li>
@@ -699,38 +681,38 @@ body {
             <!-- Premium Plan Options -->
             <div style="margin-bottom:1.5rem;">
               <!-- Monthly Option -->
-              <div id="monthly-option" style="border:1px solid var(--primary-orange);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('monthly')">
+              <div id="monthly-option" style="border:1px solid var(--primary-purple);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('monthly')">
                 <div>
-                  <div style="font-weight:600;color:var(--secondary-dark-orange);">Monthly</div>
+                  <div style="font-weight:600;color:var(--secondary-indigo);">Monthly</div>
                   <div style="font-size:0.9rem;color:var(--neutral-medium);">Billed monthly</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:var(--secondary-dark-orange);">R149.00</div>
+                  <div style="font-weight:700;font-size:1.2rem;color:var(--secondary-indigo);">R149.00</div>
                   <div style="font-size:0.8rem;color:var(--neutral-medium);">per month</div>
                 </div>
-                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-orange);position:relative;margin-left:10px;">
-                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-orange);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
+                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-purple);position:relative;margin-left:10px;">
+                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-purple);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
                 </div>
               </div>
               
               <!-- Annual Option -->
-              <div id="annual-option" style="border:1px solid var(--primary-orange);border-radius:8px;padding:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('annual')">
+              <div id="annual-option" style="border:1px solid var(--primary-purple);border-radius:8px;padding:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('annual')">
                 <div>
-                  <div style="font-weight:600;color:var(--secondary-dark-orange);">Annual</div>
+                  <div style="font-weight:600;color:var(--secondary-indigo);">Annual</div>
                   <div style="font-size:0.9rem;color:var(--neutral-medium);">Billed annually</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:var(--secondary-dark-orange);">R129.00</div>
+                  <div style="font-weight:700;font-size:1.2rem;color:var(--secondary-indigo);">R129.00</div>
                   <div style="font-size:0.8rem;color:var(--neutral-medium);">per month</div>
                   <div style="font-size:0.75rem;color:white;background:var(--success);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:3px;">SAVE R240</div>
                 </div>
-                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-orange);position:relative;margin-left:10px;">
-                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-orange);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
+                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-purple);position:relative;margin-left:10px;">
+                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-purple);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
                 </div>
               </div>
             </div>
             
-            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-orange);color:white;">Continue to Payment</button>
+            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-purple);color:white;">Continue to Payment</button>
           </div>
         </div>
       </div>
@@ -746,7 +728,7 @@ body {
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <span>OomPiet</span>
+            <span>Bra Vusi</span>
         </div>
         
         <div class="navbar-buttons">
@@ -783,19 +765,18 @@ body {
            
             <!-- Character Image -->
             <div class="character-container">
-                <img src="/static/character.PNG" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
-                <div class="character-title">OomPiet</div>
+                <img src="/static/charcater2.png" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
+                <div class="character-title">Bra Vusi</div>
             </div>
             
             <!-- Chat Messages -->
             <div class="chat-messages" id="chat-messages">
                 <!-- Assistant Message -->
                 <div class="message">
-                    <div class="message-avatar">OP</div>
+                    <div class="message-avatar">BV</div>
                     <div>
                         <div class="message-content">
-                            Hallo daar! Ek's Piet, a geotechnical engineer who has been mastering the art of tailings dam engineering since the first mining boom.  I've learnt many lessons during my journey and want to continue to shape safer, more sustainable practices in the future. 
-Ask me a question and I'll guide you in the right direction.
+                            Howzit! I'm Bra Vusi, your go-to structural fundi. I kicked off my journey as a batch plant operator, mastering the perfect mix and getting my hands dirty with hardcore site operations. From there, I levelled up into structural and building design, turning blueprints into bridges and building. Whether it's Jozi's high-rises or national highways, I've been in the trenches, tackling shaky foundations, tight deadlines, and every onsite curveball with precision and grit. Let's build it strong, safe, and sound together.
                         </div>
                         <div class="message-time">12:00 PM</div>
                     </div>
@@ -1098,7 +1079,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
 
-const collectionName = "Tailings_engineer_docs";
+const collectionName = "Concrete_docs";
 
 function callRagApi(query) {
     if (!apiMode) {
@@ -1493,22 +1474,22 @@ document.addEventListener('click', function(e) {
             const annualRadio = annualOption.querySelector('.radio-inner');
             
             if (option === 'monthly') {
-                monthlyOption.style.backgroundColor = 'var(--primary-orange-20)';
-                monthlyOption.style.borderColor = 'var(--primary-orange)';
+                monthlyOption.style.backgroundColor = 'var(--primary-purple-20)';
+                monthlyOption.style.borderColor = 'var(--primary-purple)';
                 monthlyRadio.style.display = 'block';
                 
                 annualOption.style.backgroundColor = 'transparent';
-                annualOption.style.borderColor = 'var(--primary-orange)';
+                annualOption.style.borderColor = 'var(--primary-purple)';
                 annualRadio.style.display = 'none';
                 
                 document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R149.00/month)';
             } else {
-                annualOption.style.backgroundColor = 'var(--primary-orange-20)';
-                annualOption.style.borderColor = 'var(--primary-orange)';
+                annualOption.style.backgroundColor = 'var(--primary-purple-20)';
+                annualOption.style.borderColor = 'var(--primary-purple)';
                 annualRadio.style.display = 'block';
                 
                 monthlyOption.style.backgroundColor = 'transparent';
-                monthlyOption.style.borderColor = 'var(--primary-orange)';
+                monthlyOption.style.borderColor = 'var(--primary-purple)';
                 monthlyRadio.style.display = 'none';
                 
                 document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R1548.00/year)';
@@ -1558,8 +1539,8 @@ document.addEventListener('click', function(e) {
                     // Highlight selected plan
                     freeBtn.addEventListener('click', function(e) {
                         e.stopPropagation(); // Prevent triggering the card's click
-                        freePlanCard.style.borderColor = 'var(--primary-orange)';
-                        premiumPlanCard.style.borderColor = 'var(--primary-orange)';
+                        freePlanCard.style.borderColor = 'var(--primary-purple)';
+                        premiumPlanCard.style.borderColor = 'var(--primary-purple)';
                         setTimeout(function() {
                             apiMode = 'free';
                             modal.style.opacity = '0';
@@ -1580,8 +1561,8 @@ document.addEventListener('click', function(e) {
                         // Only handle clicks on the card itself, not on its children
                         if (e.target === this || this.contains(e.target) && !e.target.matches('button, #monthly-option, #annual-option, .pricing-radio')) {
                             // Highlight the premium card
-                            freePlanCard.style.borderColor = 'var(--primary-orange-20)';
-                            premiumPlanCard.style.borderColor = 'var(--secondary-dark-orange)';
+                            freePlanCard.style.borderColor = 'var(--primary-purple-20)';
+                            premiumPlanCard.style.borderColor = 'var(--secondary-indigo)';
                         }
                     });
                 }
