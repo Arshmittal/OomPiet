@@ -1060,10 +1060,89 @@ document.addEventListener('DOMContentLoaded', function() {
             // Send message function
             chatSendBtn.addEventListener('click', sendMessage);
             
+            let apiMode = null;
+            let isPremium = false;
+            let usageCount = 0;
+
+            window.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('api-mode-modal');
+                const chatMain = document.getElementById('chat-main-content');
+                const freeBtn = document.getElementById('modal-free-btn');
+                const premiumBtn = document.getElementById('modal-premium-btn');
+                const monthlyOption = document.getElementById('monthly-option');
+                const annualOption = document.getElementById('annual-option');
+
+                // Plan card click listeners
+                if (monthlyOption) {
+                    monthlyOption.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selectPricingOption('monthly');
+                    });
+                }
+                if (annualOption) {
+                    annualOption.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selectPricingOption('annual');
+                    });
+                }
+
+                // On page load, check for plan selection in localStorage
+                fetch('/api/user-profile')
+                    .then(res => res.json())
+                    .then(user => {
+                        isPremium = user.premium;
+                        usageCount = user.sonnet_usage_count || 0;
+                        console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
+                        const selectedPlan = localStorage.getItem('selectedPlan');
+                        if (isPremium) {
+                            apiMode = 'premium';
+                            modal.style.display = 'none';
+                            chatMain.style.display = 'block';
+                        } else if (usageCount < 10) {
+                            modal.style.display = 'none';
+                            chatMain.style.display = 'block';
+                        } else {
+                            if (selectedPlan === 'free') {
+                                modal.style.display = 'none';
+                                chatMain.style.display = 'block';
+                                apiMode = 'free';
+                            } else {
+                                modal.style.display = 'flex';
+                                chatMain.style.display = 'none';
+                            }
+                        }
+                    });
+
+                // Attach click handler for Free plan
+                if (freeBtn) {
+                    freeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        apiMode = 'free';
+                        localStorage.setItem('selectedPlan', 'free');
+                        modal.style.display = 'none';
+                        chatMain.style.display = 'block';
+                    });
+                }
+
+                // Attach click handler for Premium plan
+                if (premiumBtn) {
+                    premiumBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        localStorage.removeItem('selectedPlan');
+                        const selectedPlan = window.selectedPricingOption || 'monthly';
+                        if (selectedPlan === 'monthly') {
+                            window.location.href = '/pay?plan=monthly&amount=149.00';
+                        } else {
+                            window.location.href = '/pay?plan=annual&amount=1548.00';
+                        }
+                    });
+                }
+            });
+
             function sendMessage() {
                 const message = chatInput.value.trim();
                 if (!message) return;
-                
+
                 // Add message to chat
                 const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
@@ -1094,6 +1173,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Call the RAG API
                 callRagApi(message);
+
+                // After sending a message, fetch the latest usage count and premium status
+                fetch('/api/user-profile')
+                  .then(res => res.json())
+                  .then(user => {
+                    isPremium = user.premium;
+                    usageCount = user.sonnet_usage_count || 0;
+                    console.log('[SEND MESSAGE] usageCount', usageCount, 'isPremium', isPremium);
+                    if (!isPremium && usageCount >= 10) {
+                      document.getElementById('api-mode-modal').style.display = 'flex';
+                      document.getElementById('chat-main-content').style.display = 'none';
+                      apiMode = null; // Require plan selection
+                    }
+                  });
             }
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
@@ -1101,23 +1194,23 @@ document.addEventListener('DOMContentLoaded', function() {
 const collectionName = "Tailings_engineer_docs";
 
 function callRagApi(query) {
-    if (!apiMode) {
-        alert('Please select Free or Premium first.');
-        return;
+    // For the first 10 messages, always use hybrid_rag
+    let endpoint;
+    if (usageCount < 10) {
+        endpoint = 'https://oompiet.space/hybrid_rag';
+    } else {
+        endpoint = apiMode === 'premium'
+            ? 'https://oompiet.space/rag'
+            : 'https://oompiet.space/hybrid_rag';
     }
-    const endpoint = apiMode === 'premium'
-        ? 'https://oompiet.space/rag'
-        : 'https://oompiet.space/hybrid_rag';
 
     const requestBody = {
         query: query,
         top_k: 5,
         max_tokens: 4096,
-        collection_name: collectionName
+        collection_name: collectionName,
+        user_id: window.currentUserId || 'demo-user'
     };
-    if (apiMode === 'free') {
-        requestBody.user_id = window.currentUserId || 'demo-user';
-    }
 
     fetch(endpoint, {
         method: 'POST',
@@ -1479,47 +1572,11 @@ document.addEventListener('click', function(e) {
          
         });
 
-        let apiMode = null; // Not set until user chooses
-        let selectedPricingOption = 'monthly'; // Default to monthly pricing
-
-        // Function to handle pricing option selection
-        function selectPricingOption(option) {
-            selectedPricingOption = option;
-            
-            // Update UI to show selected option
-            const monthlyOption = document.getElementById('monthly-option');
-            const annualOption = document.getElementById('annual-option');
-            const monthlyRadio = monthlyOption.querySelector('.radio-inner');
-            const annualRadio = annualOption.querySelector('.radio-inner');
-            
-            if (option === 'monthly') {
-                monthlyOption.style.backgroundColor = 'var(--primary-orange-20)';
-                monthlyOption.style.borderColor = 'var(--primary-orange)';
-                monthlyRadio.style.display = 'block';
-                
-                annualOption.style.backgroundColor = 'transparent';
-                annualOption.style.borderColor = 'var(--primary-orange)';
-                annualRadio.style.display = 'none';
-                
-                document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R149.00/month)';
-            } else {
-                annualOption.style.backgroundColor = 'var(--primary-orange-20)';
-                annualOption.style.borderColor = 'var(--primary-orange)';
-                annualRadio.style.display = 'block';
-                
-                monthlyOption.style.backgroundColor = 'transparent';
-                monthlyOption.style.borderColor = 'var(--primary-orange)';
-                monthlyRadio.style.display = 'none';
-                
-                document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R1548.00/year)';
-            }
-        }
-        
-        // Make the function globally available
-        window.selectPricingOption = selectPricingOption;
+        let apiMode = null;
+        let isPremium = false;
+        let usageCount = 0;
 
         window.addEventListener('DOMContentLoaded', function() {
-            // Modal logic for Free/Premium selection
             const modal = document.getElementById('api-mode-modal');
             const chatMain = document.getElementById('chat-main-content');
             const freeBtn = document.getElementById('modal-free-btn');
@@ -1651,6 +1708,27 @@ document.addEventListener('click', function(e) {
                 });
             }
         });
+
+        // --- Plan selection logic for modal ---
+        function selectPricingOption(option) {
+            window.selectedPricingOption = option;
+            const monthlyOption = document.getElementById('monthly-option');
+            const annualOption = document.getElementById('annual-option');
+            if (monthlyOption && annualOption) {
+                if (option === 'monthly') {
+                    monthlyOption.style.borderColor = 'var(--primary-orange)';
+                    annualOption.style.borderColor = 'var(--primary-orange-20)';
+                    if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'block';
+                    if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'none';
+                } else {
+                    annualOption.style.borderColor = 'var(--primary-orange)';
+                    monthlyOption.style.borderColor = 'var(--primary-orange-20)';
+                    if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'block';
+                    if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'none';
+                }
+            }
+        }
+        window.selectedPricingOption = 'monthly';
 
         // Fetch the logged-in user's email on page load
         window.currentUserId = null;

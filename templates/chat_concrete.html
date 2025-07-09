@@ -9,16 +9,17 @@
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
                             :root {
     /* Primary Colors */
-    --primary-purple: #7c3aed;
-    --primary-purple-80: #a78bfa;
-    --primary-purple-60: #c4b5fd;
-    --primary-purple-40: #ddd6fe;
-    --primary-purple-20: #ede9fe;
     --primary-green: #3db54b;
     --primary-green-80: #63c36e;
     --primary-green-60: #89d191;
     --primary-green-40: #aee0b4;
     --primary-green-20: #d6efd8;
+    /* Keep the original green for secondary/contrast if needed */
+    --accent-green: #3db54b;
+    --accent-green-80: #63c36e;
+    --accent-green-60: #89d191;
+    --accent-green-40: #aee0b4;
+    --accent-green-20: #d6efd8;
     /* Secondary Colors */
     --secondary-indigo: #4f46e5;
     --secondary-indigo-80: #6366f1;
@@ -34,8 +35,8 @@
     /* Utility Colors */
     --white: #ffffff;
     --black: #000000;
-    --success: var(--primary-green);
-    --info: var(--primary-purple);
+    --success: var(--accent-green);
+    --info: var(--primary-green);
     --warning: #f0ad4e;
     --danger: #d9534f;
 }
@@ -58,7 +59,7 @@ body {
 
 .streaming-cursor {
     animation: blink 1s infinite;
-    color: var(--primary-purple);
+    color: var(--primary-green);
     font-weight: bold;
 }
 
@@ -97,7 +98,7 @@ body {
     font-size: 2.1rem;
     font-weight: 600;
     font-family: 'Pabasing', sans-serif;
-    color: var(--secondary-indigo);
+    color: var(--accent-green);
     display: flex;
     align-items: center;
 
@@ -129,21 +130,21 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-purple);
-    color: var(--white);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-purple-80);
-}
-
-.btn-secondary {
     background-color: var(--primary-green);
     color: var(--white);
 }
 
-.btn-secondary:hover {
+.btn-primary:hover {
     background-color: var(--primary-green-80);
+}
+
+.btn-secondary {
+    background-color: var(--accent-green);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-green-80);
 }
 
 .btn img {
@@ -170,7 +171,7 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-purple);
+    border: 2px solid var(--primary-green);
 }
 
 .profile-dropdown {
@@ -259,7 +260,7 @@ body {
 .chat-header-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--secondary-indigo);
+    color: var(--accent-green);
 }
 
 .chat-header-status {
@@ -333,12 +334,12 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: var(--primary-purple-20);
+    background-color: var(--primary-green-20);
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 600;
-    color: var(--primary-purple);
+    color: var(--primary-green);
     flex-shrink: 0;
 }
 
@@ -350,7 +351,7 @@ body {
 .message-content {
     padding: 0.75rem 1.8rem;
     border-radius: 18px;
-    background-color: var(--primary-purple-20);
+    background-color: var(--primary-green-20);
     color: var(--neutral-dark);
     font-size: 0.95rem;
     line-height: 1.5;
@@ -369,6 +370,7 @@ body {
 
 .message-user .message-content {
     background-color: var(--primary-green-20);
+    
 }
 
 .message-time {
@@ -404,11 +406,11 @@ body {
 }
 
 .chat-input:focus {
-    border-color: var(--primary-purple);
+    border-color: var(--primary-green);
 }
 
 .chat-send-btn {
-    background-color: var(--primary-purple);
+    background-color: var(--primary-green);
     color: white;
     width: 48px;
     height: 48px;
@@ -423,7 +425,7 @@ body {
 }
 
 .chat-send-btn:hover {
-    background-color: var(--primary-purple-20);
+    background-color: var(--primary-green-20);
 }
 
 .chat-send-btn:disabled {
@@ -449,7 +451,7 @@ body {
     width: 50px;
     height: 50px;
     border: 5px solid var(--neutral-lighter);
-    border-top: 5px solid var(--primary-purple);
+    border-top: 5px solid var(--primary-green);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -470,7 +472,7 @@ body {
 .chat-loading-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--primary-purple);
+    background-color: var(--primary-green);
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
 }
@@ -626,21 +628,21 @@ body {
 }
 
 .api-mode-btn.selected {
-    background: var(--primary-purple, #e67e22);
+    background: var(--primary-green, #e67e22);
     color: #fff;
     border: none;
     border-radius: 6px;
 }
 .api-mode-btn {
     background: #fff;
-    color: var(--primary-purple, #e67e22);
-    border: 1px solid var(--primary-purple, #e67e22);
+    color: var(--primary-green, #e67e22);
+    border: 1px solid var(--primary-green, #e67e22);
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 .api-mode-btn:not(.selected):hover {
-    background: var(--primary-purple-20, #fae9d8);
+    background: var(--primary-green-20, #fae9d8);
 }
 #chat-main-content {
   display: none;
@@ -651,13 +653,13 @@ body {
     <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
     <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
       <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:700px;width:95%;animation:fadeIn 0.5s ease-out;">
-        <h2 style="margin-bottom:1rem;color:var(--secondary-indigo);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
+        <h2 style="margin-bottom:1rem;color:var(--accent-green);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
         <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1rem;">Select the plan that best suits your needs</p>
         
         <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-bottom:1.5rem;">
           <!-- Free Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--primary-purple-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card" onclick="document.getElementById('modal-free-btn').click()">
-            <h3 style="color:var(--primary-purple);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-green-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card">
+            <h3 style="color:var(--primary-green);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Basic features with limited usage</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
               <li style="margin-bottom:0.5rem;">Standard responses</li>
@@ -668,9 +670,9 @@ body {
           </div>
           
           <!-- Premium Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--primary-purple);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-purple-20);position:relative;" id="premium-plan-card">
-            <div style="position:absolute;top:-10px;right:20px;background:var(--secondary-indigo);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
-            <h3 style="color:var(--secondary-indigo);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
+          <div style="flex:1;min-width:200px;border:2px solid var(--accent-green);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-green-20);position:relative;" id="premium-plan-card">
+            <div style="position:absolute;top:-10px;right:20px;background:var(--accent-green);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
+            <h3 style="color:var(--accent-green);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Enhanced features with priority access</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
               <li style="margin-bottom:0.5rem;">Advanced responses</li>
@@ -681,38 +683,38 @@ body {
             <!-- Premium Plan Options -->
             <div style="margin-bottom:1.5rem;">
               <!-- Monthly Option -->
-              <div id="monthly-option" style="border:1px solid var(--primary-purple);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('monthly')">
+              <div id="monthly-option" style="border:1px solid var(--primary-green);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('monthly')">
                 <div>
-                  <div style="font-weight:600;color:var(--secondary-indigo);">Monthly</div>
+                  <div style="font-weight:600;color:var(--accent-green);">Monthly</div>
                   <div style="font-size:0.9rem;color:var(--neutral-medium);">Billed monthly</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:var(--secondary-indigo);">R149.00</div>
+                  <div style="font-weight:700;font-size:1.2rem;color:var(--accent-green);">R149.00</div>
                   <div style="font-size:0.8rem;color:var(--neutral-medium);">per month</div>
                 </div>
-                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-purple);position:relative;margin-left:10px;">
-                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-purple);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
+                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-green);position:relative;margin-left:10px;">
+                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-green);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
                 </div>
               </div>
               
               <!-- Annual Option -->
-              <div id="annual-option" style="border:1px solid var(--primary-purple);border-radius:8px;padding:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('annual')">
+              <div id="annual-option" style="border:1px solid var(--primary-green);border-radius:8px;padding:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('annual')">
                 <div>
-                  <div style="font-weight:600;color:var(--secondary-indigo);">Annual</div>
+                  <div style="font-weight:600;color:var(--accent-green);">Annual</div>
                   <div style="font-size:0.9rem;color:var(--neutral-medium);">Billed annually</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:var(--secondary-indigo);">R129.00</div>
+                  <div style="font-weight:700;font-size:1.2rem;color:var(--accent-green);">R129.00</div>
                   <div style="font-size:0.8rem;color:var(--neutral-medium);">per month</div>
                   <div style="font-size:0.75rem;color:white;background:var(--success);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:3px;">SAVE R240</div>
                 </div>
-                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-purple);position:relative;margin-left:10px;">
-                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-purple);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
+                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-green);position:relative;margin-left:10px;">
+                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-green);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
                 </div>
               </div>
             </div>
             
-            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-purple);color:white;">Continue to Payment</button>
+            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-green);color:white;">Continue to Payment</button>
           </div>
         </div>
       </div>
@@ -967,7 +969,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create chat loading indicator
     const loadingHTML = `
         <div class="message" id="loading-message">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">BV</div>
             <div>
                 <div class="message-content chat-loading">
                     <div class="chat-loading-indicator">
@@ -1041,6 +1043,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Send message function
             chatSendBtn.addEventListener('click', sendMessage);
             
+            let apiMode = null;
+            let isPremium = false;
+            let usageCount = 0;
+
             function sendMessage() {
                 const message = chatInput.value.trim();
                 if (!message) return;
@@ -1075,6 +1081,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Call the RAG API
                 callRagApi(message);
+
+                // After sending a message, fetch the latest usage count and premium status
+                fetch('/api/user-profile')
+                  .then(res => res.json())
+                  .then(user => {
+                    isPremium = user.premium;
+                    usageCount = user.sonnet_usage_count || 0;
+                    console.log('[SEND MESSAGE] usageCount', usageCount, 'isPremium', isPremium);
+                    if (!isPremium && usageCount >= 10) {
+                      document.getElementById('api-mode-modal').style.display = 'flex';
+                      document.getElementById('chat-main-content').style.display = 'none';
+                      apiMode = null; // Require plan selection
+                    }
+                  });
             }
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
@@ -1082,23 +1102,23 @@ document.addEventListener('DOMContentLoaded', function() {
 const collectionName = "Concrete_docs";
 
 function callRagApi(query) {
-    if (!apiMode) {
-        alert('Please select Free or Premium first.');
-        return;
+    // For the first 10 messages, always use hybrid_rag
+    let endpoint;
+    if (usageCount < 10) {
+        endpoint = 'https://oompiet.space/hybrid_rag';
+    } else {
+        endpoint = apiMode === 'premium'
+            ? 'https://oompiet.space/rag'
+            : 'https://oompiet.space/hybrid_rag';
     }
-    const endpoint = apiMode === 'premium'
-        ? 'https://oompiet.space/rag'
-        : 'https://oompiet.space/hybrid_rag';
 
     const requestBody = {
         query: query,
         top_k: 5,
         max_tokens: 4096,
-        collection_name: collectionName
+        collection_name: collectionName,
+        user_id: window.currentUserId || 'demo-user'
     };
-    if (apiMode === 'free') {
-        requestBody.user_id = window.currentUserId || 'demo-user';
-    }
 
     fetch(endpoint, {
         method: 'POST',
@@ -1138,7 +1158,7 @@ function displayAssistantResponseWithStreaming(message) {
     // Create the message container with feedback UI
     const assistantMessageHTML = `
         <div class="message" id="${messageId}">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">BV</div>
             <div>
                 <div class="message-content" id="${messageId}-content">
                     <span class="streaming-cursor">|</span>
@@ -1318,7 +1338,7 @@ function displayErrorMessage(errorText) {
     
     const errorMessageHTML = `
         <div class="message">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">BV</div>
             <div>
                 <div class="message-content">
                     <span style="color: var(--danger);">${errorText}</span>
@@ -1357,7 +1377,7 @@ document.addEventListener('click', function(e) {
     
     const assistantMessageHTML = `
         <div class="message">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">BV</div>
             <div>
                 <div class="message-content">
                     ${message.replace(/\n/g, '<br>')}
@@ -1460,175 +1480,98 @@ document.addEventListener('click', function(e) {
          
         });
 
-        let apiMode = null; // Not set until user chooses
-        let selectedPricingOption = 'monthly'; // Default to monthly pricing
-
-        // Function to handle pricing option selection
+        // --- Plan selection logic for modal ---
         function selectPricingOption(option) {
-            selectedPricingOption = option;
-            
-            // Update UI to show selected option
+            window.selectedPricingOption = option;
             const monthlyOption = document.getElementById('monthly-option');
             const annualOption = document.getElementById('annual-option');
-            const monthlyRadio = monthlyOption.querySelector('.radio-inner');
-            const annualRadio = annualOption.querySelector('.radio-inner');
-            
-            if (option === 'monthly') {
-                monthlyOption.style.backgroundColor = 'var(--primary-purple-20)';
-                monthlyOption.style.borderColor = 'var(--primary-purple)';
-                monthlyRadio.style.display = 'block';
-                
-                annualOption.style.backgroundColor = 'transparent';
-                annualOption.style.borderColor = 'var(--primary-purple)';
-                annualRadio.style.display = 'none';
-                
-                document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R149.00/month)';
-            } else {
-                annualOption.style.backgroundColor = 'var(--primary-purple-20)';
-                annualOption.style.borderColor = 'var(--primary-purple)';
-                annualRadio.style.display = 'block';
-                
-                monthlyOption.style.backgroundColor = 'transparent';
-                monthlyOption.style.borderColor = 'var(--primary-purple)';
-                monthlyRadio.style.display = 'none';
-                
-                document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R1548.00/year)';
+            if (monthlyOption && annualOption) {
+                if (option === 'monthly') {
+                    monthlyOption.style.borderColor = 'var(--primary-green)';
+                    annualOption.style.borderColor = 'var(--primary-green-20)';
+                    if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'block';
+                    if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'none';
+                } else {
+                    annualOption.style.borderColor = 'var(--primary-green)';
+                    monthlyOption.style.borderColor = 'var(--primary-green-20)';
+                    if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'block';
+                    if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'none';
+                }
             }
         }
-        
-        // Make the function globally available
-        window.selectPricingOption = selectPricingOption;
+        window.selectedPricingOption = 'monthly';
 
         window.addEventListener('DOMContentLoaded', function() {
-            // Modal logic for Free/Premium selection
             const modal = document.getElementById('api-mode-modal');
             const chatMain = document.getElementById('chat-main-content');
             const freeBtn = document.getElementById('modal-free-btn');
             const premiumBtn = document.getElementById('modal-premium-btn');
-            const freePlanCard = document.getElementById('free-plan-card');
-            const premiumPlanCard = document.getElementById('premium-plan-card');
-            
-            // Initialize pricing option selection
-            selectPricingOption('monthly');
-            
-            // Add hover effects for plan cards
-            function setupPlanCardInteractions() {
-                if (freePlanCard && premiumPlanCard) {
-                    // Free plan card hover effect
-                    freePlanCard.addEventListener('mouseenter', function() {
-                        this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-                        this.style.transform = 'translateY(-5px)';
-                    });
-                    
-                    freePlanCard.addEventListener('mouseleave', function() {
-                        this.style.boxShadow = 'none';
-                        this.style.transform = 'translateY(0)';
-                    });
-                    
-                    // Premium plan card hover effect
-                    premiumPlanCard.addEventListener('mouseenter', function() {
-                        this.style.boxShadow = '0 5px 20px rgba(211, 84, 0, 0.2)';
-                        this.style.transform = 'translateY(-5px)';
-                    });
-                    
-                    premiumPlanCard.addEventListener('mouseleave', function() {
-                        this.style.boxShadow = 'none';
-                        this.style.transform = 'translateY(0)';
-                    });
-                    
-                    // Highlight selected plan
-                    freeBtn.addEventListener('click', function(e) {
-                        e.stopPropagation(); // Prevent triggering the card's click
-                        freePlanCard.style.borderColor = 'var(--primary-purple)';
-                        premiumPlanCard.style.borderColor = 'var(--primary-purple)';
-                        setTimeout(function() {
-                            apiMode = 'free';
-                            modal.style.opacity = '0';
-                            modal.style.transform = 'scale(0.9)';
-                            modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                            
-                            setTimeout(function() {
-                                modal.style.display = 'none';
-                                chatMain.style.display = 'block';
-                                // Add entrance animation for chat
-                                chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
-                            }, 300);
-                        }, 400);
-                    });
-                    
-                    // Make premium plan card clickable but not directly trigger the button
-                    premiumPlanCard.addEventListener('click', function(e) {
-                        // Only handle clicks on the card itself, not on its children
-                        if (e.target === this || this.contains(e.target) && !e.target.matches('button, #monthly-option, #annual-option, .pricing-radio')) {
-                            // Highlight the premium card
-                            freePlanCard.style.borderColor = 'var(--primary-purple-20)';
-                            premiumPlanCard.style.borderColor = 'var(--secondary-indigo)';
-                        }
-                    });
-                }
+            const monthlyOption = document.getElementById('monthly-option');
+            const annualOption = document.getElementById('annual-option');
+
+            // Plan card click listeners
+            if (monthlyOption) {
+                monthlyOption.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectPricingOption('monthly');
+                });
             }
-            
-            // On page load, check if user is premium and show chat directly if so
+            if (annualOption) {
+                annualOption.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectPricingOption('annual');
+                });
+            }
+
+            // On page load, check for plan selection in localStorage
             fetch('/api/user-profile')
-              .then(res => res.ok ? res.json() : null)
-              .then(user => {
-                if (user && user.premium) {
-                  apiMode = 'premium';
-                  if (modal) modal.style.display = 'none';
-                  if (chatMain) {
-                    chatMain.style.display = 'block';
-                    chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
-                  }
-                } else {
-                  if (modal) modal.style.display = 'flex';
-                  if (chatMain) chatMain.style.display = 'none';
-                  setupPlanCardInteractions();
-                }
-              })
-              .catch(() => {
-                if (modal) modal.style.display = 'flex';
-                if (chatMain) chatMain.style.display = 'none';
-                setupPlanCardInteractions();
-              });
-              
-            if (freeBtn && premiumBtn && modal && chatMain) {
-                // Premium button click handler
-                premiumBtn.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent triggering the card's click
-                    
-                    // Check if user is already premium
-                    fetch('/api/user-profile')
-                      .then(res => res.ok ? res.json() : null)
-                      .then(user => {
-                        if (user && user.premium) {
-                          apiMode = 'premium';
-                          
-                          // Add exit animation
-                          modal.style.opacity = '0';
-                          modal.style.transform = 'scale(0.9)';
-                          modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                          
-                          setTimeout(function() {
+                .then(res => res.json())
+                .then(user => {
+                    isPremium = user.premium;
+                    usageCount = user.sonnet_usage_count || 0;
+                    console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
+                    const selectedPlan = localStorage.getItem('selectedPlan');
+                    if (isPremium) {
+                        apiMode = 'premium';
+                        modal.style.display = 'none';
+                        chatMain.style.display = 'block';
+                    } else if (usageCount < 10) {
+                        modal.style.display = 'none';
+                        chatMain.style.display = 'block';
+                    } else {
+                        if (selectedPlan === 'free') {
                             modal.style.display = 'none';
                             chatMain.style.display = 'block';
-                            // Add entrance animation for chat
-                            chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
-                          }, 300);
+                            apiMode = 'free';
                         } else {
-                          // Redirect to payment page with selected pricing option
-                          const paymentUrl = selectedPricingOption === 'monthly' 
-                            ? '/pay?plan=monthly&amount=149.00' 
-                            : '/pay?plan=annual&amount=1548.00';
-                          window.location.href = paymentUrl;
+                            modal.style.display = 'flex';
+                            chatMain.style.display = 'none';
                         }
-                      })
-                      .catch(() => {
-                        // Redirect to payment page with selected pricing option on error
-                        const paymentUrl = selectedPricingOption === 'monthly' 
-                          ? '/pay?plan=monthly&amount=149.00' 
-                          : '/pay?plan=annual&amount=1548.00';
-                        window.location.href = paymentUrl;
-                      });
+                    }
+                });
+
+            // Attach click handler for Free plan
+            if (freeBtn) {
+                freeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    apiMode = 'free';
+                    localStorage.setItem('selectedPlan', 'free');
+                    modal.style.display = 'none';
+                    chatMain.style.display = 'block';
+                });
+            }
+
+            // Attach click handler for Premium plan
+            if (premiumBtn) {
+                premiumBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('selectedPlan');
+                    const selectedPlan = window.selectedPricingOption || 'monthly';
+                    if (selectedPlan === 'monthly') {
+                        window.location.href = '/pay?plan=monthly&amount=149.00';
+                    } else {
+                        window.location.href = '/pay?plan=annual&amount=1548.00';
+                    }
                 });
             }
         });

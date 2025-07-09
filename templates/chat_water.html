@@ -59,7 +59,7 @@ body {
 
 .streaming-cursor {
     animation: blink 1s infinite;
-    color: var(--primary-blue);
+    color: var(--primary-green);
     font-weight: bold;
 }
 
@@ -98,7 +98,7 @@ body {
     font-size: 2.1rem;
     font-weight: 600;
     font-family: 'Pabasing', sans-serif;
-    color: var(--secondary-navy);
+    color: var(--secondary-indigo);
     display: flex;
     align-items: center;
 
@@ -130,21 +130,21 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-blue);
-    color: var(--white);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-blue-80);
-}
-
-.btn-secondary {
     background-color: var(--primary-green);
     color: var(--white);
 }
 
-.btn-secondary:hover {
+.btn-primary:hover {
     background-color: var(--primary-green-80);
+}
+
+.btn-secondary {
+    background-color: var(--accent-green);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-green-80);
 }
 
 .btn img {
@@ -171,7 +171,7 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-blue);
+    border: 2px solid var(--primary-green);
 }
 
 .profile-dropdown {
@@ -260,7 +260,7 @@ body {
 .chat-header-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--secondary-navy);
+    color: var(--secondary-indigo);
 }
 
 .chat-header-status {
@@ -450,7 +450,7 @@ body {
     width: 50px;
     height: 50px;
     border: 5px solid var(--neutral-lighter);
-    border-top: 5px solid var(--primary-blue);
+    border-top: 5px solid var(--primary-green);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -471,7 +471,7 @@ body {
 .chat-loading-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--primary-blue);
+    background-color: var(--primary-green);
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
 }
@@ -627,21 +627,21 @@ body {
 }
 
 .api-mode-btn.selected {
-    background: var(--primary-blue, #e67e22);
+    background: var(--primary-green, #e67e22);
     color: #fff;
     border: none;
     border-radius: 6px;
 }
 .api-mode-btn {
     background: #fff;
-    color: var(--primary-blue, #e67e22);
-    border: 1px solid var(--primary-blue, #e67e22);
+    color: var(--primary-green, #e67e22);
+    border: 1px solid var(--primary-green, #e67e22);
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 .api-mode-btn:not(.selected):hover {
-    background: var(--primary-blue-20, #fae9d8);
+    background: var(--primary-green-20, #fae9d8);
 }
 #chat-main-content {
   display: none;
@@ -652,12 +652,12 @@ body {
     <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
     <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
       <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:700px;width:95%;animation:fadeIn 0.5s ease-out;">
-        <h2 style="margin-bottom:1rem;color:var(--secondary-navy);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
+        <h2 style="margin-bottom:1rem;color:var(--secondary-indigo);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
         <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1rem;">Select the plan that best suits your needs</p>
         
         <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-bottom:1.5rem;">
           <!-- Free Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--primary-blue-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card" onclick="document.getElementById('modal-free-btn').click()">
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-blue-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card">
             <h3 style="color:var(--primary-blue);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Basic features with limited usage</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
@@ -665,7 +665,7 @@ body {
               <li style="margin-bottom:0.5rem;">Basic knowledge base</li>
               <li>Community support</li>
             </ul>
-            <button id="modal-free-btn" class="api-mode-btn selected" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;">Select Free</button>
+            <button id="modal-free-btn" class="api-mode-btn selected" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-blue);color:white;">Select Free</button>
           </div>
           
           <!-- Premium Plan Card -->
@@ -777,7 +777,7 @@ body {
                     <div class="message-avatar">MD</div>
                     <div>
                         <div class="message-content">
-                            Sanibonani! I'm Mama Dudu, a devoted advocate for clean water, climate resilience, and thriving ecosystems. My journey has taken me from grassroots wetlands restoration to national catchment management plans, always guided by the principle that nature and communities can flourish together. From the Vaal catchment to Tsitsikamma forest, I've led initiatives safeguard our shared resources for generations to come. I bring a thoughtful approach grounded in empathy, science, and sustainability. Let's engineer with care — the kind that listens, learns, and lasts.
+                            Sanibonani! I'm Mama Dudu, a devoted advocate for clean water, climate resilience, and thriving ecosystems. My journey has taken me from grassroots wetlands restoration to national catchment management plans, always guided by the principle that nature and communities can flourish together. From the Vaal catchment to Tsitsikamma forest, I've led initiatives safeguard our shared resources for generations to come. I bring a thoughtful approach grounded in empathy, science, and sustainability. Let's engineer with care — the kind that listens, learns, and lasts. 
                         </div>
                         <div class="message-time">12:00 PM</div>
                     </div>
@@ -968,7 +968,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create chat loading indicator
     const loadingHTML = `
         <div class="message" id="loading-message">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">MD</div>
             <div>
                 <div class="message-content chat-loading">
                     <div class="chat-loading-indicator">
@@ -1042,6 +1042,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Send message function
             chatSendBtn.addEventListener('click', sendMessage);
             
+            let apiMode = null;
+            let isPremium = false;
+            let usageCount = 0;
+
             function sendMessage() {
                 const message = chatInput.value.trim();
                 if (!message) return;
@@ -1076,6 +1080,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Call the RAG API
                 callRagApi(message);
+
+                // After sending a message, fetch the latest usage count and premium status
+                fetch('/api/user-profile')
+                  .then(res => res.json())
+                  .then(user => {
+                    isPremium = user.premium;
+                    usageCount = user.sonnet_usage_count || 0;
+                    console.log('[SEND MESSAGE] usageCount', usageCount, 'isPremium', isPremium);
+                    if (!isPremium && usageCount >= 10) {
+                      document.getElementById('api-mode-modal').style.display = 'flex';
+                      document.getElementById('chat-main-content').style.display = 'none';
+                      apiMode = null; // Require plan selection
+                    }
+                  });
             }
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
@@ -1083,23 +1101,23 @@ document.addEventListener('DOMContentLoaded', function() {
 const collectionName = "Water_docs";
 
 function callRagApi(query) {
-    if (!apiMode) {
-        alert('Please select Free or Premium first.');
-        return;
+    // For the first 10 messages, always use hybrid_rag
+    let endpoint;
+    if (usageCount < 10) {
+        endpoint = 'https://oompiet.space/hybrid_rag';
+    } else {
+        endpoint = apiMode === 'premium'
+            ? 'https://oompiet.space/rag'
+            : 'https://oompiet.space/hybrid_rag';
     }
-    const endpoint = apiMode === 'premium'
-        ? 'https://oompiet.space/rag'
-        : 'https://oompiet.space/hybrid_rag';
 
     const requestBody = {
         query: query,
         top_k: 5,
         max_tokens: 4096,
-        collection_name: collectionName
+        collection_name: collectionName,
+        user_id: window.currentUserId || 'demo-user'
     };
-    if (apiMode === 'free') {
-        requestBody.user_id = window.currentUserId || 'demo-user';
-    }
 
     fetch(endpoint, {
         method: 'POST',
@@ -1139,7 +1157,7 @@ function displayAssistantResponseWithStreaming(message) {
     // Create the message container with feedback UI
     const assistantMessageHTML = `
         <div class="message" id="${messageId}">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">MD</div>
             <div>
                 <div class="message-content" id="${messageId}-content">
                     <span class="streaming-cursor">|</span>
@@ -1319,7 +1337,7 @@ function displayErrorMessage(errorText) {
     
     const errorMessageHTML = `
         <div class="message">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">MD</div>
             <div>
                 <div class="message-content">
                     <span style="color: var(--danger);">${errorText}</span>
@@ -1358,7 +1376,7 @@ document.addEventListener('click', function(e) {
     
     const assistantMessageHTML = `
         <div class="message">
-            <div class="message-avatar">OP</div>
+            <div class="message-avatar">MD</div>
             <div>
                 <div class="message-content">
                     ${message.replace(/\n/g, '<br>')}
@@ -1461,175 +1479,98 @@ document.addEventListener('click', function(e) {
          
         });
 
-        let apiMode = null; // Not set until user chooses
-        let selectedPricingOption = 'monthly'; // Default to monthly pricing
-
-        // Function to handle pricing option selection
+        // --- Plan selection logic for modal ---
         function selectPricingOption(option) {
-            selectedPricingOption = option;
-            
-            // Update UI to show selected option
+            window.selectedPricingOption = option;
             const monthlyOption = document.getElementById('monthly-option');
             const annualOption = document.getElementById('annual-option');
-            const monthlyRadio = monthlyOption.querySelector('.radio-inner');
-            const annualRadio = annualOption.querySelector('.radio-inner');
-            
-            if (option === 'monthly') {
-                monthlyOption.style.backgroundColor = 'var(--primary-blue-20)';
-                monthlyOption.style.borderColor = 'var(--primary-blue)';
-                monthlyRadio.style.display = 'block';
-                
-                annualOption.style.backgroundColor = 'transparent';
-                annualOption.style.borderColor = 'var(--primary-blue)';
-                annualRadio.style.display = 'none';
-                
-                document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R149.00/month)';
-            } else {
-                annualOption.style.backgroundColor = 'var(--primary-blue-20)';
-                annualOption.style.borderColor = 'var(--primary-blue)';
-                annualRadio.style.display = 'block';
-                
-                monthlyOption.style.backgroundColor = 'transparent';
-                monthlyOption.style.borderColor = 'var(--primary-blue)';
-                monthlyRadio.style.display = 'none';
-                
-                document.getElementById('modal-premium-btn').textContent = 'Continue to Payment (R1548.00/year)';
+            if (monthlyOption && annualOption) {
+                if (option === 'monthly') {
+                    monthlyOption.style.borderColor = 'var(--primary-blue)';
+                    annualOption.style.borderColor = 'var(--primary-blue-20)';
+                    if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'block';
+                    if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'none';
+                } else {
+                    annualOption.style.borderColor = 'var(--primary-blue)';
+                    monthlyOption.style.borderColor = 'var(--primary-blue-20)';
+                    if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'block';
+                    if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'none';
+                }
             }
         }
-        
-        // Make the function globally available
-        window.selectPricingOption = selectPricingOption;
+        window.selectedPricingOption = 'monthly';
 
         window.addEventListener('DOMContentLoaded', function() {
-            // Modal logic for Free/Premium selection
             const modal = document.getElementById('api-mode-modal');
             const chatMain = document.getElementById('chat-main-content');
             const freeBtn = document.getElementById('modal-free-btn');
             const premiumBtn = document.getElementById('modal-premium-btn');
-            const freePlanCard = document.getElementById('free-plan-card');
-            const premiumPlanCard = document.getElementById('premium-plan-card');
-            
-            // Initialize pricing option selection
-            selectPricingOption('monthly');
-            
-            // Add hover effects for plan cards
-            function setupPlanCardInteractions() {
-                if (freePlanCard && premiumPlanCard) {
-                    // Free plan card hover effect
-                    freePlanCard.addEventListener('mouseenter', function() {
-                        this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-                        this.style.transform = 'translateY(-5px)';
-                    });
-                    
-                    freePlanCard.addEventListener('mouseleave', function() {
-                        this.style.boxShadow = 'none';
-                        this.style.transform = 'translateY(0)';
-                    });
-                    
-                    // Premium plan card hover effect
-                    premiumPlanCard.addEventListener('mouseenter', function() {
-                        this.style.boxShadow = '0 5px 20px rgba(211, 84, 0, 0.2)';
-                        this.style.transform = 'translateY(-5px)';
-                    });
-                    
-                    premiumPlanCard.addEventListener('mouseleave', function() {
-                        this.style.boxShadow = 'none';
-                        this.style.transform = 'translateY(0)';
-                    });
-                    
-                    // Highlight selected plan
-                    freeBtn.addEventListener('click', function(e) {
-                        e.stopPropagation(); // Prevent triggering the card's click
-                        freePlanCard.style.borderColor = 'var(--primary-blue)';
-                        premiumPlanCard.style.borderColor = 'var(--primary-blue)';
-                        setTimeout(function() {
-                            apiMode = 'free';
-                            modal.style.opacity = '0';
-                            modal.style.transform = 'scale(0.9)';
-                            modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                            
-                            setTimeout(function() {
-                                modal.style.display = 'none';
-                                chatMain.style.display = 'block';
-                                // Add entrance animation for chat
-                                chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
-                            }, 300);
-                        }, 400);
-                    });
-                    
-                    // Make premium plan card clickable but not directly trigger the button
-                    premiumPlanCard.addEventListener('click', function(e) {
-                        // Only handle clicks on the card itself, not on its children
-                        if (e.target === this || this.contains(e.target) && !e.target.matches('button, #monthly-option, #annual-option, .pricing-radio')) {
-                            // Highlight the premium card
-                            freePlanCard.style.borderColor = 'var(--primary-blue-20)';
-                            premiumPlanCard.style.borderColor = 'var(--secondary-navy)';
-                        }
-                    });
-                }
+            const monthlyOption = document.getElementById('monthly-option');
+            const annualOption = document.getElementById('annual-option');
+
+            // Plan card click listeners
+            if (monthlyOption) {
+                monthlyOption.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectPricingOption('monthly');
+                });
             }
-            
-            // On page load, check if user is premium and show chat directly if so
+            if (annualOption) {
+                annualOption.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectPricingOption('annual');
+                });
+            }
+
+            // On page load, check for plan selection in localStorage
             fetch('/api/user-profile')
-              .then(res => res.ok ? res.json() : null)
-              .then(user => {
-                if (user && user.premium) {
-                  apiMode = 'premium';
-                  if (modal) modal.style.display = 'none';
-                  if (chatMain) {
-                    chatMain.style.display = 'block';
-                    chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
-                  }
-                } else {
-                  if (modal) modal.style.display = 'flex';
-                  if (chatMain) chatMain.style.display = 'none';
-                  setupPlanCardInteractions();
-                }
-              })
-              .catch(() => {
-                if (modal) modal.style.display = 'flex';
-                if (chatMain) chatMain.style.display = 'none';
-                setupPlanCardInteractions();
-              });
-              
-            if (freeBtn && premiumBtn && modal && chatMain) {
-                // Premium button click handler
-                premiumBtn.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent triggering the card's click
-                    
-                    // Check if user is already premium
-                    fetch('/api/user-profile')
-                      .then(res => res.ok ? res.json() : null)
-                      .then(user => {
-                        if (user && user.premium) {
-                          apiMode = 'premium';
-                          
-                          // Add exit animation
-                          modal.style.opacity = '0';
-                          modal.style.transform = 'scale(0.9)';
-                          modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                          
-                          setTimeout(function() {
+                .then(res => res.json())
+                .then(user => {
+                    isPremium = user.premium;
+                    usageCount = user.sonnet_usage_count || 0;
+                    console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
+                    const selectedPlan = localStorage.getItem('selectedPlan');
+                    if (isPremium) {
+                        apiMode = 'premium';
+                        modal.style.display = 'none';
+                        chatMain.style.display = 'block';
+                    } else if (usageCount < 10) {
+                        modal.style.display = 'none';
+                        chatMain.style.display = 'block';
+                    } else {
+                        if (selectedPlan === 'free') {
                             modal.style.display = 'none';
                             chatMain.style.display = 'block';
-                            // Add entrance animation for chat
-                            chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
-                          }, 300);
+                            apiMode = 'free';
                         } else {
-                          // Redirect to payment page with selected pricing option
-                          const paymentUrl = selectedPricingOption === 'monthly' 
-                            ? '/pay?plan=monthly&amount=149.00' 
-                            : '/pay?plan=annual&amount=1548.00';
-                          window.location.href = paymentUrl;
+                            modal.style.display = 'flex';
+                            chatMain.style.display = 'none';
                         }
-                      })
-                      .catch(() => {
-                        // Redirect to payment page with selected pricing option on error
-                        const paymentUrl = selectedPricingOption === 'monthly' 
-                          ? '/pay?plan=monthly&amount=149.00' 
-                          : '/pay?plan=annual&amount=1548.00';
-                        window.location.href = paymentUrl;
-                      });
+                    }
+                });
+
+            // Attach click handler for Free plan
+            if (freeBtn) {
+                freeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    apiMode = 'free';
+                    localStorage.setItem('selectedPlan', 'free');
+                    modal.style.display = 'none';
+                    chatMain.style.display = 'block';
+                });
+            }
+
+            // Attach click handler for Premium plan
+            if (premiumBtn) {
+                premiumBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('selectedPlan');
+                    const selectedPlan = window.selectedPricingOption || 'monthly';
+                    if (selectedPlan === 'monthly') {
+                        window.location.href = '/pay?plan=monthly&amount=149.00';
+                    } else {
+                        window.location.href = '/pay?plan=annual&amount=1548.00';
+                    }
                 });
             }
         });

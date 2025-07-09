@@ -305,9 +305,18 @@ def check_login_status():
 @app.route('/api/user-profile')
 def user_profile():
     user = session.get('user')
-    if user:
-        return jsonify(user)
-    return jsonify({"error": "Not logged in"}), 401
+    if not user:
+        return jsonify({"error": "Not logged in"}), 401
+
+    # Fetch the usage count from MongoDB
+    user_limits = db.user_limits.find_one({"user_id": user["email"]})
+    usage_count = user_limits["sonnet_usage_count"] if user_limits and "sonnet_usage_count" in user_limits else 0
+
+    # Add the real usage count to the user dict
+    user_with_count = dict(user)
+    user_with_count["sonnet_usage_count"] = usage_count
+
+    return jsonify(user_with_count)
 
 @app.route('/logout', methods=['POST'])
 def logout():
