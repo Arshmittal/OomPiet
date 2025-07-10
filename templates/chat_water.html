@@ -98,7 +98,7 @@ body {
     font-size: 2.1rem;
     font-weight: 600;
     font-family: 'Pabasing', sans-serif;
-    color: var(--secondary-indigo);
+    color: var(--primary-blue);
     display: flex;
     align-items: center;
 
@@ -921,6 +921,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             function logout() {
                 showPageLoading();
+                // Remove all avatar plan selections on logout
+                Object.keys(localStorage).forEach(function(key) {
+                  if (key.startsWith('selectedPlan_')) {
+                    localStorage.removeItem(key);
+                  }
+                });
                 fetch('/logout', {
                     method: 'POST',
                     headers: {
@@ -1088,11 +1094,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     isPremium = user.premium;
                     usageCount = user.sonnet_usage_count || 0;
                     console.log('[SEND MESSAGE] usageCount', usageCount, 'isPremium', isPremium);
-                    if (!isPremium && usageCount >= 10) {
-                      document.getElementById('api-mode-modal').style.display = 'flex';
-                      document.getElementById('chat-main-content').style.display = 'none';
-                      apiMode = null; // Require plan selection
-                    }
                   });
             }
             
@@ -1529,7 +1530,7 @@ document.addEventListener('click', function(e) {
                     isPremium = user.premium;
                     usageCount = user.sonnet_usage_count || 0;
                     console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
-                    const selectedPlan = localStorage.getItem('selectedPlan');
+                    const selectedPlan = localStorage.getItem('selectedPlan_water');
                     if (isPremium) {
                         apiMode = 'premium';
                         modal.style.display = 'none';
@@ -1554,7 +1555,7 @@ document.addEventListener('click', function(e) {
                 freeBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     apiMode = 'free';
-                    localStorage.setItem('selectedPlan', 'free');
+                    localStorage.setItem('selectedPlan_water', 'free');
                     modal.style.display = 'none';
                     chatMain.style.display = 'block';
                 });
@@ -1564,7 +1565,7 @@ document.addEventListener('click', function(e) {
             if (premiumBtn) {
                 premiumBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    localStorage.removeItem('selectedPlan');
+                    localStorage.removeItem('selectedPlan_water');
                     const selectedPlan = window.selectedPricingOption || 'monthly';
                     if (selectedPlan === 'monthly') {
                         window.location.href = '/pay?plan=monthly&amount=149.00';

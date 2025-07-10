@@ -8,24 +8,25 @@
   
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
                             :root {
-    /* Primary Colors */
-    --primary-green: #3db54b;
-    --primary-green-80: #63c36e;
-    --primary-green-60: #89d191;
-    --primary-green-40: #aee0b4;
-    --primary-green-20: #d6efd8;
-    /* Keep the original green for secondary/contrast if needed */
-    --accent-green: #3db54b;
-    --accent-green-80: #63c36e;
-    --accent-green-60: #89d191;
-    --accent-green-40: #aee0b4;
-    --accent-green-20: #d6efd8;
-    /* Secondary Colors */
-    --secondary-indigo: #4f46e5;
-    --secondary-indigo-80: #6366f1;
-    --secondary-indigo-60: #818cf8;
-    --secondary-indigo-40: #a5b4fc;
-    --secondary-indigo-20: #c7d2fe;
+    /* Primary Colors - Light Teal / Soft Aqua Theme */
+    --primary-teal: #B0D9D3;         /* Actual circle fill */
+  --primary-teal-80: #C2E1DC;      /* 80% tint */
+  --primary-teal-60: #D3EAE5;      /* 60% tint */
+  --primary-teal-40: #E5F3EF;      /* 40% tint */
+  --primary-teal-20: #F5FBFA;      /* 20% tint */
+
+  /* Accent (darker shades for contrast) */
+  --accent-teal: #5CA89A;          /* Base accent */
+  --accent-teal-80: #70B7AA;       /* 80% tint */
+  --accent-teal-60: #8CC9BE;       /* 60% tint */
+  --accent-teal-40: #B1DED4;       /* 40% tint */
+    --accent-teal-20: #E8F9F6;
+    /* Secondary Colors (for contrast, buttons, etc.) */
+    --secondary-navy: #2B4C59;
+    --secondary-navy-80: #3E6B7A;
+    --secondary-navy-60: #5A8CA0;
+    --secondary-navy-40: #8CB5C2;
+    --secondary-navy-20: #C7DDE5;
     /* Neutrals */
     --neutral-dark: #333333;
     --neutral-medium: #666666;
@@ -35,10 +36,15 @@
     /* Utility Colors */
     --white: #ffffff;
     --black: #000000;
-    --success: var(--accent-green);
-    --info: var(--primary-green);
+    --success: var(--accent-teal);
+    --info: var(--primary-teal);
     --warning: #f0ad4e;
     --danger: #d9534f;
+    --primary-green: #3db54b;
+    --primary-green-80: #63c36e;
+    --primary-green-60: #89d191;
+    --primary-green-40: #aee0b4;
+    --primary-green-20: #d6efd8;
 }
 /* Reset and base styles */
 * {
@@ -59,7 +65,7 @@ body {
 
 .streaming-cursor {
     animation: blink 1s infinite;
-    color: var(--primary-green);
+    color: var(--primary-teal);
     font-weight: bold;
 }
 
@@ -98,7 +104,7 @@ body {
     font-size: 2.1rem;
     font-weight: 600;
     font-family: 'Pabasing', sans-serif;
-    color: var(--accent-green);
+    color: var(--accent-teal);
     display: flex;
     align-items: center;
 
@@ -130,21 +136,21 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-green);
+    background-color: var(--primary-teal);
     color: var(--white);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-green-80);
+    background-color: var(--primary-teal-80);
 }
 
 .btn-secondary {
-    background-color: var(--accent-green);
+    background-color: var(--accent-teal);
     color: var(--white);
 }
 
 .btn-secondary:hover {
-    background-color: var(--accent-green-80);
+    background-color: var(--accent-teal-80);
 }
 
 .btn img {
@@ -171,7 +177,7 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-green);
+    border: 2px solid var(--primary-teal);
 }
 
 .profile-dropdown {
@@ -260,7 +266,7 @@ body {
 .chat-header-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--accent-green);
+    color: var(--accent-teal);
 }
 
 .chat-header-status {
@@ -334,12 +340,12 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: var(--primary-green-20);
+    background-color: var(--primary-teal);
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 600;
-    color: var(--primary-green);
+    color: var( --neutral-dark);
     flex-shrink: 0;
 }
 
@@ -351,7 +357,7 @@ body {
 .message-content {
     padding: 0.75rem 1.8rem;
     border-radius: 18px;
-    background-color: var(--primary-green-20);
+    background-color: var(--primary-teal);
     color: var(--neutral-dark);
     font-size: 0.95rem;
     line-height: 1.5;
@@ -406,12 +412,12 @@ body {
 }
 
 .chat-input:focus {
-    border-color: var(--primary-green);
+    border-color: var(--primary-teal);
 }
 
 .chat-send-btn {
-    background-color: var(--primary-green);
-    color: white;
+    background-color: var(--primary-teal);
+    color: rgb(0, 0, 0);
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -425,7 +431,7 @@ body {
 }
 
 .chat-send-btn:hover {
-    background-color: var(--primary-green-20);
+    background-color: var(--primary-teal-20);
 }
 
 .chat-send-btn:disabled {
@@ -451,7 +457,7 @@ body {
     width: 50px;
     height: 50px;
     border: 5px solid var(--neutral-lighter);
-    border-top: 5px solid var(--primary-green);
+    border-top: 5px solid var(--primary-teal);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -472,7 +478,7 @@ body {
 .chat-loading-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--primary-green);
+    background-color: var(--neutral-dark);
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
 }
@@ -628,21 +634,21 @@ body {
 }
 
 .api-mode-btn.selected {
-    background: var(--primary-green, #e67e22);
+    background: var(--primary-teal, #e67e22);
     color: #fff;
     border: none;
     border-radius: 6px;
 }
 .api-mode-btn {
     background: #fff;
-    color: var(--primary-green, #e67e22);
-    border: 1px solid var(--primary-green, #e67e22);
+    color: var(--primary-teal, #e67e22);
+    border: 1px solid var(--primary-teal, #e67e22);
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 .api-mode-btn:not(.selected):hover {
-    background: var(--primary-green-20, #fae9d8);
+    background: var(--primary-teal-20, #fae9d8);
 }
 #chat-main-content {
   display: none;
@@ -653,26 +659,26 @@ body {
     <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
     <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
       <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:700px;width:95%;animation:fadeIn 0.5s ease-out;">
-        <h2 style="margin-bottom:1rem;color:var(--accent-green);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
+        <h2 style="margin-bottom:1rem;color:var(--accent-teal);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
         <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1rem;">Select the plan that best suits your needs</p>
         
         <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-bottom:1.5rem;">
           <!-- Free Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--primary-green-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card">
-            <h3 style="color:var(--primary-green);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
+          <div style="flex:1;min-width:200px;border:2px solid var(--primary-teal-20);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;" id="free-plan-card">
+            <h3 style="color:var(--primary-teal);margin-bottom:0.5rem;font-size:1.4rem;">Free Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Basic features with limited usage</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
               <li style="margin-bottom:0.5rem;">Standard responses</li>
               <li style="margin-bottom:0.5rem;">Basic knowledge base</li>
               <li>Community support</li>
             </ul>
-            <button id="modal-free-btn" class="api-mode-btn selected" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;">Select Free</button>
+            <button id="modal-free-btn" class="api-mode-btn selected" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-teal);color:black;">Select Free</button>
           </div>
           
           <!-- Premium Plan Card -->
-          <div style="flex:1;min-width:200px;border:2px solid var(--accent-green);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-green-20);position:relative;" id="premium-plan-card">
-            <div style="position:absolute;top:-10px;right:20px;background:var(--accent-green);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
-            <h3 style="color:var(--accent-green);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
+          <div style="flex:1;min-width:200px;border:2px solid var(--accent-teal);border-radius:12px;padding:1.5rem;text-align:left;transition:all 0.3s ease;cursor:pointer;background-color:var(--primary-teal-20);position:relative;" id="premium-plan-card">
+            <div style="position:absolute;top:-10px;right:20px;background:var(--accent-teal);color:white;padding:2px 10px;border-radius:12px;font-size:0.8rem;font-weight:bold;">RECOMMENDED</div>
+            <h3 style="color:var(--primary-teal);margin-bottom:0.5rem;font-size:1.4rem;">Premium Plan</h3>
             <p style="color:var(--neutral-medium);margin-bottom:1rem;font-size:0.9rem;">Enhanced features with priority access</p>
             <ul style="padding-left:1.5rem;margin-bottom:1.5rem;color:var(--neutral-dark);">
               <li style="margin-bottom:0.5rem;">Advanced responses</li>
@@ -683,38 +689,38 @@ body {
             <!-- Premium Plan Options -->
             <div style="margin-bottom:1.5rem;">
               <!-- Monthly Option -->
-              <div id="monthly-option" style="border:1px solid var(--primary-green);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('monthly')">
+              <div id="monthly-option" style="border:1px solid var(--primary-teal);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('monthly')">
                 <div>
-                  <div style="font-weight:600;color:var(--accent-green);">Monthly</div>
+                  <div style="font-weight:600;color:var(--accent-teal);">Monthly</div>
                   <div style="font-size:0.9rem;color:var(--neutral-medium);">Billed monthly</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:var(--accent-green);">R149.00</div>
+                  <div style="font-weight:700;font-size:1.2rem;color:var(--accent-teal);">R149.00</div>
                   <div style="font-size:0.8rem;color:var(--neutral-medium);">per month</div>
                 </div>
-                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-green);position:relative;margin-left:10px;">
-                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-green);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
+                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-teal);position:relative;margin-left:10px;">
+                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-teal);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
                 </div>
               </div>
               
               <!-- Annual Option -->
-              <div id="annual-option" style="border:1px solid var(--primary-green);border-radius:8px;padding:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('annual')">
+              <div id="annual-option" style="border:1px solid var(--primary-teal);border-radius:8px;padding:0.8rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;" onclick="selectPricingOption('annual')">
                 <div>
-                  <div style="font-weight:600;color:var(--accent-green);">Annual</div>
+                  <div style="font-weight:600;color:var(--accent-teal);">Annual</div>
                   <div style="font-size:0.9rem;color:var(--neutral-medium);">Billed annually</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-weight:700;font-size:1.2rem;color:var(--accent-green);">R129.00</div>
+                  <div style="font-weight:700;font-size:1.2rem;color:var(--accent-teal);">R129.00</div>
                   <div style="font-size:0.8rem;color:var(--neutral-medium);">per month</div>
                   <div style="font-size:0.75rem;color:white;background:var(--success);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:3px;">SAVE R240</div>
                 </div>
-                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-green);position:relative;margin-left:10px;">
-                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-green);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
+                <div class="pricing-radio" style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary-teal);position:relative;margin-left:10px;">
+                  <div class="radio-inner" style="width:10px;height:10px;border-radius:50%;background:var(--primary-teal);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;"></div>
                 </div>
               </div>
             </div>
             
-            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-green);color:white;">Continue to Payment</button>
+            <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-teal);color:black;">Continue to Payment</button>
           </div>
         </div>
       </div>
@@ -922,6 +928,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             function logout() {
                 showPageLoading();
+                // Remove all avatar plan selections on logout
+                Object.keys(localStorage).forEach(function(key) {
+                  if (key.startsWith('selectedPlan_')) {
+                    localStorage.removeItem(key);
+                  }
+                });
                 fetch('/logout', {
                     method: 'POST',
                     headers: {
@@ -1089,11 +1101,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     isPremium = user.premium;
                     usageCount = user.sonnet_usage_count || 0;
                     console.log('[SEND MESSAGE] usageCount', usageCount, 'isPremium', isPremium);
-                    if (!isPremium && usageCount >= 10) {
-                      document.getElementById('api-mode-modal').style.display = 'flex';
-                      document.getElementById('chat-main-content').style.display = 'none';
-                      apiMode = null; // Require plan selection
-                    }
                   });
             }
             
@@ -1487,13 +1494,13 @@ document.addEventListener('click', function(e) {
             const annualOption = document.getElementById('annual-option');
             if (monthlyOption && annualOption) {
                 if (option === 'monthly') {
-                    monthlyOption.style.borderColor = 'var(--primary-green)';
-                    annualOption.style.borderColor = 'var(--primary-green-20)';
+                    monthlyOption.style.borderColor = 'var(--primary-teal)';
+                    annualOption.style.borderColor = 'var(--primary-teal-20)';
                     if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'block';
                     if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'none';
                 } else {
-                    annualOption.style.borderColor = 'var(--primary-green)';
-                    monthlyOption.style.borderColor = 'var(--primary-green-20)';
+                    annualOption.style.borderColor = 'var(--primary-teal)';
+                    monthlyOption.style.borderColor = 'var(--primary-teal-20)';
                     if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'block';
                     if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'none';
                 }
@@ -1530,7 +1537,7 @@ document.addEventListener('click', function(e) {
                     isPremium = user.premium;
                     usageCount = user.sonnet_usage_count || 0;
                     console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
-                    const selectedPlan = localStorage.getItem('selectedPlan');
+                    const selectedPlan = localStorage.getItem('selectedPlan_concrete');
                     if (isPremium) {
                         apiMode = 'premium';
                         modal.style.display = 'none';
@@ -1555,7 +1562,7 @@ document.addEventListener('click', function(e) {
                 freeBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     apiMode = 'free';
-                    localStorage.setItem('selectedPlan', 'free');
+                    localStorage.setItem('selectedPlan_concrete', 'free');
                     modal.style.display = 'none';
                     chatMain.style.display = 'block';
                 });
@@ -1565,7 +1572,7 @@ document.addEventListener('click', function(e) {
             if (premiumBtn) {
                 premiumBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    localStorage.removeItem('selectedPlan');
+                    localStorage.removeItem('selectedPlan_concrete');
                     const selectedPlan = window.selectedPricingOption || 'monthly';
                     if (selectedPlan === 'monthly') {
                         window.location.href = '/pay?plan=monthly&amount=149.00';
