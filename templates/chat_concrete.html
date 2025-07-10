@@ -805,6 +805,7 @@ body {
     </div>
     </div>
 
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Profile dropdown functionality
@@ -1059,10 +1060,85 @@ document.addEventListener('DOMContentLoaded', function() {
             let isPremium = false;
             let usageCount = 0;
 
+            window.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('api-mode-modal');
+                const chatMain = document.getElementById('chat-main-content');
+                const freeBtn = document.getElementById('modal-free-btn');
+                const premiumBtn = document.getElementById('modal-premium-btn');
+                const monthlyOption = document.getElementById('monthly-option');
+                const annualOption = document.getElementById('annual-option');
+
+                // Plan card click listeners
+                if (monthlyOption) {
+                    monthlyOption.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selectPricingOption('monthly');
+                    });
+                }
+                if (annualOption) {
+                    annualOption.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selectPricingOption('annual');
+                    });
+                }
+
+                // On page load, check for plan selection in localStorage
+                fetch('/api/user-profile')
+                    .then(res => res.json())
+                    .then(user => {
+                        isPremium = user.premium;
+                        usageCount = user.sonnet_usage_count || 0;
+                        console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
+                        const selectedPlan = localStorage.getItem('selectedPlan_oompiet');
+                        if (isPremium) {
+                            apiMode = 'premium';
+                            modal.style.display = 'none';
+                            chatMain.style.display = 'block';
+                        } else if (usageCount < 10) {
+                            modal.style.display = 'none';
+                            chatMain.style.display = 'block';
+                        } else {
+                            if (selectedPlan === 'free') {
+                                modal.style.display = 'none';
+                                chatMain.style.display = 'block';
+                                apiMode = 'free';
+                            } else {
+                                modal.style.display = 'flex';
+                                chatMain.style.display = 'none';
+                            }
+                        }
+                    });
+
+                // Attach click handler for Free plan
+                if (freeBtn) {
+                    freeBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        apiMode = 'free';
+                        localStorage.setItem('selectedPlan_oompiet', 'free');
+                        modal.style.display = 'none';
+                        chatMain.style.display = 'block';
+                    });
+                }
+
+                // Attach click handler for Premium plan
+                if (premiumBtn) {
+                    premiumBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        localStorage.removeItem('selectedPlan_oompiet');
+                        const selectedPlan = window.selectedPricingOption || 'monthly';
+                        if (selectedPlan === 'monthly') {
+                            window.location.href = '/pay?plan=monthly&amount=149.00';
+                        } else {
+                            window.location.href = '/pay?plan=annual&amount=1548.00';
+                        }
+                    });
+                }
+            });
+
             function sendMessage() {
                 const message = chatInput.value.trim();
                 if (!message) return;
-                
+
                 // Add message to chat
                 const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
@@ -1111,7 +1187,7 @@ const collectionName = "Concrete_docs";
 function callRagApi(query) {
     // For the first 10 messages, always use hybrid_rag
     let endpoint;
-    if (usageCount < 10) {
+    if (usageCount < 9) {
         endpoint = 'https://oompiet.space/hybrid_rag';
     } else {
         endpoint = apiMode === 'premium'
@@ -1487,6 +1563,143 @@ document.addEventListener('click', function(e) {
          
         });
 
+        let apiMode = null;
+        let isPremium = false;
+        let usageCount = 0;
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('api-mode-modal');
+            const chatMain = document.getElementById('chat-main-content');
+            const freeBtn = document.getElementById('modal-free-btn');
+            const premiumBtn = document.getElementById('modal-premium-btn');
+            const freePlanCard = document.getElementById('free-plan-card');
+            const premiumPlanCard = document.getElementById('premium-plan-card');
+            
+            // Initialize pricing option selection
+            selectPricingOption('monthly');
+            
+            // Add hover effects for plan cards
+            function setupPlanCardInteractions() {
+                if (freePlanCard && premiumPlanCard) {
+                    // Free plan card hover effect
+                    freePlanCard.addEventListener('mouseenter', function() {
+                        this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    
+                    freePlanCard.addEventListener('mouseleave', function() {
+                        this.style.boxShadow = 'none';
+                        this.style.transform = 'translateY(0)';
+                    });
+                    
+                    // Premium plan card hover effect
+                    premiumPlanCard.addEventListener('mouseenter', function() {
+                        this.style.boxShadow = '0 5px 20px rgba(211, 84, 0, 0.2)';
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    
+                    premiumPlanCard.addEventListener('mouseleave', function() {
+                        this.style.boxShadow = 'none';
+                        this.style.transform = 'translateY(0)';
+                    });
+                    
+                    // Highlight selected plan
+                    freeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent triggering the card's click
+                        freePlanCard.style.borderColor = 'var(--primary-orange)';
+                        premiumPlanCard.style.borderColor = 'var(--primary-orange)';
+                        setTimeout(function() {
+                            apiMode = 'free';
+                            modal.style.opacity = '0';
+                            modal.style.transform = 'scale(0.9)';
+                            modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            
+                            setTimeout(function() {
+                                modal.style.display = 'none';
+                                chatMain.style.display = 'block';
+                                // Add entrance animation for chat
+                                chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
+                            }, 300);
+                        }, 400);
+                    });
+                    
+                    // Make premium plan card clickable but not directly trigger the button
+                    premiumPlanCard.addEventListener('click', function(e) {
+                        // Only handle clicks on the card itself, not on its children
+                        if (e.target === this || this.contains(e.target) && !e.target.matches('button, #monthly-option, #annual-option, .pricing-radio')) {
+                            // Highlight the premium card
+                            freePlanCard.style.borderColor = 'var(--primary-orange-20)';
+                            premiumPlanCard.style.borderColor = 'var(--secondary-dark-orange)';
+                        }
+                    });
+                }
+            }
+            
+            // On page load, check if user is premium and show chat directly if so
+            fetch('/api/user-profile')
+              .then(res => res.ok ? res.json() : null)
+              .then(user => {
+                if (user && user.premium) {
+                  apiMode = 'premium';
+                  if (modal) modal.style.display = 'none';
+                  if (chatMain) {
+                    chatMain.style.display = 'block';
+                    chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
+                  }
+                } else {
+                  if (modal) modal.style.display = 'flex';
+                  if (chatMain) chatMain.style.display = 'none';
+                  setupPlanCardInteractions();
+                }
+              })
+              .catch(() => {
+                if (modal) modal.style.display = 'flex';
+                if (chatMain) chatMain.style.display = 'none';
+                setupPlanCardInteractions();
+              });
+              
+            if (freeBtn && premiumBtn && modal && chatMain) {
+                // Premium button click handler
+                premiumBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering the card's click
+                    
+                    // Check if user is already premium
+                    fetch('/api/user-profile')
+                      .then(res => res.ok ? res.json() : null)
+                      .then(user => {
+                        if (user && user.premium) {
+                          apiMode = 'premium';
+                          
+                          // Add exit animation
+                          modal.style.opacity = '0';
+                          modal.style.transform = 'scale(0.9)';
+                          modal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                          
+                          setTimeout(function() {
+                            modal.style.display = 'none';
+                            chatMain.style.display = 'block';
+                            // Add entrance animation for chat
+                            chatMain.style.animation = 'fadeIn 0.5s ease-out forwards';
+                          }, 300);
+                        } else {
+                          // Redirect to payment page with selected pricing option
+                          const paymentUrl = selectedPricingOption === 'monthly' 
+                            ? '/pay?plan=monthly&amount=149.00' 
+                            : '/pay?plan=annual&amount=1548.00';
+                          window.location.href = paymentUrl;
+                        }
+                      })
+                      .catch(() => {
+                        // Redirect to payment page with selected pricing option on error
+                        const paymentUrl = selectedPricingOption === 'monthly' 
+                          ? '/pay?plan=monthly&amount=149.00' 
+                          : '/pay?plan=annual&amount=1548.00';
+                        window.location.href = paymentUrl;
+                      });
+                });
+            }
+        });
+
         // --- Plan selection logic for modal ---
         function selectPricingOption(option) {
             window.selectedPricingOption = option;
@@ -1494,94 +1707,19 @@ document.addEventListener('click', function(e) {
             const annualOption = document.getElementById('annual-option');
             if (monthlyOption && annualOption) {
                 if (option === 'monthly') {
-                    monthlyOption.style.borderColor = 'var(--primary-teal)';
-                    annualOption.style.borderColor = 'var(--primary-teal-20)';
+                    monthlyOption.style.borderColor = 'var(--primary-orange)';
+                    annualOption.style.borderColor = 'var(--primary-orange-20)';
                     if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'block';
                     if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'none';
                 } else {
-                    annualOption.style.borderColor = 'var(--primary-teal)';
-                    monthlyOption.style.borderColor = 'var(--primary-teal-20)';
+                    annualOption.style.borderColor = 'var(--primary-orange)';
+                    monthlyOption.style.borderColor = 'var(--primary-orange-20)';
                     if (annualOption.querySelector('.radio-inner')) annualOption.querySelector('.radio-inner').style.display = 'block';
                     if (monthlyOption.querySelector('.radio-inner')) monthlyOption.querySelector('.radio-inner').style.display = 'none';
                 }
             }
         }
         window.selectedPricingOption = 'monthly';
-
-        window.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('api-mode-modal');
-            const chatMain = document.getElementById('chat-main-content');
-            const freeBtn = document.getElementById('modal-free-btn');
-            const premiumBtn = document.getElementById('modal-premium-btn');
-            const monthlyOption = document.getElementById('monthly-option');
-            const annualOption = document.getElementById('annual-option');
-
-            // Plan card click listeners
-            if (monthlyOption) {
-                monthlyOption.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    selectPricingOption('monthly');
-                });
-            }
-            if (annualOption) {
-                annualOption.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    selectPricingOption('annual');
-                });
-            }
-
-            // On page load, check for plan selection in localStorage
-            fetch('/api/user-profile')
-                .then(res => res.json())
-                .then(user => {
-                    isPremium = user.premium;
-                    usageCount = user.sonnet_usage_count || 0;
-                    console.log('[PAGE LOAD] usageCount', usageCount, 'isPremium', isPremium);
-                    const selectedPlan = localStorage.getItem('selectedPlan_concrete');
-                    if (isPremium) {
-                        apiMode = 'premium';
-                        modal.style.display = 'none';
-                        chatMain.style.display = 'block';
-                    } else if (usageCount < 10) {
-                        modal.style.display = 'none';
-                        chatMain.style.display = 'block';
-                    } else {
-                        if (selectedPlan === 'free') {
-                            modal.style.display = 'none';
-                            chatMain.style.display = 'block';
-                            apiMode = 'free';
-                        } else {
-                            modal.style.display = 'flex';
-                            chatMain.style.display = 'none';
-                        }
-                    }
-                });
-
-            // Attach click handler for Free plan
-            if (freeBtn) {
-                freeBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    apiMode = 'free';
-                    localStorage.setItem('selectedPlan_concrete', 'free');
-                    modal.style.display = 'none';
-                    chatMain.style.display = 'block';
-                });
-            }
-
-            // Attach click handler for Premium plan
-            if (premiumBtn) {
-                premiumBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    localStorage.removeItem('selectedPlan_concrete');
-                    const selectedPlan = window.selectedPricingOption || 'monthly';
-                    if (selectedPlan === 'monthly') {
-                        window.location.href = '/pay?plan=monthly&amount=149.00';
-                    } else {
-                        window.location.href = '/pay?plan=annual&amount=1548.00';
-                    }
-                });
-            }
-        });
 
         // Fetch the logged-in user's email on page load
         window.currentUserId = null;

@@ -1197,7 +1197,7 @@ const collectionName = "Tailings_engineer_docs";
 function callRagApi(query) {
     // For the first 10 messages, always use hybrid_rag
     let endpoint;
-    if (usageCount < 10) {
+    if (usageCount < 9) {
         endpoint = 'https://oompiet.space/hybrid_rag';
     } else {
         endpoint = apiMode === 'premium'
