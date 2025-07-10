@@ -657,7 +657,7 @@ body {
 </head>
 <body>
     <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
-    <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
+    <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
       <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:700px;width:95%;animation:fadeIn 0.5s ease-out;">
         <h2 style="margin-bottom:1rem;color:var(--accent-teal);font-family:'Pabasing',sans-serif;font-size:1.8rem;">Choose Your Plan</h2>
         <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1rem;">Select the plan that best suits your needs</p>
@@ -728,8 +728,8 @@ body {
     
     <!-- Only this is hidden initially -->
     <div id="chat-main-content" style="display:none;">
-    <!-- Page loading spinner -->
-    <div class="loading-spinner">
+    <!-- Page loading spinner (visible on initial load) -->
+    <div class="loading-spinner" id="initial-loading-spinner" style="display:flex;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:3000;background:rgba(255,255,255,0.8);align-items:center;justify-content:center;">
         <div class="spinner"></div>
     </div>
     
