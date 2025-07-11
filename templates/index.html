@@ -938,6 +938,9 @@ body {
                     if (data.success) {
                         showLoggedInState();
                         updateProfileUI(data.user);
+                    } else if (data.error === 'session_conflict') {
+                        // Show session conflict modal
+                        showSessionConflictModal(data.message, data.session_info, email, password);
                     } else {
                         showError(data.error || 'Invalid email or password');
                     }
@@ -947,6 +950,133 @@ body {
                     console.error('Signin error:', error);
                     showError('An error occurred. Please try again.');
                 });
+            }
+
+            function showSessionConflictModal(message, sessionInfo, email, password) {
+                // Create modal HTML
+                const modalHTML = `
+                    <div id="session-conflict-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
+                        <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:95%;animation:fadeIn 0.5s ease-out;">
+                            <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+                            <h2 style="margin-bottom:1rem;color:#163c66;font-size:1.5rem;">Account Already Active</h2>
+                            <p style="margin-bottom:2rem;color:#666;line-height:1.6;">${message}</p>
+                            
+                            <div style="background:#f5f7fa;border-radius:8px;padding:1.5rem;margin-bottom:2rem;text-align:left;">
+                                <h3 style="color:#163c66;margin-bottom:1rem;font-size:1.1rem;">Active Session Details:</h3>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;">
+                                    <span style="color:#666;font-weight:500;">Device:</span>
+                                    <span style="color:#333;font-weight:600;">${sessionInfo.user_agent.substring(0, 50)}${sessionInfo.user_agent.length > 50 ? '...' : ''}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;">
+                                    <span style="color:#666;font-weight:500;">IP Address:</span>
+                                    <span style="color:#333;font-weight:600;">${sessionInfo.ip_address}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.9rem;">
+                                    <span style="color:#666;font-weight:500;">Last Activity:</span>
+                                    <span style="color:#333;font-weight:600;">${formatTimeAgo(sessionInfo.last_activity)}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="buttons" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+                                <button id="force-login-btn" style="padding:0.8rem 2rem;border-radius:8px;font-weight:600;cursor:pointer;background:#1d78a3;color:white;border:none;font-size:1rem;">Continue and Log Out Other Session</button>
+                                <button id="cancel-login-btn" style="padding:0.8rem 2rem;border-radius:8px;font-weight:600;cursor:pointer;background:#ccc;color:#333;border:none;font-size:1rem;">Cancel</button>
+                            </div>
+                            
+                            <div id="force-login-loading" style="display:none;align-items:center;justify-content:center;gap:0.5rem;margin-top:1rem;">
+                                <div style="width:20px;height:20px;border:2px solid #ccc;border-top:2px solid #1d78a3;border-radius:50%;animation:spin 1s linear infinite;"></div>
+                                <span>Processing...</span>
+                            </div>
+                            
+                            <div id="force-login-error" style="color:#d9534f;margin-top:1rem;display:none;"></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal to page
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Add event listeners
+                document.getElementById('force-login-btn').addEventListener('click', () => {
+                    handleForceLogin(email, password);
+                });
+                
+                document.getElementById('cancel-login-btn').addEventListener('click', () => {
+                    document.getElementById('session-conflict-modal').remove();
+                });
+            }
+
+            function handleForceLogin(email, password) {
+                console.log('handleForceLogin called with email:', email);
+                
+                const loading = document.getElementById('force-login-loading');
+                const error = document.getElementById('force-login-error');
+                const buttons = document.querySelector('#session-conflict-modal .buttons');
+                
+                console.log('Found elements:', { loading, error, buttons });
+                
+                // Show loading
+                loading.style.display = 'flex';
+                if (buttons) buttons.style.display = 'none';
+                error.style.display = 'none';
+                
+                console.log('Making force login API call...');
+                
+                // Make API call to force login
+                fetch('/api/force-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                })
+                .then(response => {
+                    console.log('Force login response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Force login response data:', data);
+                    if (data.success) {
+                        // Remove modal and update UI
+                        document.getElementById('session-conflict-modal').remove();
+                        showLoggedInState();
+                        updateProfileUI(data.user);
+                    } else {
+                        throw new Error(data.error || 'Force login failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Force login error:', error);
+                    // Show error and restore buttons
+                    document.getElementById('force-login-error').textContent = 'An error occurred. Please try again.';
+                    document.getElementById('force-login-error').style.display = 'block';
+                    loading.style.display = 'none';
+                    if (buttons) buttons.style.display = 'flex';
+                });
+            }
+
+            function formatTimeAgo(timestamp) {
+                try {
+                    const date = new Date(timestamp);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    
+                    if (diffMins < 1) {
+                        return 'Just now';
+                    } else if (diffMins < 60) {
+                        return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+                    } else if (diffHours < 24) {
+                        return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                    } else {
+                        return date.toLocaleString();
+                    }
+                } catch (e) {
+                    return timestamp;
+                }
             }
 
             function checkLoginStatus() {

@@ -17,6 +17,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from urllib.parse import urlencode
 import requests
+import secrets
+import uuid
 
 # Load environment variables
 load_dotenv()
@@ -47,6 +49,7 @@ db = client["geotech_db"]
 users_collection = db["users"]
 dashboard_stats_collection = db["dashboard_stats"]
 feedback_collection = db["feedback"]  # Add new collection for feedback
+sessions_collection = db["sessions"]  # New collection for session management
 
 # Initialize OAuth
 oauth = OAuth(app)
@@ -77,12 +80,103 @@ class JSONEncoder(json.JSONEncoder):
 
 app.json_encoder = JSONEncoder
 
-# Login decorator
+# Session management functions
+def generate_session_token():
+    """Generate a unique session token"""
+    return str(uuid.uuid4())
+
+def create_user_session(user_email, session_id=None):
+    """Create a new session for a user"""
+    if session_id is None:
+        session_id = generate_session_token()
+    
+    # Remove any existing sessions for this user
+    sessions_collection.delete_many({"user_email": user_email})
+    
+    # Create new session
+    session_data = {
+        "session_id": session_id,
+        "user_email": user_email,
+        "created_at": datetime.utcnow(),
+        "last_activity": datetime.utcnow(),
+        "user_agent": request.headers.get('User-Agent', ''),
+        "ip_address": request.remote_addr
+    }
+    
+    sessions_collection.insert_one(session_data)
+    return session_id
+
+def validate_session(session_id, user_email):
+    """Validate if a session is still active"""
+    session_data = sessions_collection.find_one({
+        "session_id": session_id,
+        "user_email": user_email
+    })
+    
+    if not session_data:
+        return False
+    
+    # Check if session is expired (24 hours)
+    if datetime.utcnow() - session_data["created_at"] > timedelta(hours=24):
+        sessions_collection.delete_one({"_id": session_data["_id"]})
+        return False
+    
+    # Update last activity
+    sessions_collection.update_one(
+        {"_id": session_data["_id"]},
+        {"$set": {"last_activity": datetime.utcnow()}}
+    )
+    
+    return True
+
+def remove_user_session(user_email):
+    """Remove all sessions for a user"""
+    sessions_collection.delete_many({"user_email": user_email})
+
+def get_active_session_info(user_email):
+    """Get information about the active session for a user"""
+    app.logger.info(f"Getting active session info for user: {user_email}")
+    session_data = sessions_collection.find_one({"user_email": user_email})
+    app.logger.info(f"Session data found: {session_data is not None}")
+    
+    if session_data:
+        # Check if session is expired
+        if datetime.utcnow() - session_data["created_at"] > timedelta(hours=24):
+            app.logger.info(f"Session expired for user: {user_email}")
+            sessions_collection.delete_one({"_id": session_data["_id"]})
+            return None
+            
+        app.logger.info(f"Active session found for user: {user_email}")
+        return {
+            "session_id": session_data["session_id"],
+            "created_at": session_data["created_at"],
+            "last_activity": session_data["last_activity"],
+            "user_agent": session_data["user_agent"],
+            "ip_address": session_data["ip_address"]
+        }
+    
+    app.logger.info(f"No active session found for user: {user_email}")
+    return None
+
+# Login decorator with session validation
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user' not in session:
             return redirect(url_for('login'))
+        
+        # Validate session
+        user_email = session['user'].get('email')
+        session_id = session.get('session_id')
+        
+        if not user_email or not session_id:
+            session.clear()
+            return redirect(url_for('login'))
+        
+        if not validate_session(session_id, user_email):
+            session.clear()
+            return redirect(url_for('login'))
+        
         return f(*args, **kwargs)
     return decorated_function
 
@@ -114,6 +208,39 @@ def verify_payfast_itn(data):
     if response.text.strip() == 'VALID':
         return True
     return False
+
+def cleanup_expired_sessions():
+    """Clean up expired sessions (older than 24 hours)"""
+    try:
+        cutoff_time = datetime.utcnow() - timedelta(hours=24)
+        result = sessions_collection.delete_many({
+            "created_at": {"$lt": cutoff_time}
+        })
+        app.logger.info(f"Cleaned up {result.deleted_count} expired sessions")
+    except Exception as e:
+        app.logger.error(f"Error cleaning up expired sessions: {str(e)}")
+
+# Schedule cleanup task (run every hour)
+def schedule_cleanup():
+    """Schedule the cleanup task to run periodically"""
+    import threading
+    import time
+    
+    def cleanup_worker():
+        while True:
+            try:
+                cleanup_expired_sessions()
+                time.sleep(3600)  # Run every hour
+            except Exception as e:
+                app.logger.error(f"Error in cleanup worker: {str(e)}")
+                time.sleep(3600)  # Continue trying every hour
+    
+    # Start cleanup thread
+    cleanup_thread = threading.Thread(target=cleanup_worker, daemon=True)
+    cleanup_thread.start()
+
+# Start cleanup scheduler
+schedule_cleanup()
 
 # Routes
 @app.route('/')
@@ -192,11 +319,33 @@ def signin():
         if not check_password_hash(user['password'], password):
             return jsonify({'success': False, 'error': 'Invalid email or password'}), 401
 
+        # Check if user already has an active session
+        app.logger.info(f"Checking for active session for user: {email}")
+        active_session = get_active_session_info(email)
+        app.logger.info(f"Active session found: {active_session is not None}")
+        
+        if active_session:
+            app.logger.info(f"Session conflict detected for user: {email}")
+            # Return session conflict information
+            return jsonify({
+                'success': False, 
+                'error': 'session_conflict',
+                'message': 'This account is already active on another device. Do you want to continue and log out the other session?',
+                'session_info': {
+                    'user_agent': active_session['user_agent'],
+                    'ip_address': active_session['ip_address'],
+                    'last_activity': active_session['last_activity'].isoformat()
+                }
+            }), 409
+        
         # Update last login
         users_collection.update_one(
             {'_id': user['_id']},
             {'$set': {'last_login': datetime.utcnow()}}
         )
+
+        # Create new session
+        session_id = create_user_session(email)
 
         # Set session, include premium status if present
         session.permanent = True
@@ -207,6 +356,7 @@ def signin():
             'auth_method': user['auth_method'],
             'premium': user.get('premium', False)
         }
+        session['session_id'] = session_id
 
         app.logger.info(f"User signed in: {email}")
         return jsonify({
@@ -253,6 +403,20 @@ def google_callback():
         if not user_info or 'email' not in user_info:
             raise ValueError("Failed to get user info")
 
+        # Check if user already has an active session
+        active_session = get_active_session_info(user_info["email"])
+        if active_session:
+            # Store session conflict info in session for later handling
+            session['session_conflict'] = {
+                'user_email': user_info["email"],
+                'session_info': {
+                    'user_agent': active_session['user_agent'],
+                    'ip_address': active_session['ip_address'],
+                    'last_activity': active_session['last_activity'].isoformat()
+                }
+            }
+            return redirect(url_for('session_conflict'))
+
         # Store user data in MongoDB
         user_data = {
             "name": user_info.get("name", "User"),
@@ -276,6 +440,9 @@ def google_callback():
         # Fetch the full user record (including premium status)
         db_user = users_collection.find_one({"email": user_data["email"]})
 
+        # Create new session
+        session_id = create_user_session(user_data["email"])
+
         # Set session, include premium status if present
         session.permanent = True
         session['user'] = {
@@ -285,7 +452,8 @@ def google_callback():
             'auth_method': db_user['auth_method'],
             'premium': db_user.get('premium', False)
         }
-        session.modified = True  # Ensure session is saved
+        session['session_id'] = session_id
+        session.modified = True
 
         app.logger.info(f"Google login successful for user: {user_data['email']}")
         return redirect(url_for('index'))
@@ -320,6 +488,9 @@ def user_profile():
 
 @app.route('/logout', methods=['POST'])
 def logout():
+    user_email = session.get('user', {}).get('email')
+    if user_email:
+        remove_user_session(user_email)
     session.clear()
     return jsonify({"success": True})
 
@@ -399,6 +570,87 @@ def submit_feedback():
     except Exception as e:
         app.logger.error(f"Error submitting feedback: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/invalidate-session', methods=['POST'])
+def invalidate_session():
+    """Invalidate current session (called when user logs in from another device)"""
+    try:
+        user_email = session.get('user', {}).get('email')
+        if user_email:
+            # Remove the current session
+            remove_user_session(user_email)
+        
+        # Clear the session
+        session.clear()
+        
+        return jsonify({'success': True, 'message': 'Session invalidated'})
+        
+    except Exception as e:
+        app.logger.error(f"Error invalidating session: {str(e)}")
+        return jsonify({'success': False, 'error': 'Failed to invalidate session'}), 500
+
+@app.route('/session-conflict')
+def session_conflict():
+    """Handle session conflicts by showing a page to the user"""
+    conflict_info = session.get('session_conflict')
+    if not conflict_info:
+        return redirect(url_for('index'))
+    
+    return render_template('session_conflict.html', conflict_info=conflict_info)
+
+@app.route('/api/force-login', methods=['POST'])
+def force_login():
+    """Force login by logging out the previous session"""
+    try:
+        app.logger.info("Force login endpoint called")
+        data = request.get_json()
+        user_email = data.get('email')
+        
+        app.logger.info(f"Force login request for email: {user_email}")
+        
+        if not user_email:
+            app.logger.error("Force login failed: Email is required")
+            return jsonify({'success': False, 'error': 'Email is required'}), 400
+        
+        # Remove existing session
+        app.logger.info(f"Removing existing sessions for user: {user_email}")
+        remove_user_session(user_email)
+        
+        # Get user data
+        user = users_collection.find_one({'email': user_email})
+        if not user:
+            app.logger.error(f"Force login failed: User not found for email: {user_email}")
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+        
+        app.logger.info(f"User found: {user.get('name', 'Unknown')}")
+        
+        # Create new session
+        app.logger.info("Creating new session")
+        session_id = create_user_session(user_email)
+        
+        # Set session
+        session.permanent = True
+        session['user'] = {
+            'email': user['email'],
+            'name': user['name'],
+            'picture': user['picture'],
+            'auth_method': user['auth_method'],
+            'premium': user.get('premium', False)
+        }
+        session['session_id'] = session_id
+        
+        # Clear session conflict info
+        session.pop('session_conflict', None)
+        
+        app.logger.info(f"Force login successful for user: {user_email}")
+        return jsonify({
+            'success': True,
+            'user': session['user']
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error in force login: {str(e)}")
+        return jsonify({'success': False, 'error': 'An error occurred during force login'}), 500
 
 # Serve the home page HTML file
 @app.route('/static/<path:path>')

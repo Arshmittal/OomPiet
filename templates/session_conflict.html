@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Conflict - Mama Dudu</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/pabasing');
+        
+        :root {
+            --primary-blue: #1d78a3;
+            --primary-green: #3db54b;
+            --secondary-navy: #163c66;
+            --neutral-dark: #333333;
+            --neutral-medium: #666666;
+            --neutral-light: #999999;
+            --neutral-lighter: #cccccc;
+            --neutral-lightest: #f5f7fa;
+            --white: #ffffff;
+            --black: #000000;
+            --success: var(--primary-green);
+            --warning: #f0ad4e;
+            --danger: #d9534f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--neutral-lightest);
+            color: var(--neutral-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 600;
+            font-family: 'Pabasing', sans-serif;
+            color: var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--warning);
+        }
+
+        h1 {
+            color: var(--secondary-navy);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .message {
+            color: var(--neutral-medium);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .session-info {
+            background: var(--neutral-lightest);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .session-info h3 {
+            color: var(--secondary-navy);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: var(--neutral-medium);
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--neutral-dark);
+            font-weight: 600;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-navy);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--neutral-lighter);
+            color: var(--neutral-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--neutral-light);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neutral-lighter);
+            border-top: 2px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: var(--danger);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Mama Dudu</div>
+        
+        <div class="icon">⚠️</div>
+        
+        <h1>Account Already Active</h1>
+        
+        <div class="message">
+            This account is currently active on another device. If you continue, the other session will be logged out.
+        </div>
+        
+        <div class="session-info">
+            <h3>Active Session Details:</h3>
+            <div class="info-item">
+                <span class="info-label">Device:</span>
+                <span class="info-value" id="user-agent">{{ conflict_info.session_info.user_agent }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">IP Address:</span>
+                <span class="info-value" id="ip-address">{{ conflict_info.session_info.ip_address }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Last Activity:</span>
+                <span class="info-value" id="last-activity">{{ conflict_info.session_info.last_activity }}</span>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="forceLogin()">
+                Continue and Log Out Other Session
+            </button>
+            <button class="btn btn-secondary" onclick="goBack()">
+                Cancel
+            </button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <span>Processing...</span>
+        </div>
+        
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        function forceLogin() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const buttons = document.querySelector('.buttons');
+            
+            // Show loading
+            loading.style.display = 'flex';
+            buttons.style.display = 'none';
+            error.style.display = 'none';
+            
+            // Make API call to force login
+            fetch('/api/force-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: '{{ conflict_info.user_email }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirect to home page
+                    window.location.href = '/';
+                } else {
+                    throw new Error(data.error || 'Force login failed');
+                }
+            })
+            .catch(error => {
+                console.error('Force login error:', error);
+                // Show error and restore buttons
+                document.getElementById('error').textContent = 'An error occurred. Please try again.';
+                document.getElementById('error').style.display = 'block';
+                loading.style.display = 'none';
+                buttons.style.display = 'flex';
+            });
+        }
+        
+        function goBack() {
+            // Clear session conflict info and redirect to home
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(() => {
+                window.location.href = '/';
+            })
+            .catch(() => {
+                window.location.href = '/';
+            });
+        }
+        
+        // Format the last activity time
+        document.addEventListener('DOMContentLoaded', function() {
+            const lastActivityElement = document.getElementById('last-activity');
+            if (lastActivityElement) {
+                const timestamp = lastActivityElement.textContent;
+                try {
+                    const date = new Date(timestamp);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    
+                    let timeAgo;
+                    if (diffMins < 1) {
+                        timeAgo = 'Just now';
+                    } else if (diffMins < 60) {
+                        timeAgo = `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+                    } else if (diffHours < 24) {
+                        timeAgo = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                    } else {
+                        timeAgo = date.toLocaleString();
+                    }
+                    
+                    lastActivityElement.textContent = timeAgo;
+                } catch (e) {
+                    // Keep original timestamp if parsing fails
+                }
+            }
+            
+            // Truncate user agent if too long
+            const userAgentElement = document.getElementById('user-agent');
+            if (userAgentElement && userAgentElement.textContent.length > 50) {
+                userAgentElement.textContent = userAgentElement.textContent.substring(0, 47) + '...';
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1744,6 +1744,70 @@ document.addEventListener('click', function(e) {
             window.currentUserId = null;
           });
 
+        // Add periodic session validation
+        let sessionCheckInterval;
+        
+        function startSessionValidation() {
+            // Check session every 30 seconds
+            sessionCheckInterval = setInterval(() => {
+                fetch('/check-login-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.loggedIn) {
+                            // User has been logged out from another device
+                            clearInterval(sessionCheckInterval);
+                            // Redirect to login page
+                            window.location.href = '/';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Session check error:', error);
+                    });
+            }, 30000); // Check every 30 seconds
+        }
+        
+        function showSessionExpiredModal() {
+            const modalHTML = `
+                <div id="session-expired-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:3000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
+                    <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:95%;animation:fadeIn 0.5s ease-out;">
+                        <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
+                        <h2 style="margin-bottom:1rem;color:#163c66;font-size:1.5rem;">Session Expired</h2>
+                        <p style="margin-bottom:2rem;color:#666;line-height:1.6;">Your account has been logged in on another device. You have been logged out for security reasons.</p>
+                        
+                        <button id="relogin-btn" style="padding:0.8rem 2rem;border-radius:8px;font-weight:600;cursor:pointer;background:#1d78a3;color:white;border:none;font-size:1rem;">Login Again</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Add event listener
+            document.getElementById('relogin-btn').addEventListener('click', () => {
+                window.location.href = '/';
+            });
+        }
+        
+        // Start session validation when user is logged in
+        if (window.currentUserId) {
+            startSessionValidation();
+        }
+
+        // Immediate session check on page load
+        fetch('/check-login-status')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    // User is not logged in, redirect to login page
+                    window.location.href = '/';
+                }
+            })
+            .catch(error => {
+                console.error('Session check error:', error);
+                // On error, redirect to login page for safety
+                window.location.href = '/';
+            });
+
         // In the chat header, display the collection name:
         const chatHeader = document.querySelector('.chat-header');
         if (chatHeader) {
