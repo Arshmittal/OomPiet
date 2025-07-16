@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Assistant Platform</title>
+    <title>mentormate – Instant Expertise</title>
+    <link rel="icon" type="image/png" href="/static/logo1.PNG">
     <style>
        /* Color Palette Variables */
        @import url('https://fonts.cdnfonts.com/css/pabasing');
@@ -526,7 +527,7 @@ body {
 }
 
 .welcome-section {
-    text-align: left;
+    text-align: center;
     margin-bottom: 3rem;
 }
 
@@ -534,6 +535,7 @@ body {
     font-size: 2rem;
     margin-bottom: 1rem;
     color: var(--neutral-dark);
+    text-align: center;
 }
 
 .experts-grid {
@@ -615,7 +617,53 @@ body {
         padding: 1.5rem;
     }
 }
-    </style>
+
+/* FAQ Section */
+.faq-accordion {
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 8px;
+    background: none;
+}
+.faq-item {
+    border-bottom: 2px solid #1d78a3;
+    margin-bottom: 0;
+}
+.faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    text-align: left;
+    font-size: 1.15rem;
+    padding: 1rem 2.5rem 1rem 0.5rem;
+    cursor: pointer;
+    position: relative;
+    color: var(--neutral-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s;
+}
+.faq-question[aria-expanded="true"] {
+    background: #f5f7fa;
+}
+.faq-arrow {
+    margin-left: auto;
+    font-size: 1.3rem;
+    transition: transform 0.2s;
+}
+.faq-question[aria-expanded="true"] .faq-arrow {
+    transform: rotate(180deg);
+}
+.faq-answer {
+    padding: 1rem 0.5rem 1.5rem 0.5rem;
+    color: var(--neutral-medium);
+    font-size: 1rem;
+    text-align: left;
+    background: none;
+}
+</style>
 </head>
 <body>
     <div class="loading-spinner">
@@ -625,7 +673,9 @@ body {
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <span>mentormate</span>
+            <a href="/" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="/static/logo.png" alt="Logo" style="height: 48px; margin-right: 10px;">
+            </a>
         </div>
         
         <div class="navbar-buttons">
@@ -654,6 +704,18 @@ body {
         </div>
     </nav>
 
+    <!-- Welcome Text and Main Home Content -->
+    <div id="home-main-content">
+        <div id="mentormate-welcome" style="max-width: 100%; margin: 2rem auto 0 auto; text-align: center; padding: 0;">
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--neutral-dark); margin-bottom: 1rem;">Welcome to Mentormate, your gateway to instant expertise!</h2>
+            <p style="font-size: 1.15rem; color: var(--neutral-dark); margin-bottom: 0.7rem; margin-left: auto; margin-right: auto; max-width: 1100px; text-align: center;">
+                Mentormate is a South African-developed tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.
+            </p>
+            <p style="font-size: 1.15rem; color: var(--neutral-dark); margin-bottom: 0.7rem; margin-left: auto; margin-right: auto; max-width: 1100px; text-align: center;">
+                Each expert persona represents a different discipline and is built using accurate South African contextual data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors. Start your conversation now!
+            </p>
+        </div>
+    </div>
     <!-- Main Content -->
     <div class="main-content">
         <!-- Auth Container (shown when not logged in) -->
@@ -671,7 +733,7 @@ body {
             <form class="auth-form active" id="signin-form">
                 <div class="auth-header">
                     <h2>Sign in</h2>
-                    <p>Log in to unlock tailored content and stay connected with your community</p>
+                    <p>Log in to unlock instant expertise</p>
                 </div>
 
                 <div class="form-group">
@@ -713,7 +775,7 @@ body {
             <form class="auth-form" id="signup-form">
                 <div class="auth-header">
                     <h2>Sign up</h2>
-                    <p>Create your account to unlock tailored content and stay connected</p>
+                    <p>Create your account to unlock instant expertise</p>
                 </div>
 
                 <div class="form-group">
@@ -757,28 +819,102 @@ body {
         <!-- Expert selection container (shown when logged in) -->
         <div class="experts-container" id="experts-container" style="display: none;">
             <div class="welcome-section">
-                <h1>Welcome, choose your expert!</h1>
+                <h1>Choose your expert below!</h1>
             </div>
             <div class="experts-grid">
+
                 <div class="expert-card" onclick="window.location.href='/chat'">
                     <img src="/static/character.PNG" alt="Oom Piet" class="expert-image">
                     <div class="expert-name">Oom Piet</div>
-                    <div class="expert-title">Tailings, Geotech and Geology</div>
+                    <div class="expert-title" style="margin-bottom: 0.5rem; font-weight: 500;">Areas of expertise include:</div>
+                    <ul style="text-align: left; display: inline-block; margin: 0 auto 1rem auto; padding-left: 1.2em; font-size: 1rem; color: var(--neutral-dark);">
+                        <li>Soil mechanics</li>
+                        <li>Geology and hydrogeology</li>
+                        <li>Tailings Engineering</li>
+                    </ul>
                 </div>
 
                 <div class="expert-card" onclick="window.location.href='/chat_water'">
-                    <img src="/static/character3.png" alt="Dr. Celia" class="expert-image">
+                    <img src="/static/character3.png" alt="Mama Dudu" class="expert-image">
                     <div class="expert-name">Mama Dudu</div>
-                    <div class="expert-title">Water and Environmental expert</div>
+                    <div class="expert-title" style="margin-bottom: 0.5rem; font-weight: 500;">Areas of expertise include:</div>
+                    <ul style="text-align: left; display: inline-block; margin: 0 auto 1rem auto; padding-left: 1.2em; font-size: 1rem; color: var(--neutral-dark);">
+                        <li>Environmental Engineering</li>
+                        <li>Water Management</li>
+                        <li>Wastewater treatment</li>
+                    </ul>
                 </div>
 
+              
+
                 <div class="expert-card" onclick="window.location.href='/chat_concrete'">
-                    <img src="/static/charcater2.png" alt="Baba Mandla" class="expert-image">
+                    <img src="/static/charcater2.png" alt="Bra Vusi" class="expert-image">
                     <div class="expert-name">Bra Vusi</div>
-                    <div class="expert-title">Concrete specialist</div>
+                    <div class="expert-title" style="margin-bottom: 0.5rem; font-weight: 500;">Areas of expertise include:</div>
+                    <ul style="text-align: left; display: inline-block; margin: 0 auto 1rem auto; padding-left: 1.2em; font-size: 1rem; color: var(--neutral-dark);">
+                        <li>Concrete construction</li>
+                        <li>Structural design</li>
+                        <li>Foundations</li>
+                    </ul>
                 </div>
             </div>
         </div>
+    </div> <!-- end of .main-content -->
+
+    <!-- FAQ Section and Links -->
+    <div id="home-faq-links">
+        <div id="faq-section" style="max-width: 600px; margin: 3rem auto 2rem auto; text-align: center;">
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">What is mentormate?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Mentormate is a South African-developed tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">Who are the experts behind mentormate?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Each expert persona (e.g., Oom Piet, Mama Dudu, Bra Vusi) represents a different discipline and is built using accurate Southern African data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">How is mentormate different from ChatGPT or other AI tools?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Unlike other popular AI models, Mentormate is specifically developed for factual content instead of creative content. The models are specifically designed to support you with engineering queries. We have also split the areas of expertise so the models learn jargon within a specific area and there is less chance of misunderstanding or inaccurate information.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">Who can use mentormate?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Anyone can use Mentormate. Mentormate supports both students and professionals, offering guidance on design, licensing, ethics, and environmental compliance. It also helps individuals in fields like project management, policy, or finance understand engineering concepts for collaboration and growth.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">How do I get started?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Simply sign up on the right side and start chatting with one of our expert personas! All users will get a free trial on the Premium service before any subscription commences.
+                        office@intailings.com</div>
+                </div>
+            </div>
+        </div>
+        <!-- End of FAQ Section -->
+        <div style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
+            <p style="font-size: 1.15rem; color: #090909; margin-bottom: 0.5rem;">
+                Learn how to get the most out of your Mentormate expert 
+                <a href="/detail" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">here</a>
+            </p>
+            <p style="font-size: 1.08rem; color: #333; margin-top: 0.7rem;margin-bottom: 5rem;">
+                <a href="mailto:office@intailings.com" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a> to build your own specialist agents
+            </p>
+        </div>
+    </div>
+
+<script>
+document.querySelectorAll('.faq-question').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        // Collapse all
+        document.querySelectorAll('.faq-question').forEach(b => b.setAttribute('aria-expanded', 'false'));
+        document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
+        // Expand this one if it was not already expanded
+        if (!expanded) {
+            btn.setAttribute('aria-expanded', 'true');
+            btn.parentElement.querySelector('.faq-answer').style.display = 'block';
+        }
+    });
+});
+</script>
     </div>
 
     <script>
@@ -1134,6 +1270,12 @@ body {
                 }
                 if (chatButton) chatButton.style.display = 'none';
                 if (profileContainer) profileContainer.style.display = 'block';
+                if (document.getElementById('home-main-content')) {
+                    document.getElementById('home-main-content').style.display = 'block';
+                }
+                if (document.getElementById('home-faq-links')) {
+                    document.getElementById('home-faq-links').style.display = 'block';
+                }
             }
 
             function showLoggedOutState() {
@@ -1143,6 +1285,12 @@ body {
                 }
                 if (chatButton) chatButton.style.display = 'none';
                 if (profileContainer) profileContainer.style.display = 'none';
+                if (document.getElementById('home-main-content')) {
+                    document.getElementById('home-main-content').style.display = 'none';
+                }
+                if (document.getElementById('home-faq-links')) {
+                    document.getElementById('home-faq-links').style.display = 'none';
+                }
             }
 
             function logout() {

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Assistant - Chat</title>
+    <title>mentormate – Instant Expertise</title>
+    <link rel="icon" type="image/png" href="/static/logo1.PNG">
     <style>
   
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
@@ -287,7 +288,15 @@ body {
     width: 130px;
     text-align: center;
 }
-
+#free-version-banner {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    z-index: 20;
+    pointer-events: auto;
+}
 .character-image {
     width: 100%;
     border-radius: 50%;
@@ -369,7 +378,7 @@ body {
 
 
 .message-user .message-content {
-    background-color: var(--primary-green-20);
+    background-color: #c2c2c2;
 }
 
 .message-time {
@@ -409,7 +418,7 @@ body {
 }
 
 .chat-send-btn {
-    background-color: var(--primary-blue);
+    background-color: #55bd97;
     color: white;
     width: 48px;
     height: 48px;
@@ -424,7 +433,7 @@ body {
 }
 
 .chat-send-btn:hover {
-    background-color: var(--primary-blue-20);
+    background-color: #4cae87;
 }
 
 .chat-send-btn:disabled {
@@ -729,7 +738,9 @@ body {
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">
-            <span>Mama Dudu</span>
+            <a href="/" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="/static/logo.png" alt="Logo" style="height: 48px; margin-right: 10px;">
+            </a>
         </div>
         
         <div class="navbar-buttons">
@@ -739,8 +750,7 @@ body {
                     Login with Google
                 </button>
             </div>
-            
-            <!-- Profile dropdown (shown when logged in) -->
+            <div id="free-version-banner" style="display:none; margin-right: 16px; align-items: center;"></div>
             <div class="profile-container" id="profile-container">
                 <button class="profile-button" id="profile-button">
                     <img src="/static/default-profile.png" alt="Profile" class="profile-image" id="profile-image">
@@ -766,6 +776,7 @@ body {
            
             <!-- Character Image -->
             <div class="character-container">
+                <div id="free-version-banner" style="display:none;"></div>
                 <img src="/static/character3.png" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
                 <div class="character-title">Mama Dudu</div>
             </div>
@@ -892,6 +903,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(user => {
                         updateProfileUI(user);
+                        showFreeVersionBanner(user);
                     })
                     .catch(error => {
                         console.error('Error fetching user profile:', error);
@@ -1467,6 +1479,29 @@ document.addEventListener('click', function(e) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+function showFreeVersionBanner(user) {
+    const banner = document.getElementById('free-version-banner');
+    if (!banner) return;
+    if (!user.premium && user.sonnet_usage_count >= 10) {
+        banner.innerHTML = `
+            <span style="color: var(--neutral-dark);margin-left:70rem;margin-top:2rem; font-size: 1rem; font-weight: 500; vertical-align: middle;">You're in Free version – <a href="#" id="go-premium-link" style='color: var(--primary-green); text-decoration: underline; font-weight: 600;'>go premium!</a></span>
+        `;
+        banner.style.display = 'flex';
+        // Add event listener to open modal
+        setTimeout(function() {
+          var link = document.getElementById('go-premium-link');
+          if (link) {
+            link.addEventListener('click', function(e) {
+              e.preventDefault();
+              var modal = document.getElementById('api-mode-modal');
+              if (modal) modal.style.display = 'flex';
+            });
+          }
+        }, 0);
+    } else {
+        banner.style.display = 'none';
+    }
+}
          
             
             // Helper function to escape HTML
