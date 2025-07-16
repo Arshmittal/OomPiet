@@ -295,13 +295,24 @@ body {
     text-align: center;
 }
 #free-version-banner {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static;
+    width: auto;
+    margin: 0 1rem 0 0;
+    font-size: 1rem;
+    background: none;
+    box-shadow: none;
     z-index: 20;
     pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+    #free-version-banner {
+        font-size: 0.95rem;
+        margin: 0 0.5rem 0 0;
+    }
 }
 .character-image {
     width: 100%;
@@ -1492,7 +1503,10 @@ function showFreeVersionBanner(user) {
     if (!banner) return;
     if (!user.premium && user.sonnet_usage_count >= 10) {
         banner.innerHTML = `
-            <span style="color: var(--neutral-dark); font-size: 1rem; font-weight: 500;margin-left:70rem;margin-top:2rem; vertical-align: middle;">You're in Free version – <a href="#" id="go-premium-link" style='color: var(--accent-teal); text-decoration: underline; font-weight: 600;'>go premium!</a></span>
+            <span style="color: var(--neutral-dark); font-size: 1rem; font-weight: 500; vertical-align: middle;">
+                You're in Free version – 
+                <a href="#" id="go-premium-link" style="color: var(--accent-teal); text-decoration: underline; font-weight: 600;">go premium!</a>
+            </span>
         `;
         banner.style.display = 'flex';
         // Add event listener to open modal
