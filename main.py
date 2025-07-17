@@ -7,6 +7,7 @@ import logging
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime, timedelta
+import urllib
 from werkzeug.middleware.proxy_fix import ProxyFix
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,6 +20,9 @@ from urllib.parse import urlencode
 import requests
 import secrets
 import uuid
+import hashlib
+from collections import OrderedDict
+from urllib.parse import parse_qsl
 
 # Load environment variables
 load_dotenv()
@@ -38,8 +42,11 @@ PAYFAST_MERCHANT_KEY = os.getenv('PAYFAST_MERCHANT_KEY')
 PAYFAST_PASSPHRASE = os.getenv('PAYFAST_PASSPHRASE', '')
 PAYFAST_SANDBOX = os.getenv('PAYFAST_SANDBOX', 'true').lower() == 'true'
 
+
 app = Flask(__name__, static_folder='static')
 CORS(app)
+app.logger.warning(f"PAYFAST_PASSPHRASE: '{PAYFAST_PASSPHRASE}'")
+
 app.secret_key = SECRET_KEY
 app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
@@ -202,44 +209,43 @@ def is_valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
-# Helper: Verify PayFast ITN signature
+IS_SANDBOX = True  # Toggle as needed
+PAYFAST_PASSPHRASE = 'jt7NOE43FZPn'  # Used only in prod
+
+def generate_payfast_signature(data, passphrase=''):
+    # Remove empty, 'no value', or signature fields
+    filtered_data = {
+        k: v for k, v in data.items()
+        if k != 'signature' and str(v).strip().lower() != 'no value' and str(v).strip() != ''
+    }
+
+    # Sort keys alphabetically
+    sorted_items = sorted(filtered_data.items())
+
+    # Build string exactly as PayFast does
+    payload = "&".join([
+        f"{k}={urllib.parse.quote_plus(str(v))}"  # ✅ Don't alter the value manually
+        for k, v in sorted_items
+    ])
+
+    # Add passphrase if in production
+    if passphrase:
+        payload += f"&passphrase={urllib.parse.quote_plus(passphrase)}"
+
+    return hashlib.md5(payload.encode()).hexdigest()
 
 def verify_payfast_itn(data):
-    """Verify PayFast ITN data"""
     try:
-        # For sandbox, we can be more lenient with validation
-        if PAYFAST_SANDBOX:
-            # Basic validation for sandbox
-            required_fields = ['merchant_id', 'merchant_key', 'payment_status']
-            for field in required_fields:
-                if field not in data:
-                    app.logger.warning(f"Missing required field: {field}")
-                    return False
-            
-            # Check if merchant credentials match
-            if data.get('merchant_id') != PAYFAST_MERCHANT_ID:
-                app.logger.warning(f"Invalid merchant_id: {data.get('merchant_id')}")
-                return False
-                
-            return True
-        else:
-            # Production validation
-            data_for_sig = {k: v for k, v in data.items() if k != 'signature'}
-            pf_data = urlencode(sorted(data_for_sig.items()))
-            
-            # Add passphrase if provided
-            if PAYFAST_PASSPHRASE:
-                pf_data += f"&passphrase={PAYFAST_PASSPHRASE}"
-            
-            # Post back to PayFast for validation
-            validate_url = 'https://www.payfast.co.za/eng/query/validate'
-            response = requests.post(validate_url, data=pf_data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-            
-            if response.text.strip() == 'VALID':
-                return True
-            
-        return False
-        
+        received_signature = data.get('signature')
+        passphrase = '' if IS_SANDBOX else PAYFAST_PASSPHRASE
+
+        calculated_signature = generate_payfast_signature(data, passphrase)
+
+        if received_signature != calculated_signature:
+            app.logger.warning(f"Signature mismatch:\nReceived: {received_signature}\nExpected: {calculated_signature}")
+            return False
+
+        return True
     except Exception as e:
         app.logger.error(f"Error verifying PayFast ITN: {str(e)}")
         return False
@@ -816,30 +822,42 @@ def pay_cancel():
 
 @app.route('/pay/notify', methods=['POST'])
 def pay_notify():
-    """Handle PayFast ITN (Instant Transaction Notification)"""
-    data = request.form.to_dict()
-    
-    # Log all received data for debugging
-    app.logger.info(f"PayFast ITN received: {data}")
-    print('PayFast ITN received:', data)  # Terminal log
-    
-    # Verify ITN data
-    if not verify_payfast_itn(data):
-        app.logger.warning("Invalid PayFast ITN signature!")
-        return 'Invalid signature', 400
+    raw_body = request.get_data(as_text=True)
 
-    payment_status = data.get('payment_status')
-    email = data.get('custom_str1')
-    plan = data.get('custom_str2', 'monthly')
+    # Remove &signature=... (PayFast always puts it LAST, but be defensive)
+    if '&signature=' in raw_body:
+        # Remove everything from the last '&signature=' to the end
+        payload = raw_body[:raw_body.rindex('&signature=')]
+    else:
+        payload = raw_body
+
+    # Append passphrase *only in production* (and only if defined)
+    if not IS_SANDBOX and PAYFAST_PASSPHRASE:
+        payload += f"&passphrase={PAYFAST_PASSPHRASE}"
+
+    calculated_signature = hashlib.md5(payload.encode()).hexdigest()
+    received_signature = request.form.get('signature')
+    app.logger.warning(f"Signature string from raw: {payload}")
+    app.logger.warning(f"Calculated signature: {calculated_signature}")
+    app.logger.warning(f"Received signature: {received_signature}")
+
+    if calculated_signature != received_signature:
+        app.logger.warning(f"Signature mismatch: received {received_signature}, calculated {calculated_signature}")
+        return "Invalid signature", 400
+
+    
+    payment_status = request.form.get('payment_status')
+    email = request.form.get('custom_str1')
+    plan = request.form.get('custom_str2', 'monthly')
     
     # Handle different payment statuses
     if payment_status == 'COMPLETE' and email:
         # Get subscription ID from different possible fields
         pf_subscription_id = (
-            data.get('pf_subscription_id') or 
-            data.get('subscription_id') or 
-            data.get('recurring_transaction_id') or 
-            data.get('m_payment_id') or 
+            request.form.get('pf_subscription_id') or 
+            request.form.get('subscription_id') or 
+            request.form.get('recurring_transaction_id') or 
+            request.form.get('m_payment_id') or 
             ''
         )
         
@@ -857,8 +875,8 @@ def pay_notify():
             'subscription_plan': plan,
             'subscription_start': datetime.utcnow(),
             'subscription_end': subscription_end,
-            'payment_amount': data.get('amount', '0.00'),
-            'payment_id': data.get('pf_payment_id', ''),
+            'payment_amount': request.form.get('amount', '0.00'),
+            'payment_id': request.form.get('pf_payment_id', ''),
             'payfast_subscription_id': pf_subscription_id,
             'last_payment_date': datetime.utcnow()
         }

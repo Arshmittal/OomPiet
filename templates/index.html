@@ -681,6 +681,106 @@ body {
 .terms-label a {
   font-size: 0.93rem;
 }
+
+/* Public (before-auth) expert grid styles */
+.public-experts-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+    margin-top: 2.5rem;
+}
+.public-expert-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+    text-align: center;
+    width: 220px;
+    border: 1.5px solid var(--neutral-lighter);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.public-expert-card:hover {
+    box-shadow: 0 8px 24px rgba(29,120,163,0.10);
+    transform: translateY(-4px);
+}
+.public-expert-image {
+    width: 120px; /* increased from 90px */
+    height: 120px; /* increased from 90px */
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+   /* reduced border thickness */
+}
+.public-expert-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--neutral-dark);
+    margin-bottom: 0.3rem;
+}
+.public-expert-title {
+    font-size: 0.98rem;
+    color: var(--neutral-medium);
+    font-weight: 400;
+}
+@media (max-width: 900px) {
+    .public-experts-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+    }
+    .public-expert-card {
+        width: 90vw;
+        max-width: 340px;
+    }
+}
+
+/* Before-auth flex layout styles */
+.before-auth-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start; /* changed from center to flex-start */
+  gap: 4.5rem; /* increased gap for more space */
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto 0 auto;
+  padding: 2.5rem 0 2.5rem 0;
+}
+.before-auth-left {
+  flex: 1 1 0;
+  min-width: 340px;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-right: 2.5rem; /* add extra right margin to shift left */
+}
+.before-auth-right {
+  flex: 0 0 370px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+@media (max-width: 1100px) {
+  .before-auth-flex {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 0;
+  }
+  .before-auth-right {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .before-auth-left {
+    max-width: 100%;
+    width: 100%;
+    margin-right: 0;
+  }
+}
 </style>
 </head>
 <body>
@@ -736,131 +836,164 @@ body {
     </div>
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Auth Container (shown when not logged in) -->
-        <div class="auth-container" id="auth-container">
-            <!-- Auth Tabs -->
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="signin-tab">Sign In</button>
-                <button class="auth-tab" id="signup-tab">Sign Up</button>
-            </div>
-            <!-- Error/Success Messages -->
-            <div id="message-container"></div>
-            <!-- Sign In Form -->
-            <form class="auth-form active" id="signin-form">
-                <div class="auth-header">
-                    <h2>Sign in</h2>
-                    <p>Log in to unlock instant expertise</p>
+        <!-- Before-auth flex layout -->
+        <div id="before-auth-flex-wrapper">
+          <div class="before-auth-flex">
+            <!-- Left: Expert grid + FAQ -->
+            <div class="before-auth-left">
+              <!-- Public Expert Grid (before-auth) -->
+              <div id="public-experts-section" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+                <h2 style="font-size:1.45rem;font-weight:700;color:var(--neutral-dark);margin-bottom:0.7rem;margin-top:0.5rem;">Meet our experts</h2>
+                <div class="public-experts-grid">
+                  <div class="public-expert-card">
+                    <img src="/static/character.PNG" alt="Oom Piet" class="public-expert-image">
+                    <div class="public-expert-name">Oom Piet</div>
+                    <div class="public-expert-title">Tailings, Geotech and Geology</div>
+                  </div>
+                  <div class="public-expert-card">
+                    <img src="/static/character3.png" alt="Mama Dudu" class="public-expert-image">
+                    <div class="public-expert-name">Mama Dudu</div>
+                    <div class="public-expert-title">Water and Environmental expert</div>
+                  </div>
+                  <div class="public-expert-card">
+                    <img src="/static/charcater2.png" alt="Bra Vusi" class="public-expert-image">
+                    <div class="public-expert-name">Bra Vusi</div>
+                    <div class="public-expert-title">Concrete specialist</div>
+                  </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="signin-email">Email</label>
-                    <input type="email" id="signin-email" placeholder="Email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="signin-password">Password</label>
-                    <div class="password-group">
-                        <input type="password" id="signin-password" placeholder="Password" required>
-                        <button type="button" class="password-toggle" data-target="signin-password">
-                            👁️
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-options">
-                    <label>
-                        <input type="checkbox" id="keep-signed-in">
-                        Keep me signed in
-                    </label>
-                    <a href="#" id="forgot-password">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="btn-submit">Sign in</button>
-
-                <div class="divider">
-                    <span>or</span>
-                </div>
-
-                <a href="/login" class="btn-google">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
-                    Continue with Google
-                </a>
-            </form>
-
-            <!-- Sign Up Form -->
-            <form class="auth-form" id="signup-form">
-                <div class="auth-header">
-                    <h2>Sign up</h2>
-                    <p>Create your account to unlock instant expertise</p>
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <div class="password-group">
-                        <input type="password" id="signup-password" placeholder="Password" required>
-                        <button type="button" class="password-toggle" data-target="signup-password">👁️</button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="signup-confirm-password">Confirm Password</label>
-                    <div class="password-group">
-                        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
-                        <button type="button" class="password-toggle" data-target="signup-confirm-password">👁️</button>
-                    </div>
-                </div>
-                <div class="form-options" style="margin-bottom: 1.2rem;">
-                    <label style="display: flex; align-items: center; color: var(--neutral-medium); cursor: pointer; font-size: 0.93rem;">
-                        <input type="checkbox" id="accept-terms" style="margin-right: 0.5rem; width: auto;">
-                        <span style="color: var(--neutral-dark); font-weight: 400;">Accept&nbsp;</span>
-                        <a href="/static/Mentormate Software Ts and Cs.pdf" target="_blank" style="color: #1d78a3; text-decoration: underline; font-size: 0.93rem; font-weight: 400;">Terms and Conditions</a>
-                    </label>
-                </div>
-                <button type="submit" class="btn-submit" id="signup-btn" disabled>Sign up</button>
-                <div class="divider">
-                    <span>or</span>
-                </div>
-                <a href="/login" class="btn-google">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
-                    Continue with Google
-                </a>
-            </form>
-        </div>
-        <!-- FAQ Section (only when not logged in, below the card) -->
-        <div id="faq-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
-            <div class="faq-accordion">
-                <div class="faq-item">
+              </div>
+              <!-- End Public Expert Grid -->
+              <!-- FAQ Section (only when not logged in, below the card) -->
+              <div id="faq-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
+                <div class="faq-accordion">
+                  <div class="faq-item">
                     <button class="faq-question" aria-expanded="false">What is mentormate?<span class="faq-arrow">&#9660;</span></button>
                     <div class="faq-answer" style="display:none;">Mentormate is a South African-developed tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.</div>
-                </div>
-                <div class="faq-item">
+                  </div>
+                  <div class="faq-item">
                     <button class="faq-question" aria-expanded="false">Who are the experts behind mentormate?<span class="faq-arrow">&#9660;</span></button>
                     <div class="faq-answer" style="display:none;">Each expert persona (e.g., Oom Piet, Mama Dudu, Bra Vusi) represents a different discipline and is built using accurate Southern African data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors.</div>
-                </div>
-                <div class="faq-item">
+                  </div>
+                  <div class="faq-item">
                     <button class="faq-question" aria-expanded="false">How is mentormate different from ChatGPT or other AI tools?<span class="faq-arrow">&#9660;</span></button>
                     <div class="faq-answer" style="display:none;">Unlike other popular AI models, Mentormate is specifically developed for factual content instead of creative content. The models are specifically designed to support you with engineering queries. We have also split the areas of expertise so the models learn jargon within a specific area and there is less chance of misunderstanding or inaccurate information.</div>
-                </div>
-                <div class="faq-item">
+                  </div>
+                  <div class="faq-item">
                     <button class="faq-question" aria-expanded="false">Who can use mentormate?<span class="faq-arrow">&#9660;</span></button>
                     <div class="faq-answer" style="display:none;">Anyone can use Mentormate. Mentormate supports both students and professionals, offering guidance on design, licensing, ethics, and environmental compliance. It also helps individuals in fields like project management, policy, or finance understand engineering concepts for collaboration and growth.</div>
-                </div>
-                <div class="faq-item">
+                  </div>
+                  <div class="faq-item">
                     <button class="faq-question" aria-expanded="false">How do I get started?<span class="faq-arrow">&#9660;</span></button>
                     <div class="faq-answer" style="display:none;">Simply sign up on the right side and start chatting with one of our expert personas! All users will get a free trial on the Premium service before any subscription commences.</div>
+                  </div>
                 </div>
+              </div>
+              <!-- End FAQ Section -->
             </div>
+            <!-- Right: Auth Container -->
+            <div class="before-auth-right">
+              <div class="auth-container" id="auth-container">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="signin-tab">Sign In</button>
+                    <button class="auth-tab" id="signup-tab">Sign Up</button>
+                </div>
+                <!-- Error/Success Messages -->
+                <div id="message-container"></div>
+                <!-- Sign In Form -->
+                <form class="auth-form active" id="signin-form">
+                    <div class="auth-header">
+                        <h2>Sign in</h2>
+                        <p>Log in to unlock instant expertise</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signin-email">Email</label>
+                        <input type="email" id="signin-email" placeholder="Email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signin-password">Password</label>
+                        <div class="password-group">
+                            <input type="password" id="signin-password" placeholder="Password" required>
+                            <button type="button" class="password-toggle" data-target="signin-password">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label>
+                            <input type="checkbox" id="keep-signed-in">
+                            Keep me signed in
+                        </label>
+                        <a href="#" id="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Sign in</button>
+
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+
+                    <a href="/login" class="btn-google">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
+                        Continue with Google
+                    </a>
+                </form>
+
+                <!-- Sign Up Form -->
+                <form class="auth-form" id="signup-form">
+                    <div class="auth-header">
+                        <h2>Sign up</h2>
+                        <p>Create your account to unlock instant expertise</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="password-group">
+                            <input type="password" id="signup-password" placeholder="Password" required>
+                            <button type="button" class="password-toggle" data-target="signup-password">👁️</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <div class="password-group">
+                            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                            <button type="button" class="password-toggle" data-target="signup-confirm-password">👁️</button>
+                        </div>
+                    </div>
+                    <div class="form-options" style="margin-bottom: 1.2rem;">
+                        <label style="display: flex; align-items: center; color: var(--neutral-medium); cursor: pointer; font-size: 0.93rem;">
+                            <input type="checkbox" id="accept-terms" style="margin-right: 0.5rem; width: auto;">
+                            <span style="color: var(--neutral-dark); font-weight: 400;">Accept&nbsp;</span>
+                            <a href="/static/Mentormate Software Ts and Cs.pdf" target="_blank" style="color: #1d78a3; text-decoration: underline; font-size: 0.93rem; font-weight: 400;">Terms and Conditions</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-submit" id="signup-btn" disabled>Sign up</button>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <a href="/login" class="btn-google">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
+                        Continue with Google
+                    </a>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- End FAQ Section -->
-        <!-- Expert selection container (shown when logged in) -->
+        <!-- End Before-auth flex layout -->
+
+        <!-- Expert selection container (after-auth, shown when logged in) -->
         <div class="experts-container" id="experts-container" style="display: none;">
             <div class="welcome-section">
                 <h1>Choose your expert below!</h1>
             </div>
             <div class="experts-grid">
-
                 <div class="expert-card" onclick="window.location.href='/chat'">
                     <img src="/static/character.PNG" alt="Oom Piet" class="expert-image">
                     <div class="expert-name">Oom Piet</div>
@@ -871,7 +1004,6 @@ body {
                         <li>Tailings Engineering</li>
                     </ul>
                 </div>
-
                 <div class="expert-card" onclick="window.location.href='/chat_water'">
                     <img src="/static/character3.png" alt="Mama Dudu" class="expert-image">
                     <div class="expert-name">Mama Dudu</div>
@@ -882,9 +1014,6 @@ body {
                         <li>Wastewater treatment</li>
                     </ul>
                 </div>
-
-              
-
                 <div class="expert-card" onclick="window.location.href='/chat_concrete'">
                     <img src="/static/charcater2.png" alt="Bra Vusi" class="expert-image">
                     <div class="expert-name">Bra Vusi</div>
@@ -897,18 +1026,18 @@ body {
                 </div>
             </div>
         </div>
-    </div> <!-- end of .main-content -->
+        <!-- End after-auth expert grid -->
 
-    <!-- FAQ Section and Links -->
-    <div id="home-links-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
-        <p style="font-size: 1.15rem; color: #090909; margin-bottom: 0.5rem;">
-            Learn how to get the most out of your Mentormate expert 
-            <a href="/detail" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">here</a>
-        </p>
-        <p style="font-size: 1.08rem; color: #333; margin-top: 0.7rem;margin-bottom: 5rem;">
-            <a href="mailto:office@intailings.com" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a> to build your own specialist agents
-        </p>
-    </div>
+        <!-- FAQ Section and Links -->
+        <div id="home-links-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
+            <p style="font-size: 1.15rem; color: #090909; margin-bottom: 0.5rem;">
+                Learn how to get the most out of your Mentormate expert 
+                <a href="/detail" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">here</a>
+            </p>
+            <p style="font-size: 1.08rem; color: #333; margin-top: 0.7rem;margin-bottom: 5rem;">
+                <a href="mailto:office@intailings.com" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a> to build your own specialist agents
+            </p>
+        </div>
 
 <script>
 document.querySelectorAll('.faq-question').forEach(function(btn) {
@@ -948,6 +1077,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
             const profileEmail = document.getElementById('profile-email');
             const signupBtn = document.getElementById('signup-btn');
             const acceptTermsCheckbox = document.getElementById('accept-terms');
+            const expertsContainer = document.getElementById('experts-container');
+            const publicExpertsSection = document.getElementById('public-experts-section');
 
             // Check login status on page load
             checkLoginStatus();
@@ -1288,9 +1419,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
 
             function showLoggedInState() {
                 if (authContainer) authContainer.style.display = 'none';
-                if (document.getElementById('experts-container')) {
-                    document.getElementById('experts-container').style.display = 'block';
-                }
+                if (expertsContainer) expertsContainer.style.display = 'block';
+                if (publicExpertsSection) publicExpertsSection.style.display = 'none';
                 if (chatButton) chatButton.style.display = 'none';
                 if (profileContainer) profileContainer.style.display = 'block';
                 if (document.getElementById('home-main-content')) {
@@ -1307,9 +1437,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
             }
             function showLoggedOutState() {
                 if (authContainer) authContainer.style.display = 'block';
-                if (document.getElementById('experts-container')) {
-                    document.getElementById('experts-container').style.display = 'none';
-                }
+                if (expertsContainer) expertsContainer.style.display = 'none';
+                if (publicExpertsSection) publicExpertsSection.style.display = 'flex';
                 if (chatButton) chatButton.style.display = 'none';
                 if (profileContainer) profileContainer.style.display = 'none';
                 if (document.getElementById('home-main-content')) {
