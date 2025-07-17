@@ -145,7 +145,7 @@
             </div>
         </div>
         
-        <form id="payfast-form" action="https://www.payfast.co.za/eng/process" method="post">
+        <form id="payfast-form" action="https://sandbox.payfast.co.za/eng/process" method="post">
             <input type="hidden" name="merchant_id" value="{{ payfast.merchant_id }}">
             <input type="hidden" name="merchant_key" value="{{ payfast.merchant_key }}">
             <input type="hidden" name="amount" value="{{ payfast.amount }}">
@@ -157,6 +157,15 @@
             <input type="hidden" name="notify_url" value="{{ payfast.notify_url }}">
             <input type="hidden" name="custom_str1" value="{{ payfast.custom_str1 }}">
             <input type="hidden" name="custom_str2" value="{{ payfast.custom_str2 }}">
+            <input type="hidden" name="custom_str3" value="{{ payfast.custom_str3 }}">
+            <input type="hidden" name="m_payment_id" value="{{ payfast.m_payment_id }}">
+            {% if recurring %}
+              <input type="hidden" name="subscription_type" value="1">
+              <input type="hidden" name="billing_date" value="{{ payfast.billing_date }}">
+              <input type="hidden" name="recurring_amount" value="{{ payfast.recurring_amount }}">
+              <input type="hidden" name="frequency" value="{{ payfast.frequency }}">
+              <input type="hidden" name="cycles" value="0">
+            {% endif %}
             <button type="submit">Complete Payment</button>
         </form>
         

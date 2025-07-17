@@ -32,6 +32,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')  # Default for developme
 MONGO_URI = os.getenv('MONGO_URI')
 MODE = os.getenv('MODE', 'development')
 
+# PayFast Configuration
+PAYFAST_MERCHANT_ID = os.getenv('PAYFAST_MERCHANT_ID')
+PAYFAST_MERCHANT_KEY = os.getenv('PAYFAST_MERCHANT_KEY')
+PAYFAST_PASSPHRASE = os.getenv('PAYFAST_PASSPHRASE', '')
+PAYFAST_SANDBOX = os.getenv('PAYFAST_SANDBOX', 'true').lower() == 'true'
+
 app = Flask(__name__, static_folder='static')
 CORS(app)
 app.secret_key = SECRET_KEY
@@ -199,15 +205,44 @@ def is_valid_email(email):
 # Helper: Verify PayFast ITN signature
 
 def verify_payfast_itn(data):
-    # Remove signature field
-    data_for_sig = {k: v for k, v in data.items() if k != 'signature'}
-    # Sort by key, urlencode
-    pf_data = urlencode(sorted(data_for_sig.items()))
-    # Post back to PayFast for validation
-    response = requests.post('https://sandbox.payfast.co.za/eng/query/validate', data=pf_data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-    if response.text.strip() == 'VALID':
-        return True
-    return False
+    """Verify PayFast ITN data"""
+    try:
+        # For sandbox, we can be more lenient with validation
+        if PAYFAST_SANDBOX:
+            # Basic validation for sandbox
+            required_fields = ['merchant_id', 'merchant_key', 'payment_status']
+            for field in required_fields:
+                if field not in data:
+                    app.logger.warning(f"Missing required field: {field}")
+                    return False
+            
+            # Check if merchant credentials match
+            if data.get('merchant_id') != PAYFAST_MERCHANT_ID:
+                app.logger.warning(f"Invalid merchant_id: {data.get('merchant_id')}")
+                return False
+                
+            return True
+        else:
+            # Production validation
+            data_for_sig = {k: v for k, v in data.items() if k != 'signature'}
+            pf_data = urlencode(sorted(data_for_sig.items()))
+            
+            # Add passphrase if provided
+            if PAYFAST_PASSPHRASE:
+                pf_data += f"&passphrase={PAYFAST_PASSPHRASE}"
+            
+            # Post back to PayFast for validation
+            validate_url = 'https://www.payfast.co.za/eng/query/validate'
+            response = requests.post(validate_url, data=pf_data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+            
+            if response.text.strip() == 'VALID':
+                return True
+            
+        return False
+        
+    except Exception as e:
+        app.logger.error(f"Error verifying PayFast ITN: {str(e)}")
+        return False
 
 def cleanup_expired_sessions():
     """Clean up expired sessions (older than 24 hours)"""
@@ -480,15 +515,27 @@ def user_profile():
     if not user:
         return jsonify({"error": "Not logged in"}), 401
 
-    # Fetch the usage count from MongoDB
+    # Fetch the full user document from MongoDB
+    db_user = users_collection.find_one({'email': user['email']})
+    if not db_user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Remove sensitive fields if needed
+    db_user.pop('password', None)
+    db_user['_id'] = str(db_user['_id'])
+
+    # Add the real usage count to the user dict (if you use this)
     user_limits = db.user_limits.find_one({"user_id": user["email"]})
     usage_count = user_limits["sonnet_usage_count"] if user_limits and "sonnet_usage_count" in user_limits else 0
+    db_user["sonnet_usage_count"] = usage_count
 
-    # Add the real usage count to the user dict
-    user_with_count = dict(user)
-    user_with_count["sonnet_usage_count"] = usage_count
+    # Always include subscription info for frontend
+    db_user["payfast_subscription_id"] = db_user.get("payfast_subscription_id", None)
+    db_user["subscription_status"] = "active" if db_user.get("payfast_subscription_id") else "none"
+    db_user["subscription_plan"] = db_user.get("subscription_plan", None)
+    db_user["premium"] = db_user.get("premium", False)
 
-    return jsonify(user_with_count)
+    return jsonify(db_user)
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -672,21 +719,26 @@ def pay():
     user = session.get('user')
     if not user:
         return redirect(url_for('login'))
-    
-    # Get plan and amount from query parameters
+
     plan = request.args.get('plan', 'monthly')
     amount = request.args.get('amount', '149.00')
-    
-    # Set item name based on plan
+    recurring = request.args.get('recurring', 'false') == 'true'
+
     if plan == 'annual':
         item_name = 'Premium Plan - Annual Subscription'
+        recurring_amount = '1548.00'
+        frequency = 6  # 6 = yearly in PayFast
     else:
         item_name = 'Premium Plan - Monthly Subscription'
+        recurring_amount = '149.00'
+        frequency = 3  # 3 = monthly in PayFast
+
+    # Generate unique merchant reference for better tracking
+    merchant_ref = f"{user.get('email', '')}-{plan}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
     
-    # Create PayFast data
     payfast_data = {
-        'merchant_id': '25296103',
-        'merchant_key': 'rbn0vhdzshrbi',
+        'merchant_id': PAYFAST_MERCHANT_ID,
+        'merchant_key': PAYFAST_MERCHANT_KEY,
         'amount': amount,
         'item_name': item_name,
         'name_first': user.get('name', ''),
@@ -695,9 +747,25 @@ def pay():
         'cancel_url': url_for('pay_cancel', _external=True),
         'notify_url': url_for('pay_notify', _external=True),
         'custom_str1': user.get('email', ''),
-        'custom_str2': plan  # Store the plan type for reference
+        'custom_str2': plan,
+        'custom_str3': merchant_ref,
+        'm_payment_id': merchant_ref
     }
-    return render_template('payfast_form.html', payfast=payfast_data)
+
+    if recurring:
+        billing_date = (datetime.utcnow() + timedelta(days=1)).strftime('%Y-%m-%d')
+        payfast_data.update({
+            'subscription_type': 1,
+            'billing_date': billing_date,
+            'recurring_amount': recurring_amount,
+            'frequency': frequency,
+            'cycles': 0
+        })
+        
+        app.logger.info(f"Creating recurring subscription for {user.get('email', '')}: {payfast_data}")
+        print(f"Recurring subscription data: {payfast_data}")  # Terminal log
+
+    return render_template('payfast_form.html', payfast=payfast_data, recurring=recurring)
 
 @app.route('/pay/success')
 @login_required
@@ -748,40 +816,181 @@ def pay_cancel():
 
 @app.route('/pay/notify', methods=['POST'])
 def pay_notify():
+    """Handle PayFast ITN (Instant Transaction Notification)"""
     data = request.form.to_dict()
+    
+    # Log all received data for debugging
     app.logger.info(f"PayFast ITN received: {data}")
-    # Verify signature
+    print('PayFast ITN received:', data)  # Terminal log
+    
+    # Verify ITN data
     if not verify_payfast_itn(data):
         app.logger.warning("Invalid PayFast ITN signature!")
         return 'Invalid signature', 400
+
+    payment_status = data.get('payment_status')
+    email = data.get('custom_str1')
+    plan = data.get('custom_str2', 'monthly')
     
-    if data.get('payment_status') == 'COMPLETE' and data.get('custom_str1'):
-        email = data.get('custom_str1')
-        plan = data.get('custom_str2', 'monthly')
+    # Handle different payment statuses
+    if payment_status == 'COMPLETE' and email:
+        # Get subscription ID from different possible fields
+        pf_subscription_id = (
+            data.get('pf_subscription_id') or 
+            data.get('subscription_id') or 
+            data.get('recurring_transaction_id') or 
+            data.get('m_payment_id') or 
+            ''
+        )
+        
+        app.logger.info(f"Processing payment for {email}, subscription_id: {pf_subscription_id}")
         
         # Calculate subscription end date
         if plan == 'annual':
-            # Annual subscription - 1 year from now
             subscription_end = datetime.utcnow() + timedelta(days=365)
         else:
-            # Monthly subscription - 1 month from now
             subscription_end = datetime.utcnow() + timedelta(days=30)
         
         # Update user record with premium status, plan type, and subscription end date
-        users_collection.update_one(
-            {'email': email}, 
-            {'$set': {
-                'premium': True,
-                'subscription_plan': plan,
-                'subscription_start': datetime.utcnow(),
-                'subscription_end': subscription_end,
-                'payment_amount': data.get('amount', '0.00')
-            }}
-        )
+        update_fields = {
+            'premium': True,
+            'subscription_plan': plan,
+            'subscription_start': datetime.utcnow(),
+            'subscription_end': subscription_end,
+            'payment_amount': data.get('amount', '0.00'),
+            'payment_id': data.get('pf_payment_id', ''),
+            'payfast_subscription_id': pf_subscription_id,
+            'last_payment_date': datetime.utcnow()
+        }
+        
+        # Only add subscription_id if it's not empty
+        if pf_subscription_id:
+            update_fields['payfast_subscription_id'] = pf_subscription_id
+            app.logger.info(f"Subscription ID captured: {pf_subscription_id}")
+        else:
+            app.logger.warning(f"No subscription ID found in ITN data for {email}")
+        
+        users_collection.update_one({'email': email}, {'$set': update_fields})
         
         app.logger.info(f"User {email} upgraded to premium with {plan} plan")
+        print(f'User {email} updated with: {update_fields}')  # Terminal log
+        
+    elif payment_status == 'CANCELLED':
+        app.logger.info(f"Payment cancelled for {email}")
+        
+    elif payment_status == 'PENDING':
+        app.logger.info(f"Payment pending for {email}")
+        
+    else:
+        app.logger.warning(f"Unknown payment status: {payment_status} for {email}")
     
     return 'OK', 200
+
+@app.route('/unsubscribe', methods=['POST'])
+@login_required
+def unsubscribe():
+    user = session.get('user')
+    if not user:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
+    db_user = users_collection.find_one({'email': user['email']})
+    pf_subscription_id = db_user.get('payfast_subscription_id')
+    if not pf_subscription_id:
+        return jsonify({'success': False, 'error': 'No active subscription'}), 400
+
+    # Use sandbox or production URL based on environment
+    if PAYFAST_SANDBOX:
+        cancel_url = 'https://sandbox.payfast.co.za/eng/query/subscription/cancel'
+    else:
+        cancel_url = 'https://www.payfast.co.za/eng/query/subscription/cancel'
+    
+    payload = {
+        'merchant_id': PAYFAST_MERCHANT_ID,
+        'merchant_key': PAYFAST_MERCHANT_KEY,
+        'subscription_id': pf_subscription_id
+    }
+    response = requests.post(cancel_url, data=payload)
+    if response.status_code == 200 and 'true' in response.text.lower():
+        users_collection.update_one({'email': user['email']}, {'$unset': {'payfast_subscription_id': ""}})
+        users_collection.update_one({'email': user['email']}, {'$set': {'premium': False}})
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': 'Failed to cancel subscription'}), 500
+
+@app.route('/test/payfast-itn', methods=['GET'])
+@login_required
+def test_payfast_itn():
+    """Test endpoint to simulate PayFast ITN for debugging"""
+    user = session.get('user')
+    if not user:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    # Simulate successful payment ITN
+    test_data = {
+        'merchant_id': PAYFAST_MERCHANT_ID,
+        'merchant_key': PAYFAST_MERCHANT_KEY,
+        'payment_status': 'COMPLETE',
+        'pf_payment_id': '123456',
+        'pf_subscription_id': 'TEST_SUB_123',
+        'amount': '149.00',
+        'custom_str1': user['email'],
+        'custom_str2': 'monthly',
+        'signature': 'test_signature'
+    }
+    
+    app.logger.info(f"Testing PayFast ITN with data: {test_data}")
+    
+    # Process the test data
+    result = pay_notify_handler(test_data)
+    
+    return jsonify({'message': 'Test ITN processed', 'result': result})
+
+def pay_notify_handler(data):
+    """Helper function to process PayFast ITN data"""
+    payment_status = data.get('payment_status')
+    email = data.get('custom_str1')
+    plan = data.get('custom_str2', 'monthly')
+    
+    if payment_status == 'COMPLETE' and email:
+        # Get subscription ID from different possible fields
+        pf_subscription_id = (
+            data.get('pf_subscription_id') or 
+            data.get('subscription_id') or 
+            data.get('recurring_transaction_id') or 
+            data.get('m_payment_id') or 
+            ''
+        )
+        
+        app.logger.info(f"Processing payment for {email}, subscription_id: {pf_subscription_id}")
+        
+        # Calculate subscription end date
+        if plan == 'annual':
+            subscription_end = datetime.utcnow() + timedelta(days=365)
+        else:
+            subscription_end = datetime.utcnow() + timedelta(days=30)
+        
+        # Update user record
+        update_fields = {
+            'premium': True,
+            'subscription_plan': plan,
+            'subscription_start': datetime.utcnow(),
+            'subscription_end': subscription_end,
+            'payment_amount': data.get('amount', '0.00'),
+            'payment_id': data.get('pf_payment_id', ''),
+            'last_payment_date': datetime.utcnow()
+        }
+        
+        if pf_subscription_id:
+            update_fields['payfast_subscription_id'] = pf_subscription_id
+            app.logger.info(f"Subscription ID captured: {pf_subscription_id}")
+        else:
+            app.logger.warning(f"No subscription ID found in ITN data for {email}")
+        
+        users_collection.update_one({'email': email}, {'$set': update_fields})
+        
+        return {'success': True, 'subscription_id': pf_subscription_id}
+    
+    return {'success': False, 'error': 'Invalid payment status or missing email'}
 
 if __name__ == '__main__':
     # Create static folder if it doesn't exist

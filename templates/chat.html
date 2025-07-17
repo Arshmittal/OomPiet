@@ -749,7 +749,12 @@ body {
                 </div>
               </div>
             </div>
-            
+            <div style="margin: 1rem 0;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 1rem;">
+                <input type="checkbox" id="recurring-checkbox">
+                Enable recurring payments (auto-renew)
+              </label>
+            </div>
             <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-orange);color:white;">Continue to Payment</button>
           </div>
         </div>
@@ -789,7 +794,7 @@ body {
                         <div class="profile-name" id="profile-name">User Name</div>
                         <div class="profile-email" id="profile-email">user@example.com</div>
                     </div>
-                   
+                    <a href="#" class="profile-dropdown-item" id="unsubscribe-btn" style="display:none; color: #d9534f; font-weight: 600;">Unsubscribe</a>
                     <a href="#" class="profile-dropdown-item" id="logout-button">
                       Logout
                     </a>
@@ -889,6 +894,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     logout();
                 });
             }
+
+            const unsubscribeBtn = document.getElementById('unsubscribe-btn');
+            if (unsubscribeBtn) {
+                unsubscribeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to unsubscribe from recurring payments?')) {
+                        fetch('/unsubscribe', {method: 'POST'})
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('You have unsubscribed from recurring payments.');
+                                    location.reload();
+                                } else {
+                                    alert('Failed to unsubscribe: ' + data.error);
+                                }
+                            });
+                    }
+                });
+            }
             
             // Close dropdown when clicking outside
             document.addEventListener('click', function(e) {
@@ -932,6 +956,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(user => {
                         updateProfileUI(user);
                         showFreeVersionBanner(user);
+                        if (unsubscribeBtn) {
+                            if (user.payfast_subscription_id) {
+                                unsubscribeBtn.style.display = 'block';
+                            } else {
+                                unsubscribeBtn.style.display = 'none';
+                            }
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching user profile:', error);
@@ -941,6 +972,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             email: 'user@example.com',
                             picture: '/static/default-profile.png'
                         });
+                        if (unsubscribeBtn) {
+                            unsubscribeBtn.style.display = 'none';
+                        }
                     });
             }
             
@@ -1100,6 +1134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const premiumBtn = document.getElementById('modal-premium-btn');
                 const monthlyOption = document.getElementById('monthly-option');
                 const annualOption = document.getElementById('annual-option');
+                const recurringCheckbox = document.getElementById('recurring-checkbox');
 
                 // Plan card click listeners
                 if (monthlyOption) {
@@ -1159,11 +1194,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.preventDefault();
                         localStorage.removeItem('selectedPlan_oompiet');
                         const selectedPlan = window.selectedPricingOption || 'monthly';
-                        if (selectedPlan === 'monthly') {
-                            window.location.href = '/pay?plan=monthly&amount=149.00';
-                        } else {
-                            window.location.href = '/pay?plan=annual&amount=1548.00';
-                        }
+                        const recurring = document.getElementById('recurring-checkbox')?.checked ? 'true' : 'false';
+                        let paymentUrl = `/pay?plan=${selectedPlan}&amount=${selectedPlan === 'monthly' ? '149.00' : '1548.00'}`;
+                        if (recurring === 'true') paymentUrl += '&recurring=true';
+                        window.location.href = paymentUrl;
                     });
                 }
             });

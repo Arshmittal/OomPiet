@@ -739,7 +739,12 @@ body {
                 </div>
               </div>
             </div>
-            
+            <div style="margin: 1rem 0;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 1rem;">
+                <input type="checkbox" id="recurring-checkbox">
+                Enable recurring payments (auto-renew)
+              </label>
+            </div>
             <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-teal);color:black;">Continue to Payment</button>
           </div>
         </div>
@@ -1091,6 +1096,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const premiumBtn = document.getElementById('modal-premium-btn');
                 const monthlyOption = document.getElementById('monthly-option');
                 const annualOption = document.getElementById('annual-option');
+                const recurringCheckbox = document.getElementById('recurring-checkbox');
 
                 // Plan card click listeners
                 if (monthlyOption) {
@@ -1150,11 +1156,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.preventDefault();
                         localStorage.removeItem('selectedPlan_oompiet');
                         const selectedPlan = window.selectedPricingOption || 'monthly';
-                        if (selectedPlan === 'monthly') {
-                            window.location.href = '/pay?plan=monthly&amount=149.00';
-                        } else {
-                            window.location.href = '/pay?plan=annual&amount=1548.00';
-                        }
+                        const recurring = document.getElementById('recurring-checkbox')?.checked ? 'true' : 'false';
+                        let paymentUrl = `/pay?plan=${selectedPlan}&amount=${selectedPlan === 'monthly' ? '149.00' : '1548.00'}`;
+                        if (recurring === 'true') paymentUrl += '&recurring=true';
+                        window.location.href = paymentUrl;
                     });
                 }
             });
