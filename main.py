@@ -737,8 +737,8 @@ def pay():
     merchant_ref = f"{user.get('email', '')}-{plan}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
     
     payfast_data = {
-        'merchant_id': PAYFAST_MERCHANT_ID,
-        'merchant_key': PAYFAST_MERCHANT_KEY,
+        'merchant_id': '10000100',
+        'merchant_key': '46f0cd694581a',
         'amount': amount,
         'item_name': item_name,
         'name_first': user.get('name', ''),
