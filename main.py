@@ -905,8 +905,8 @@ def unsubscribe():
         cancel_url = 'https://www.payfast.co.za/eng/query/subscription/cancel'
     
     payload = {
-        'merchant_id': PAYFAST_MERCHANT_ID,
-        'merchant_key': PAYFAST_MERCHANT_KEY,
+        'merchant_id': '10000100',
+        'merchant_key': '46f0cd694581a',
         'subscription_id': pf_subscription_id
     }
     response = requests.post(cancel_url, data=payload)
