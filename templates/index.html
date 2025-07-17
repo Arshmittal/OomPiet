@@ -217,8 +217,9 @@ body {
 .main-content {
     flex: 1;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     padding: 2rem;
 }
 
@@ -663,6 +664,23 @@ body {
     text-align: left;
     background: none;
 }
+.terms-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.93rem;
+  font-weight: 400;
+  /* width: 100%; */
+  justify-content: flex-start;
+}
+.terms-label input[type="checkbox"] {
+  margin: 0;
+  min-width: 16px;
+  min-height: 16px;
+}
+.terms-label a {
+  font-size: 0.93rem;
+}
 </style>
 </head>
 <body>
@@ -725,10 +743,8 @@ body {
                 <button class="auth-tab active" id="signin-tab">Sign In</button>
                 <button class="auth-tab" id="signup-tab">Sign Up</button>
             </div>
-
             <!-- Error/Success Messages -->
             <div id="message-container"></div>
-
             <!-- Sign In Form -->
             <form class="auth-form active" id="signin-form">
                 <div class="auth-header">
@@ -777,45 +793,67 @@ body {
                     <h2>Sign up</h2>
                     <p>Create your account to unlock instant expertise</p>
                 </div>
-
                 <div class="form-group">
                     <label for="signup-email">Email</label>
                     <input type="email" id="signup-email" placeholder="Email" required>
                 </div>
-
                 <div class="form-group">
                     <label for="signup-password">Password</label>
                     <div class="password-group">
                         <input type="password" id="signup-password" placeholder="Password" required>
-                        <button type="button" class="password-toggle" data-target="signup-password">
-                            👁️
-                        </button>
+                        <button type="button" class="password-toggle" data-target="signup-password">👁️</button>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="signup-confirm-password">Confirm Password</label>
                     <div class="password-group">
                         <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
-                        <button type="button" class="password-toggle" data-target="signup-confirm-password">
-                            👁️
-                        </button>
+                        <button type="button" class="password-toggle" data-target="signup-confirm-password">👁️</button>
                     </div>
                 </div>
-
-                <button type="submit" class="btn-submit">Sign up</button>
-
+                <div class="form-options" style="margin-bottom: 1.2rem;">
+                    <label style="display: flex; align-items: center; color: var(--neutral-medium); cursor: pointer; font-size: 0.93rem;">
+                        <input type="checkbox" id="accept-terms" style="margin-right: 0.5rem; width: auto;">
+                        <span style="color: var(--neutral-dark); font-weight: 400;">Accept&nbsp;</span>
+                        <a href="/static/Mentormate Software Ts and Cs.pdf" target="_blank" style="color: #1d78a3; text-decoration: underline; font-size: 0.93rem; font-weight: 400;">Terms and Conditions</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn-submit" id="signup-btn" disabled>Sign up</button>
                 <div class="divider">
                     <span>or</span>
                 </div>
-
                 <a href="/login" class="btn-google">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
                     Continue with Google
                 </a>
             </form>
         </div>
-
+        <!-- FAQ Section (only when not logged in, below the card) -->
+        <div id="faq-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">What is mentormate?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Mentormate is a South African-developed tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">Who are the experts behind mentormate?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Each expert persona (e.g., Oom Piet, Mama Dudu, Bra Vusi) represents a different discipline and is built using accurate Southern African data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">How is mentormate different from ChatGPT or other AI tools?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Unlike other popular AI models, Mentormate is specifically developed for factual content instead of creative content. The models are specifically designed to support you with engineering queries. We have also split the areas of expertise so the models learn jargon within a specific area and there is less chance of misunderstanding or inaccurate information.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">Who can use mentormate?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Anyone can use Mentormate. Mentormate supports both students and professionals, offering guidance on design, licensing, ethics, and environmental compliance. It also helps individuals in fields like project management, policy, or finance understand engineering concepts for collaboration and growth.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">How do I get started?<span class="faq-arrow">&#9660;</span></button>
+                    <div class="faq-answer" style="display:none;">Simply sign up on the right side and start chatting with one of our expert personas! All users will get a free trial on the Premium service before any subscription commences.</div>
+                </div>
+            </div>
+        </div>
+        <!-- End FAQ Section -->
         <!-- Expert selection container (shown when logged in) -->
         <div class="experts-container" id="experts-container" style="display: none;">
             <div class="welcome-section">
@@ -862,42 +900,14 @@ body {
     </div> <!-- end of .main-content -->
 
     <!-- FAQ Section and Links -->
-    <div id="home-faq-links">
-        <div id="faq-section" style="max-width: 600px; margin: 3rem auto 2rem auto; text-align: center;">
-            <div class="faq-accordion">
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">What is mentormate?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Mentormate is a South African-developed tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.</div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">Who are the experts behind mentormate?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Each expert persona (e.g., Oom Piet, Mama Dudu, Bra Vusi) represents a different discipline and is built using accurate Southern African data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors.</div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">How is mentormate different from ChatGPT or other AI tools?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Unlike other popular AI models, Mentormate is specifically developed for factual content instead of creative content. The models are specifically designed to support you with engineering queries. We have also split the areas of expertise so the models learn jargon within a specific area and there is less chance of misunderstanding or inaccurate information.</div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">Who can use mentormate?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Anyone can use Mentormate. Mentormate supports both students and professionals, offering guidance on design, licensing, ethics, and environmental compliance. It also helps individuals in fields like project management, policy, or finance understand engineering concepts for collaboration and growth.</div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">How do I get started?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Simply sign up on the right side and start chatting with one of our expert personas! All users will get a free trial on the Premium service before any subscription commences.
-                        office@intailings.com</div>
-                </div>
-            </div>
-        </div>
-        <!-- End of FAQ Section -->
-        <div style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
-            <p style="font-size: 1.15rem; color: #090909; margin-bottom: 0.5rem;">
-                Learn how to get the most out of your Mentormate expert 
-                <a href="/detail" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">here</a>
-            </p>
-            <p style="font-size: 1.08rem; color: #333; margin-top: 0.7rem;margin-bottom: 5rem;">
-                <a href="mailto:office@intailings.com" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a> to build your own specialist agents
-            </p>
-        </div>
+    <div id="home-links-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
+        <p style="font-size: 1.15rem; color: #090909; margin-bottom: 0.5rem;">
+            Learn how to get the most out of your Mentormate expert 
+            <a href="/detail" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">here</a>
+        </p>
+        <p style="font-size: 1.08rem; color: #333; margin-top: 0.7rem;margin-bottom: 5rem;">
+            <a href="mailto:office@intailings.com" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a> to build your own specialist agents
+        </p>
     </div>
 
 <script>
@@ -936,6 +946,8 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
             const profileImage = document.getElementById('profile-image');
             const profileName = document.getElementById('profile-name');
             const profileEmail = document.getElementById('profile-email');
+            const signupBtn = document.getElementById('signup-btn');
+            const acceptTermsCheckbox = document.getElementById('accept-terms');
 
             // Check login status on page load
             checkLoginStatus();
@@ -973,6 +985,11 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
                     profileDropdown && !profileDropdown.contains(e.target)) {
                     profileDropdown.classList.remove('show');
                 }
+            });
+
+            // Sign up button state
+            acceptTermsCheckbox.addEventListener('change', function() {
+                signupBtn.disabled = !this.checked;
             });
 
             // Functions
@@ -1013,8 +1030,14 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
                 const email = document.getElementById('signup-email').value;
                 const password = document.getElementById('signup-password').value;
                 const confirmPassword = document.getElementById('signup-confirm-password').value;
+                const acceptTerms = document.getElementById('accept-terms').checked;
 
                 // Validation
+                if (!acceptTerms) {
+                    showError('You must accept the Terms and Conditions to sign up.');
+                    return;
+                }
+
                 if (password !== confirmPassword) {
                     showError('Passwords do not match');
                     return;
@@ -1273,11 +1296,15 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
                 if (document.getElementById('home-main-content')) {
                     document.getElementById('home-main-content').style.display = 'block';
                 }
-                if (document.getElementById('home-faq-links')) {
-                    document.getElementById('home-faq-links').style.display = 'block';
+                // Hide FAQ when logged in
+                if (document.getElementById('faq-section')) {
+                    document.getElementById('faq-section').style.display = 'none';
+                }
+                // Show home links section when logged in
+                if (document.getElementById('home-links-section')) {
+                    document.getElementById('home-links-section').style.display = 'block';
                 }
             }
-
             function showLoggedOutState() {
                 if (authContainer) authContainer.style.display = 'block';
                 if (document.getElementById('experts-container')) {
@@ -1288,8 +1315,13 @@ document.querySelectorAll('.faq-question').forEach(function(btn) {
                 if (document.getElementById('home-main-content')) {
                     document.getElementById('home-main-content').style.display = 'none';
                 }
-                if (document.getElementById('home-faq-links')) {
-                    document.getElementById('home-faq-links').style.display = 'none';
+                // Show FAQ when logged out
+                if (document.getElementById('faq-section')) {
+                    document.getElementById('faq-section').style.display = 'block';
+                }
+                // Hide home links section when logged out
+                if (document.getElementById('home-links-section')) {
+                    document.getElementById('home-links-section').style.display = 'none';
                 }
             }
 
