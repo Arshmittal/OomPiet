@@ -52,11 +52,14 @@
         }
 
         .logo {
-            font-size: 2.5rem;
-            font-weight: 600;
-            font-family: 'Pabasing', sans-serif;
-            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 2rem;
+        }
+        .logo img {
+            height: 64px;
+            margin-right: 10px;
         }
 
         .icon {
@@ -195,7 +198,11 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo">Mama Dudu</div>
+        <div class="logo">
+            <a href="/" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="/static/logo.png" alt="Logo">
+            </a>
+        </div>
         
         <div class="icon">⚠️</div>
         

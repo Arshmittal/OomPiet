@@ -743,8 +743,8 @@ def pay():
     merchant_ref = f"{user.get('email', '')}-{plan}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
     
     payfast_data = {
-        'merchant_id': '10000100',
-        'merchant_key': '46f0cd694581a',
+          'merchant_id': '25296103',
+        'merchant_key': 'rbn0vhdzshrbi',
         'amount': amount,
         'item_name': item_name,
         'name_first': user.get('name', ''),
@@ -923,8 +923,8 @@ def unsubscribe():
         cancel_url = 'https://www.payfast.co.za/eng/query/subscription/cancel'
     
     payload = {
-        'merchant_id': '10000100',
-        'merchant_key': '46f0cd694581a',
+          'merchant_id': '25296103',
+        'merchant_key': 'rbn0vhdzshrbi',
         'subscription_id': pf_subscription_id
     }
     response = requests.post(cancel_url, data=payload)

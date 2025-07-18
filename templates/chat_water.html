@@ -87,7 +87,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 0.2rem 2rem;
     background-color: var(--white);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: sticky;
@@ -107,7 +107,7 @@ body {
 }
 
 .navbar-brand img {
-    height: 32px;
+    height: 64px !important;
     margin-right: 10px;
 }
 
@@ -364,8 +364,8 @@ body {
 }
 
 .message-user .message-avatar {
-    background-color: var(--primary-green-20);
-    color: var(--primary-green);
+    background-color: #cccccc;
+    color: #000000;
 }
 
 .message-content {
@@ -389,7 +389,8 @@ body {
 
 
 .message-user .message-content {
-    background-color: #c2c2c2;
+    background-color: #cccccc;
+    color: #333;
 }
 
 .message-time {
@@ -429,8 +430,8 @@ body {
 }
 
 .chat-send-btn {
-    background-color: #55bd97;
-    color: white;
+    background-color: #cccccc;
+    color: #fff;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -444,7 +445,7 @@ body {
 }
 
 .chat-send-btn:hover {
-    background-color: #4cae87;
+    background-color: #b3b3b3;
 }
 
 .chat-send-btn:disabled {
@@ -756,7 +757,7 @@ body {
     <nav class="navbar">
         <div class="navbar-brand">
             <a href="/" style="display: flex; align-items: center; text-decoration: none;">
-                <img src="/static/logo.png" alt="Logo" style="height: 48px; margin-right: 10px;">
+                <img src="/static/logo.png" alt="Logo" style="height: 64px; margin-right: 10px;">
             </a>
         </div>
         
@@ -805,7 +806,7 @@ body {
                     <div class="message-avatar">MD</div>
                     <div>
                         <div class="message-content">
-                            Sanibonani! I'm Mama Dudu, a devoted advocate for clean water, climate resilience, and thriving ecosystems. My journey has taken me from grassroots wetlands restoration to national catchment management plans, always guided by the principle that nature and communities can flourish together. From the Vaal catchment to Tsitsikamma forest, I've led initiatives safeguard our shared resources for generations to come. I bring a thoughtful approach grounded in empathy, science, and sustainability. Let's engineer with care — the kind that listens, learns, and lasts. 
+                            Sanibonani! I’m Mama Dudu, a devoted advocate for clean water, climate resilience, and thriving ecosystems. My journey has taken me from grassroots wetlands restoration to national catchment management plans, always guided by the principle that nature and communities can flourish together. From the Vaal catchment to Tsitsikamma forest, I’ve led initiatives to safeguard our shared resources for generations to come. I bring a thoughtful approach grounded in science and sustainability. Let’s engineer with care — the kind that listens, learns, and lasts.
                         </div>
                         <div class="message-time">12:00 PM</div>
                     </div>
@@ -1207,7 +1208,6 @@ document.addEventListener('DOMContentLoaded', function() {
 const collectionName = "Water_docs";
 
 function callRagApi(query) {
-    // For the first 10 messages, always use hybrid_rag
     let endpoint;
     if (usageCount < 9) {
         endpoint = 'https://oompiet.space/hybrid_rag';
@@ -1216,13 +1216,14 @@ function callRagApi(query) {
             ? 'https://oompiet.space/rag'
             : 'https://oompiet.space/hybrid_rag';
     }
-
+    let conversationId = sessionStorage.getItem('conversation_id');
     const requestBody = {
         query: query,
         top_k: 5,
         max_tokens: 4096,
         collection_name: collectionName,
-        user_id: window.currentUserId || 'demo-user'
+        user_id: window.currentUserId || 'demo-user',
+        conversation_id: conversationId || undefined
     };
 
     fetch(endpoint, {
@@ -1781,6 +1782,9 @@ function showFreeVersionBanner(user) {
           .catch(() => {
             window.currentUserId = null;
           });
+
+        // On page load, clear conversation_id so a new chat starts when user comes to this avatar
+        sessionStorage.removeItem('conversation_id');
 
         // Add periodic session validation
         let sessionCheckInterval;
