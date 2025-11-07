@@ -1,1532 +1,1673 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mentormate – Instant Expertise</title>
     <link rel="icon" type="image/png" href="/static/logo1.PNG">
     <style>
-       /* Color Palette Variables */
-       @import url('https://fonts.cdnfonts.com/css/pabasing');
-
-       :root {
-    /* Primary Colors */
-    --primary-green: #3db54b;
-    --primary-green-80: #63c36e;
-    --primary-green-60: #89d191;
-    --primary-green-40: #aee0b4;
-    --primary-green-20: #d6efd8;
-    --primary-blue: #1d78a3;
-    --primary-blue-80: #4a93b5;
-    --primary-blue-60: #77aec8;
-    --primary-blue-40: #a5cadb;
-    --primary-blue-20: #d2e4ed;
-    
-    /* Secondary Colors */
-    --secondary-teal: #00abaf;
-    --secondary-teal-80: #33bcbf;
-    --secondary-teal-60: #66cdcf;
-    --secondary-teal-40: #99dedf;
-    --secondary-teal-20: #cceeef;
-    --secondary-dark-green: #0c734d;
-    --secondary-dark-green-80: #3c8f70;
-    --secondary-dark-green-60: #6bab93;
-    --secondary-dark-green-40: #9bc7b6;
-    --secondary-dark-green-20: #cae3d9;
-    --secondary-navy: #163c66;
-    --secondary-navy-80: #456385;
-    --secondary-navy-60: #748aa3;
-    --secondary-navy-40: #a2b0c2;
-    --secondary-navy-20: #d1d8e0;
-    
-    /* Neutrals */
-    --neutral-dark: #333333;
-    --neutral-medium: #666666;
-    --neutral-light: #999999;
-    --neutral-lighter: #cccccc;
-    --neutral-lightest: #f5f7fa;
-    
-    /* Utility Colors */
-    --white: #ffffff;
-    --black: #000000;
-    --success: var(--primary-green);
-    --info: var(--primary-blue);
-    --warning: #f0ad4e;
-    --danger: #d9534f;
-}
-
-/* Global Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: var(--neutral-lightest);
-    color: var(--neutral-dark);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-}
-
-/* Navigation Bar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.2rem 2rem;
-    background-color: var(--white);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    min-height: 70px;
-}
-
-.navbar-brand span {
-    font-size: 2.1rem;
-    font-weight: 600;
-    color: var(--secondary-navy);
-    display: flex;
-    align-items: center;
-    font-family: sans-serif;
-}
-
-.navbar-brand img {
-    height: 64px !important;
-    margin-right: 10px;
-}
-
-.navbar-buttons {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.btn {
-    padding: 0.6rem 1.2rem;
-    border-radius: 5px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    white-space: nowrap;
-}
-
-.btn-primary {
-    background-color: var(--primary-blue);
-    color: var(--white);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-blue-80);
-}
-
-.btn-secondary {
-    background-color: var(--primary-green);
-    color: var(--white);
-}
-
-.btn-secondary:hover {
-    background-color: var(--primary-green-80);
-}
-
-.btn img {
-    margin-right: 8px;
-    height: 18px;
-}
-
-/* Profile Dropdown */
-.profile-container {
-    position: relative;
-    display: none; /* Hidden by default, shown after login */
-}
-
-.profile-button {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    background: none;
-    border: none;
-}
-
-.profile-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--primary-blue);
-}
-
-.profile-dropdown {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background-color: var(--white);
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    min-width: 200px;
-    display: none;
-    z-index: 10;
-}
-
-.profile-dropdown.show {
-    display: block;
-}
-
-.profile-dropdown-item {
-    padding: 12px 15px;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: var(--neutral-dark);
-    transition: background-color 0.2s;
-}
-
-.profile-dropdown-item:hover {
-    background-color: var(--neutral-lightest);
-}
-
-.profile-dropdown-item i {
-    margin-right: 10px;
-    font-size: 1.1rem;
-}
-
-.profile-info {
-    padding: 15px;
-    border-bottom: 1px solid var(--neutral-lighter);
-}
-
-.profile-info .profile-name {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 5px;
-}
-
-.profile-info .profile-email {
-    font-size: 0.9rem;
-    color: var(--neutral-medium);
-    word-break: break-all;
-}
-
-/* Main Content and Auth Container */
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 2rem;
-    padding-top: 0.1rem !important;
-    width: 100%;
-}
-
-.auth-container {
-    background-color: var(--white);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-}
-
-/* Auth Tabs */
-.auth-tabs {
-    display: flex;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--neutral-lighter);
-}
-
-.auth-tab {
-    flex: 1;
-    padding: 1rem;
-    text-align: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--neutral-medium);
-    transition: all 0.3s ease;
-    border-bottom: 2px solid transparent;
-}
-
-.auth-tab.active {
-    color: var(--primary-blue);
-    border-bottom-color: var(--primary-blue);
-}
-
-.auth-tab:hover {
-    color: var(--primary-blue);
-}
-
-/* Auth Forms */
-.auth-form {
-    display: none;
-}
-
-.auth-form.active {
-    display: block;
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.auth-header h2 {
-    font-size: 1.5rem;
-    color: var(--neutral-dark);
-    margin-bottom: 0.5rem;
-}
-
-.auth-header p {
-    color: var(--neutral-medium);
-    font-size: 0.9rem;
-}
-
-/* Form Groups */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--neutral-dark);
-    font-weight: 500;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--neutral-lighter);
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: var(--primary-blue);
-}
-
-.form-group.error input {
-    border-color: var(--danger);
-}
-
-/* Password Toggle */
-.password-group {
-    position: relative;
-}
-
-.password-group .password-toggle {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--neutral-medium);
-    padding: 5px;
-}
-
-.password-group .password-toggle:hover {
-    color: var(--primary-blue);
-}
-
-/* Form Options */
-.form-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.form-options label {
-    display: flex;
-    align-items: center;
-    color: var(--neutral-medium);
-    cursor: pointer;
-}
-
-.form-options input[type="checkbox"] {
-    margin-right: 0.5rem;
-    width: auto;
-}
-
-.form-options a {
-    color: var(--primary-blue);
-    text-decoration: none;
-}
-
-.form-options a:hover {
-    text-decoration: underline;
-}
-
-/* Submit Buttons */
-.btn-submit {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--primary-blue);
-    color: var(--white);
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-bottom: 1rem;
-}
-
-.btn-submit:hover {
-    background-color: var(--primary-blue-80);
-}
-
-.btn-submit:disabled {
-    background-color: var(--neutral-lighter);
-    cursor: not-allowed;
-}
-
-/* Divider */
-.divider {
-    text-align: center;
-    margin: 1.5rem 0;
-    position: relative;
-    color: var(--neutral-medium);
-    font-size: 0.9rem;
-}
-
-.divider::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: var(--neutral-lighter);
-    z-index: 1;
-}
-
-.divider span {
-    background-color: var(--white);
-    padding: 0 1rem;
-    position: relative;
-    z-index: 2;
-}
-
-/* Google Login Button */
-.btn-google {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--neutral-lighter);
-    border-radius: 5px;
-    background-color: var(--white);
-    color: var(--neutral-dark);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.btn-google:hover {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-color: var(--neutral-light);
-}
-
-.btn-google img {
-    margin-right: 10px;
-    height: 20px;
-}
-
-/* Error Message */
-.error-message {
-    background-color: #ffeaea;
-    color: var(--danger);
-    padding: 0.75rem;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    border: 1px solid #fecaca;
-}
-
-/* Success Message */
-.success-message {
-    background-color: #eafaf1;
-    color: var(--success);
-    padding: 0.75rem;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    border: 1px solid #a7f3d0;
-}
-
-/* Loading Spinner */
-.loading-spinner {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.spinner {
-    border: 5px solid var(--neutral-lighter);
-    border-top: 5px solid var(--primary-blue);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Expert selection styles */
-.experts-container {
-    width: 100%;
-    max-width: 1200px;
-    padding: 0 1rem;
-    margin-top: -4rem;
-}
-
-.welcome-section {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.welcome-section h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: var(--neutral-dark);
-    text-align: center;
-}
-
-#mentormate-welcome {
-    margin-bottom: 0.1rem !important;
-}
-
-.experts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.expert-card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    border: 1px solid var(--neutral-lighter);
-}
-
-.expert-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.expert-image {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin: 0 auto 1rem;
-    object-fit: cover;
-}
-
-.expert-name {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--neutral-dark);
-}
-
-.expert-title {
-    font-size: 0.9rem;
-    color: var(--neutral-medium);
-}
-
-.coming-soon {
-    position: relative;
-}
-
-.coming-soon::after {
-    content: "Coming Soon";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.coming-soon:hover::after {
-    opacity: 1;
-}
-
-/* FAQ Section */
-.faq-accordion {
-    width: 100%;
-    margin: 0 0;
-    border-radius: 8px;
-    background: none;
-}
-
-.faq-item {
-    border-bottom: 2px solid #1d78a3;
-    margin-bottom: 0;
-}
-
-.faq-question {
-    width: 100%;
-    background: none;
-    border: none;
-    outline: none;
-    text-align: left;
-    font-size: 1.15rem;
-    padding: 1rem 2.5rem 1rem 0.5rem;
-    cursor: pointer;
-    position: relative;
-    color: var(--neutral-dark);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: background 0.2s;
-}
-
-.faq-question[aria-expanded="true"] {
-    background: #f5f7fa;
-}
-
-.faq-arrow {
-    margin-left: auto;
-    font-size: 1.3rem;
-    transition: transform 0.2s;
-    flex-shrink: 0;
-}
-
-.faq-question[aria-expanded="true"] .faq-arrow {
-    transform: rotate(180deg);
-}
-
-.faq-answer {
-    padding: 1rem 0.5rem 1.5rem 0.5rem;
-    color: var(--neutral-medium);
-    font-size: 1rem;
-    text-align: left;
-    background: none;
-}
-
-.terms-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.93rem;
-    font-weight: 400;
-    justify-content: flex-start;
-}
-
-.terms-label input[type="checkbox"] {
-    margin: 0;
-    min-width: 16px;
-    min-height: 16px;
-    flex-shrink: 0;
-}
-
-.terms-label a {
-    font-size: 0.93rem;
-}
-
-/* Public (before-auth) expert grid styles */
-.public-experts-grid {
-    display: flex;
-    justify-content: center;
-    gap: 1.7rem;
-    margin-bottom: 2.5rem;
-    margin-top: 2.5rem;
-}
-.public-expert-card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 1.5rem 1.2rem 1.2rem 1.2rem;
-    text-align: center;
-    width: 350px;
-    border: 1.5px solid var(--neutral-lighter);
-    transition: box-shadow 0.2s, transform 0.2s;
-}
-
-.public-expert-card:hover {
-    box-shadow: 0 8px 24px rgba(29,120,163,0.10);
-    transform: translateY(-4px);
-}
-
-.public-expert-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 1rem;
-}
-
-.public-expert-name {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--neutral-dark);
-    margin-bottom: 0.3rem;
-}
-
-.public-expert-title {
-    font-size: 0.98rem;
-    color: var(--neutral-medium);
-    font-weight: 400;
-}
-
-/* Before-auth flex layout styles */
-.before-auth-flex {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 10.5rem;
-    width: 100%;
-    max-width: 1300px;
-    margin: 0 auto 0 auto;
-    padding: 2rem 0 2rem 0;
-}
-
-.before-auth-left {
-    flex: 1 1 0;
-    min-width: 540px;
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin-right: 2.5rem;
-}
-
-.before-auth-right {
-    flex: 0 0 370px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-}
-
-/* Expert areas styles */
-.expert-areas-heading {
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    font-size: 0.7rem;
-    color: var(--neutral-dark);
-}
-
-.expert-areas-list {
-    text-align: left;
-    display: inline-block;
-    margin: 0 auto 1rem auto;
-    padding-left: 1.2em;
-    font-size: 0.7rem;
-    color: var(--neutral-dark);
-}
-
-.expert-areas-heading1 {
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    font-size: 1rem;
-    color: var(--neutral-dark);
-}
-
-.expert-areas-list1 {
-    text-align: left;
-    display: inline-block;
-    margin: 0 auto 1rem auto;
-    padding-left: 1.2em;
-    font-size: 1rem;
-    color: var(--neutral-dark);
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-
-/* Large Tablets (1024px and below) */
-@media (max-width: 1024px) {
-    .before-auth-flex {
-        gap: 6rem;
-    }
-    
-    .before-auth-left {
-        min-width: 450px;
-    }
-    
-    .before-auth-right {
-        flex: 0 0 320px;
-    }
-    
-    .public-experts-grid {
-        gap: 1.5rem;
-    }
-    
-    .public-expert-card {
-        width: 320px;
-    }
-}
-
-/* Medium Tablets and Small Laptops (900px and below) */
-@media (max-width: 900px) {
-    .before-auth-flex {
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-        padding: 1.5rem 0;
-    }
-    
-    .before-auth-left {
-        max-width: 100%;
-        width: 100%;
-        margin-right: 0;
-        min-width: auto;
-    }
-    
-    .before-auth-right {
-        width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
-        flex: none;
-    }
-    
-    .public-experts-grid {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.2rem;
-    }
-    
-    .public-expert-card {
-        width: 90vw;
-        max-width: 340px;
-    }
-    
-    .experts-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-    }
-    
-    .navbar {
-        padding: 0.5rem 1rem;
-    }
-    
-    .navbar-brand span {
-        font-size: 1.8rem;
-    }
-    
-    .navbar-brand img {
-        height: 50px !important;
-    }
-}
-
-/* Standard Tablets (768px and below) */
-@media (max-width: 768px) {
-    .main-content {
-        padding: 1rem;
-    }
-    
-    .auth-container {
-        padding: 1.5rem;
-        max-width: 100%;
-        margin: 0 1rem;
-    }
-    
-    .navbar {
-        padding: 1rem;
-        min-height: 60px;
-    }
-    
-    .navbar-brand span {
-        font-size: 1.5rem;
-    }
-    
-    .navbar-brand img {
-        height: 45px !important;
-        margin-right: 8px;
-    }
-    
-    .navbar-buttons {
-        gap: 10px;
-    }
-    
-    .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .welcome-section h1 {
-        font-size: 1.8rem;
-    }
-    
-    .experts-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .expert-card {
-        padding: 1.5rem;
-    }
-    
-    .expert-image {
-        width: 120px;
-        height: 120px;
-    }
-    
-    .public-expert-image {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .public-expert-card {
-        padding: 1.2rem;
-        width: 95vw;
-        max-width: 320px;
-    }
-    
-    .faq-question {
-        font-size: 1rem;
-        padding: 0.8rem 2rem 0.8rem 0.5rem;
-    }
-    
-    .faq-answer {
-        font-size: 0.9rem;
-        padding: 0.8rem 0.5rem 1.2rem 0.5rem;
-    }
-    
-    .profile-dropdown {
-        right: -20px;
-        min-width: 180px;
-    }
-    
-    .form-options {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .terms-label {
-        font-size: 0.85rem;
-        flex-wrap: wrap;
-    }
-    
-    .expert-areas-heading {
-        font-size: 0.8rem;
-    }
-    
-    .expert-areas-list {
-        font-size: 0.8rem;
-    }
-    
-    .expert-areas-heading1 {
-        font-size: 0.95rem;
-    }
-    
-    .expert-areas-list1 {
-        font-size: 0.95rem;
-    }
-}
-
-/* Large Mobile Devices (480px and below) */
-@media (max-width: 480px) {
-    .navbar {
-        padding: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .navbar-brand span {
-        font-size: 1.3rem;
-    }
-    
-    .navbar-brand img {
-        height: 40px !important;
-        margin-right: 5px;
-    }
-    
-    .navbar-buttons {
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    
-    .btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-        min-width: 80px;
-    }
-    
-    .main-content {
-        padding: 0.5rem;
-    }
-    
-    .auth-container {
-        padding: 1rem;
-        margin: 0 0.5rem;
-        border-radius: 8px;
-    }
-    
-    .welcome-section h1 {
-        font-size: 1.5rem;
-        margin-bottom: 0.8rem;
-    }
-    
-    .public-expert-card {
-        width: 95vw;
-        max-width: 300px;
-        padding: 1rem;
-    }
-    
-    .public-expert-image {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .public-expert-name {
-        font-size: 1rem;
-    }
-    
-    .public-expert-title {
-        font-size: 0.85rem;
-    }
-    
-    .expert-card {
-        padding: 1rem;
-    }
-    
-    .expert-image {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .expert-name {
-        font-size: 1.1rem;
-    }
-    
-    .expert-title {
-        font-size: 0.85rem;
-    }
-    
-    .auth-header h2 {
-        font-size: 1.3rem;
-    }
-    
-    .auth-tab {
-        padding: 0.8rem 0.5rem;
-        font-size: 0.9rem;
-    }
-    
-    .form-group input {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-    }
-    
-    .btn-submit {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-    }
-    
-    .btn-google {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-    }
-    
-    .faq-question {
-        font-size: 0.95rem;
-        padding: 0.7rem 1.5rem 0.7rem 0.4rem;
-    }
-    
-    .faq-arrow {
-        font-size: 1.1rem;
-    }
-    
-    .faq-answer {
-        font-size: 0.85rem;
-        padding: 0.7rem 0.4rem 1rem 0.4rem;
-    }
-    
-    .profile-dropdown {
-        right: -30px;
-        min-width: 160px;
-    }
-    
-    .profile-dropdown-item {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-    }
-    
-    .terms-label {
-        font-size: 0.8rem;
-    }
-    
-    .terms-label input[type="checkbox"] {
-        min-width: 14px;
-        min-height: 14px;
-    }
-    
-    .expert-areas-heading {
-        font-size: 0.75rem;
-    }
-    
-    .expert-areas-list {
-        font-size: 0.75rem;
-    }
-    
-    .expert-areas-heading1 {
-        font-size: 0.9rem;
-    }
-    
-    .expert-areas-list1 {
-        font-size: 0.9rem;
-    }
-}
-
-/* Small Mobile Devices (360px and below) */
-@media (max-width: 360px) {
-    .navbar-brand span {
-        font-size: 1.1rem;
-    }
-    
-    .navbar-brand img {
-        height: 35px !important;
-        margin-right: 4px;
-    }
-    
-    .btn {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.8rem;
-        min-width: 70px;
-    }
-    
-    .auth-container {
-        padding: 0.8rem;
-        margin: 0 0.3rem;
-    }
-    
-    .welcome-section h1 {
-        font-size: 1.3rem;
-        line-height: 1.3;
-    }
-    
-    .public-expert-card {
-        width: 98vw;
-        max-width: 280px;
-        padding: 0.8rem;
-    }
-    
-    .public-expert-image {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .public-expert-name {
-        font-size: 0.95rem;
-    }
-    
-    .public-expert-title {
-        font-size: 0.8rem;
-    }
-    
-    .expert-card {
-        padding: 0.8rem;
-    }
-    
-    .expert-image {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .expert-name {
-        font-size: 1rem;
-    }
-    
-    .expert-title {
-        font-size: 0.8rem;
-    }
-    
-    .auth-header h2 {
-        font-size: 1.2rem;
-    }
-    
-    .auth-header p {
-        font-size: 0.85rem;
-    }
-    
-    .form-group input {
-        padding: 0.5rem;
-        font-size: 0.85rem;
-    }
-    
-    .form-group label {
-        font-size: 0.9rem;
-    }
-    
-    .btn-submit, .btn-google {
-        padding: 0.5rem;
-        font-size: 0.85rem;
-    }
-    
-    .faq-question {
-        font-size: 0.9rem;
-        padding: 0.6rem 1.2rem 0.6rem 0.3rem;
-        line-height: 1.4;
-    }
-    
-    .faq-answer {
-        font-size: 0.8rem;
-        padding: 0.6rem 0.3rem 0.9rem 0.3rem;
-        line-height: 1.5;
-    }
-    
-    .terms-label {
-        font-size: 0.75rem;
-        line-height: 1.4;
-    }
-    
-    .terms-label input[type="checkbox"] {
-        min-width: 12px;
-        min-height: 12px;
-    }
-    
-    .expert-areas-heading, .expert-areas-list {
-        font-size: 0.7rem;
-    }
-    
-    .expert-areas-heading1, .expert-areas-list1 {
-        font-size: 0.85rem;
-    }
-    
-    .divider {
-        font-size: 0.8rem;
-        margin: 1rem 0;
-    }
-    
-    .error-message, .success-message {
-        font-size: 0.8rem;
-        padding: 0.6rem;
-    }
-    
-    .profile-dropdown {
-        right: -40px;
-        min-width: 140px;
-    }
-    
-    .profile-dropdown-item {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-    }
-    
-    .profile-info .profile-name {
-        font-size: 0.9rem;
-    }
-    
-    .profile-info .profile-email {
-        font-size: 0.8rem;
-    }
-}
-
-/* Very Small Mobile Devices (320px and below) */
-@media (max-width: 320px) {
-    .navbar {
-        padding: 0.3rem;
-        min-height: 50px;
-    }
-    
-    .navbar-brand span {
-        font-size: 1rem;
-    }
-    
-    .navbar-brand img {
-        height: 30px !important;
-        margin-right: 3px;
-    }
-    
-    .navbar-buttons {
-        gap: 5px;
-    }
-    
-    .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        min-width: 60px;
-    }
-    
-    .main-content {
-        padding: 0.3rem;
-    }
-    
-    .auth-container {
-        padding: 0.6rem;
-        margin: 0 0.2rem;
-        border-radius: 6px;
-    }
-    
-    .welcome-section h1 {
-        font-size: 1.1rem;
-        line-height: 1.2;
-        margin-bottom: 0.6rem;
-    }
-    
-    .public-experts-grid {
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .public-expert-card {
-        width: 99vw;
-        max-width: 260px;
-        padding: 0.6rem;
-    }
-    
-    .public-expert-image {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .public-expert-name {
-        font-size: 0.9rem;
-        margin-bottom: 0.2rem;
-    }
-    
-    .public-expert-title {
-        font-size: 0.75rem;
-    }
-    
-    .auth-header h2 {
-        font-size: 1.1rem;
-    }
-    
-    .auth-header p {
-        font-size: 0.8rem;
-    }
-    
-    .auth-tab {
-        padding: 0.6rem 0.3rem;
-        font-size: 0.8rem;
-    }
-    
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    
-    .form-group input {
-        padding: 0.4rem;
-        font-size: 0.8rem;
-    }
-    
-    .form-group label {
-        font-size: 0.85rem;
-        margin-bottom: 0.3rem;
-    }
-    
-    .btn-submit, .btn-google {
-        padding: 0.4rem;
-        font-size: 0.8rem;
-    }
-    
-    .form-options {
-        font-size: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    
-    .faq-question {
-        font-size: 0.85rem;
-        padding: 0.5rem 1rem 0.5rem 0.25rem;
-        line-height: 1.3;
-    }
-    
-    .faq-arrow {
-        font-size: 1rem;
-    }
-    
-    .faq-answer {
-        font-size: 0.75rem;
-        padding: 0.5rem 0.25rem 0.8rem 0.25rem;
-        line-height: 1.4;
-    }
-    
-    .terms-label {
-        font-size: 0.7rem;
-        line-height: 1.3;
-        gap: 0.3rem;
-    }
-    
-    .terms-label input[type="checkbox"] {
-        min-width: 10px;
-        min-height: 10px;
-    }
-    
-    .expert-areas-heading, .expert-areas-list {
-        font-size: 0.65rem;
-    }
-    
-    .expert-areas-heading1, .expert-areas-list1 {
-        font-size: 0.8rem;
-    }
-    
-    .divider {
-        font-size: 0.75rem;
-        margin: 0.8rem 0;
-    }
-    
-    .error-message, .success-message {
-        font-size: 0.75rem;
-        padding: 0.5rem;
-    }
-    
-    .profile-dropdown {
-        right: -50px;
-        min-width: 120px;
-    }
-    
-    .profile-dropdown-item {
-        padding: 6px 8px;
-        font-size: 0.75rem;
-    }
-    
-    .profile-info {
-        padding: 10px;
-    }
-    
-    .profile-info .profile-name {
-        font-size: 0.85rem;
-    }
-    
-    .profile-info .profile-email {
-        font-size: 0.75rem;
-    }
-    
-    .expert-card {
-        padding: 0.6rem;
-    }
-    
-    .expert-image {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .expert-name {
-        font-size: 0.95rem;
-    }
-    
-    .expert-title {
-        font-size: 0.75rem;
-    }
-}
-
-/* Landscape orientation adjustments for mobile */
-@media screen and (max-height: 500px) and (orientation: landscape) {
-    .main-content {
-        padding: 1rem 0.5rem;
-    }
-    
-    .welcome-section {
-        margin-bottom: 1rem;
-    }
-    
-    .welcome-section h1 {
-        font-size: 1.3rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .public-experts-grid {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-        gap: 1rem;
-    }
-    
-    .public-expert-card {
-        padding: 1rem;
-    }
-    
-    .auth-container {
-        max-width: 350px;
-        padding: 1rem;
-    }
-    
-    .experts-container {
-        margin-top: -2rem;
-    }
-}
-
-/* High DPI displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .navbar-brand img {
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-    }
-    
-    .profile-image {
-        image-rendering: auto;
-    }
-    
-    .expert-image, .public-expert-image {
-        image-rendering: auto;
-    }
-}
-
-/* Touch device optimizations */
-@media (pointer: coarse) {
-    .btn, .auth-tab, .faq-question, .expert-card, .public-expert-card {
-        min-height: 44px;
-        touch-action: manipulation;
-    }
-    
-    .form-group input {
-        min-height: 44px;
-    }
-    
-    .password-group .password-toggle {
-        min-width: 44px;
-        min-height: 44px;
-    }
-    
-    .profile-dropdown-item {
-        min-height: 40px;
-    }
-}
-
-/* Accessibility improvements for mobile */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-}
-
-</style>
+        /* Color Palette Variables */
+        @import url('https://fonts.cdnfonts.com/css/pabasing');
+
+        :root {
+            /* Primary Colors */
+            --primary-green: #3db54b;
+            --primary-green-80: #63c36e;
+            --primary-green-60: #89d191;
+            --primary-green-40: #aee0b4;
+            --primary-green-20: #d6efd8;
+            --primary-blue: #1d78a3;
+            --primary-blue-80: #4a93b5;
+            --primary-blue-60: #77aec8;
+            --primary-blue-40: #a5cadb;
+            --primary-blue-20: #d2e4ed;
+
+            /* Secondary Colors */
+            --secondary-teal: #00abaf;
+            --secondary-teal-80: #33bcbf;
+            --secondary-teal-60: #66cdcf;
+            --secondary-teal-40: #99dedf;
+            --secondary-teal-20: #cceeef;
+            --secondary-dark-green: #0c734d;
+            --secondary-dark-green-80: #3c8f70;
+            --secondary-dark-green-60: #6bab93;
+            --secondary-dark-green-40: #9bc7b6;
+            --secondary-dark-green-20: #cae3d9;
+            --secondary-navy: #163c66;
+            --secondary-navy-80: #456385;
+            --secondary-navy-60: #748aa3;
+            --secondary-navy-40: #a2b0c2;
+            --secondary-navy-20: #d1d8e0;
+
+            /* Neutrals */
+            --neutral-dark: #333333;
+            --neutral-medium: #666666;
+            --neutral-light: #999999;
+            --neutral-lighter: #cccccc;
+            --neutral-lightest: #f5f7fa;
+
+            /* Utility Colors */
+            --white: #ffffff;
+            --black: #000000;
+            --success: var(--primary-green);
+            --info: var(--primary-blue);
+            --warning: #f0ad4e;
+            --danger: #d9534f;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--neutral-lightest);
+            color: var(--neutral-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.2rem 2rem;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            min-height: 70px;
+        }
+
+        .navbar-brand span {
+            font-size: 2.1rem;
+            font-weight: 600;
+            color: var(--secondary-navy);
+            display: flex;
+            align-items: center;
+            font-family: sans-serif;
+        }
+
+        .navbar-brand img {
+            height: 64px !important;
+            margin-right: 10px;
+        }
+
+        .navbar-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-blue-80);
+        }
+
+        .btn-secondary {
+            background-color: var(--primary-green);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-green-80);
+        }
+
+        .btn img {
+            margin-right: 8px;
+            height: 18px;
+        }
+
+        /* Profile Dropdown */
+        .profile-container {
+            position: relative;
+            display: none;
+            /* Hidden by default, shown after login */
+        }
+
+        .profile-button {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-blue);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: var(--white);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            display: none;
+            z-index: 10;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-dropdown-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--neutral-dark);
+            transition: background-color 0.2s;
+        }
+
+        .profile-dropdown-item:hover {
+            background-color: var(--neutral-lightest);
+        }
+
+        .profile-dropdown-item i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .profile-info {
+            padding: 15px;
+            border-bottom: 1px solid var(--neutral-lighter);
+        }
+
+        .profile-info .profile-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .profile-info .profile-email {
+            font-size: 0.9rem;
+            color: var(--neutral-medium);
+            word-break: break-all;
+        }
+
+        /* Main Content and Auth Container */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem;
+            padding-top: 0.1rem !important;
+            width: 100%;
+        }
+
+        .auth-container {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Auth Tabs */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--neutral-lighter);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--neutral-medium);
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .auth-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .auth-tab:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Auth Forms */
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-header h2 {
+            font-size: 1.5rem;
+            color: var(--neutral-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--neutral-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--neutral-dark);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--neutral-lighter);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-group.error input {
+            border-color: var(--danger);
+        }
+        
+          .first-name {
+                margin-right: 1rem;
+            }
+
+        /* Password Toggle */
+        .password-group {
+            position: relative;
+        }
+
+        .password-group .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--neutral-medium);
+            padding: 5px;
+        }
+
+        .password-group .password-toggle:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Form Options */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            color: var(--neutral-medium);
+            cursor: pointer;
+        }
+
+        .form-options input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: auto;
+        }
+
+        .form-options a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .form-options a:hover {
+            text-decoration: underline;
+        }
+
+        /* Submit Buttons */
+        .btn-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-blue-80);
+        }
+
+        .btn-submit:disabled {
+            background-color: var(--neutral-lighter);
+            cursor: not-allowed;
+        }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+            color: var(--neutral-medium);
+            font-size: 0.9rem;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--neutral-lighter);
+            z-index: 1;
+        }
+
+        .divider span {
+            background-color: var(--white);
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Google Login Button */
+        .btn-google {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--neutral-lighter);
+            border-radius: 5px;
+            background-color: var(--white);
+            color: var(--neutral-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-google:hover {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-color: var(--neutral-light);
+        }
+
+        .btn-google img {
+            margin-right: 10px;
+            height: 20px;
+        }
+
+        /* Error Message */
+        .error-message {
+            background-color: #ffeaea;
+            color: var(--danger);
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            border: 1px solid #fecaca;
+        }
+
+        /* Success Message */
+        .success-message {
+            background-color: #eafaf1;
+            color: var(--success);
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            border: 5px solid var(--neutral-lighter);
+            border-top: 5px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Expert selection styles */
+        .experts-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 1rem;
+            margin-top: -4rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--neutral-dark);
+            text-align: center;
+        }
+
+        #mentormate-welcome {
+            margin-bottom: 0.1rem !important;
+        }
+
+        .experts-grid {
+            display: flex;
+            flex-wrap: wrap;
+            /* allow items to wrap onto multiple rows */
+            justify-content: space-evenly;
+            /* distribute space around items in each row */
+            gap: 2rem;
+            /* spacing between items */
+            margin-top: 2rem;
+        }
+
+        .expert-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: 1px solid var(--neutral-lighter);
+        }
+
+        .expert-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .expert-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            object-fit: cover;
+        }
+        .mama {
+            transform: translateX(-5px);
+        }
+        .oom{
+            height: 160px;
+            width: 160px;
+            transform: translateY(-7px);
+        }
+
+        .expert-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--neutral-dark);
+        }
+
+        .expert-title {
+            font-size: 0.9rem;
+            color: var(--neutral-medium);
+        }
+
+        /* Carousel-specific styles */
+        .public-experts-carousel {
+            overflow: hidden;
+            width: 100%;
+            margin: 2rem auto;
+        }
+
+        .public-experts-carousel .public-expert-grid {
+            display: flex;
+            gap: 2rem;
+            width: max-content;
+        }
+
+        .public-experts-carousel .public-expert-card {
+            flex: 0 0 250px;
+            max-width: 250px;
+            width: 250px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            padding: 1.5rem 1.2rem;
+            text-align: center;
+            border: 1.5px solid #e0e0e0;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .public-experts-carousel .public-expert-card:hover {
+            box-shadow: 0 8px 24px rgba(29, 120, 163, 0.10);
+            transform: translateY(-4px);
+        }
+
+        .public-expert-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .public-expert-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .expert-areas-heading {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0.5rem 0;
+        }
+
+        .expert-areas-list {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto;
+            padding-left: 1.2em;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        /* Responsive: stack cards and disable animation */
+        @media (max-width: 768px) {
+            .public-expert-grid {
+                display: flex;
+                /* keep horizontal layout */
+                gap: 1rem;
+                /* smaller gap for mobile */
+                overflow-x: hidden;
+                /* hide overflow since JS handles scrolling */
+            }
+
+            .public-expert-card {
+                flex: 0 0 80%;
+                /* cards take most of screen */
+                max-width: 80%;
+            }
+        }
+
+
+        /* Adjust card width to ensure only 3 cards are visible */
+        .public-expert-card {
+            flex: 0 0 calc(33.333% - 1.7rem);
+            /* Adjust width to show 3 cards */
+            max-width: calc(33.333% - 1.7rem);
+        }
+
+        /* FAQ Section */
+        .faq-accordion {
+            width: 100%;
+            margin: 0 0;
+            border-radius: 8px;
+            background: none;
+        }
+
+        .faq-item {
+            border-bottom: 2px solid #1d78a3;
+            margin-bottom: 0;
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            outline: none;
+            text-align: left;
+            font-size: 1.15rem;
+            padding: 1rem 2.5rem 1rem 0.5rem;
+            cursor: pointer;
+            position: relative;
+            color: var(--neutral-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+
+        .faq-question[aria-expanded="true"] {
+            background: #f5f7fa;
+        }
+
+        .faq-arrow {
+            margin-left: auto;
+            font-size: 1.3rem;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .faq-question[aria-expanded="true"] .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 1rem 0.5rem 1.5rem 0.5rem;
+            color: var(--neutral-medium);
+            font-size: 1rem;
+            text-align: left;
+            background: none;
+        }
+
+        .terms-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.93rem;
+            font-weight: 400;
+            justify-content: flex-start;
+        }
+
+        .terms-label input[type="checkbox"] {
+            margin: 0;
+            min-width: 16px;
+            min-height: 16px;
+            flex-shrink: 0;
+        }
+
+        .terms-label a {
+            font-size: 0.93rem;
+        }
+
+        /* Public (before-auth) expert grid styles */
+        .public-experts-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.7rem;
+            margin-bottom: 2.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .public-expert-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+            text-align: center;
+            width: 350px;
+            border: 1.5px solid var(--neutral-lighter);
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        .public-expert-card:hover {
+            box-shadow: 0 8px 24px rgba(29, 120, 163, 0.10);
+            transform: translateY(-4px);
+        }
+
+        .public-expert-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .public-expert-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--neutral-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .public-expert-title {
+            font-size: 0.98rem;
+            color: var(--neutral-medium);
+            font-weight: 400;
+        }
+
+        /* Before-auth flex layout styles */
+        .before-auth-flex {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 10.5rem;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto 0 auto;
+            padding: 2rem 0 2rem 0;
+        }
+
+        .before-auth-left {
+            flex: 1 1 0;
+            min-width: 540px;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            margin-right: 2.5rem;
+            position: relative;
+        }
+
+        .before-auth-right {
+            flex: 0 0 370px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        /* Expert areas styles */
+        .expert-areas-heading {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.7rem;
+            color: var(--neutral-dark);
+        }
+
+        .expert-areas-list {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto 1rem auto;
+            padding-left: 1.2em;
+            font-size: 0.7rem;
+            color: var(--neutral-dark);
+        }
+
+        .expert-areas-heading1 {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--neutral-dark);
+        }
+
+        .expert-areas-list1 {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto 1rem auto;
+            padding-left: 1.2em;
+            font-size: 1rem;
+            color: var(--neutral-dark);
+        }
+
+        /* Mobile adjustments for before-auth section, FAQ, and experts */
+        @media (max-width: 768px) {
+            .before-auth-flex {
+                flex-direction: column;
+                align-items: center;
+                gap: 3rem;
+            }
+
+            .before-auth-left,
+            .before-auth-right {
+                flex: 1 1 auto;
+                max-width: 100%;
+                margin-right: 0;
+                align-items: center;
+                text-align: center;
+            }
+
+            .faq-accordion {
+                width: 100%;
+                max-width: 100vw;
+                margin: 1.5rem auto;
+                padding: 0 1rem;
+            }
+
+            .public-expert-grid {
+                justify-content: center;
+            }
+        }
+
+
+        /* ===== RESPONSIVE DESIGN ===== */
+
+        /* Large Tablets (1024px and below) */
+        @media (max-width: 1024px) {
+            .before-auth-flex {
+                gap: 6rem;
+            }
+
+            .before-auth-left {
+                min-width: 450px;
+            }
+
+            .before-auth-right {
+                flex: 0 0 320px;
+            }
+
+            .public-experts-grid {
+                gap: 1.5rem;
+            }
+
+            .public-expert-card {
+                width: 320px;
+            }
+        }
+
+        /* Medium Tablets and Small Laptops (900px and below) */
+        @media (max-width: 900px) {
+            .before-auth-flex {
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+                padding: 1.5rem 0;
+            }
+
+            .before-auth-left {
+                max-width: 100%;
+                width: 100%;
+                margin-right: 0;
+                min-width: auto;
+            }
+
+            .before-auth-right {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+                flex: none;
+            }
+
+            .public-experts-carousel{
+                overflow: hidden;   
+                width: 100vw;
+            }
+
+            .public-experts-grid {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.2rem;
+            }
+
+            .public-expert-card {
+                width: 90vw;
+                max-width: 340px;
+            }
+
+            .experts-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .navbar {
+                padding: 0.5rem 1rem;
+            }
+
+            .navbar-brand span {
+                font-size: 1.8rem;
+            }
+
+            .navbar-brand img {
+                height: 50px !important;
+            }
+        }
+
+        /* Standard Tablets (768px and below) */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .auth-container {
+                padding: 1.5rem;
+                max-width: 100%;
+                margin: 0 1rem;
+            }
+
+            .navbar {
+                padding: 0.5rem;
+                min-height: 60px;
+            }
+
+            .navbar-brand span {
+                font-size: 1.5rem;
+            }
+
+            .navbar-brand img {
+                height: 45px !important;
+                margin-right: 8px;
+            }
+
+            .navbar-buttons {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .experts-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .expert-card {
+                padding: 1.5rem;
+            }
+
+            .expert-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .public-expert-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .public-expert-card {
+                padding: 1.2rem;
+                width: 95vw;
+                max-width: 320px;
+            }
+
+            .faq-question {
+                font-size: 1rem;
+                padding: 0.8rem 2rem 0.8rem 0.5rem;
+            }
+
+            .faq-answer {
+                font-size: 0.9rem;
+                padding: 0.8rem 0.5rem 1.2rem 0.5rem;
+            }
+
+            .profile-dropdown {
+                right: -20px;
+                min-width: 180px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .first-name {
+                margin-right: 1rem;
+            }
+
+            .terms-label {
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
+
+            .expert-areas-heading {
+                font-size: 0.8rem;
+            }
+
+            .expert-areas-list {
+                font-size: 0.8rem;
+            }
+
+            .expert-areas-heading1 {
+                font-size: 0.95rem;
+            }
+
+            .expert-areas-list1 {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Large Mobile Devices (480px and below) */
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            .navbar-brand span {
+                font-size: 1.3rem;
+            }
+
+            .navbar-brand img {
+                height: 40px !important;
+                margin-right: 5px;
+            }
+
+            .navbar-buttons {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+                min-width: 80px;
+            }
+
+            .main-content {
+                padding: 0.5rem;
+            }
+
+            .auth-container {
+                padding: 1rem;
+                margin: 0 0.5rem;
+                border-radius: 8px;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .public-expert-card {
+                width: 95vw;
+                max-width: 300px;
+                padding: 1rem;
+            }
+
+            .public-expert-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .public-expert-name {
+                font-size: 1rem;
+            }
+
+            .public-expert-title {
+                font-size: 0.85rem;
+            }
+
+            .expert-card {
+                padding: 1rem;
+            }
+
+            .expert-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .expert-name {
+                font-size: 1.1rem;
+            }
+
+            .expert-title {
+                font-size: 0.85rem;
+            }
+
+            .auth-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .auth-tab {
+                padding: 0.8rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .form-group input {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            .first-name {
+                margin-right: 1rem;
+            }
+
+
+            .btn-submit {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            .btn-google {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            .faq-question {
+                font-size: 0.95rem;
+                padding: 0.7rem 1.5rem 0.7rem 0.4rem;
+            }
+
+            .faq-arrow {
+                font-size: 1.1rem;
+            }
+
+            .faq-answer {
+                font-size: 0.85rem;
+                padding: 0.7rem 0.4rem 1rem 0.4rem;
+            }
+
+            .profile-dropdown {
+                right: -30px;
+                min-width: 160px;
+            }
+
+            .profile-dropdown-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .terms-label {
+                font-size: 0.8rem;
+            }
+
+            .terms-label input[type="checkbox"] {
+                min-width: 14px;
+                min-height: 14px;
+            }
+
+            .expert-areas-heading {
+                font-size: 0.75rem;
+            }
+
+            .expert-areas-list {
+                font-size: 0.75rem;
+            }
+
+            .expert-areas-heading1 {
+                font-size: 0.9rem;
+            }
+
+            .expert-areas-list1 {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Small Mobile Devices (360px and below) */
+        @media (max-width: 360px) {
+            .navbar-brand span {
+                font-size: 1.1rem;
+            }
+
+            .navbar-brand img {
+                height: 35px !important;
+                margin-right: 4px;
+            }
+
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+                min-width: 70px;
+            }
+
+            .auth-container {
+                padding: 0.8rem;
+                margin: 0 0.3rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.3rem;
+                line-height: 1.3;
+            }
+
+            .public-expert-card {
+                width: 98vw;
+                max-width: 280px;
+                padding: 0.8rem;
+            }
+
+            .public-expert-image {
+                width: 70px;
+                height: 70px;
+            }
+
+            .public-expert-name {
+                font-size: 0.95rem;
+            }
+
+            .public-expert-title {
+                font-size: 0.8rem;
+            }
+
+            .expert-card {
+                padding: 0.8rem;
+            }
+
+            .expert-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .expert-name {
+                font-size: 1rem;
+            }
+
+            .expert-title {
+                font-size: 0.8rem;
+            }
+
+            .auth-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .auth-header p {
+                font-size: 0.85rem;
+            }
+
+            .form-group input {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .first-name {
+                margin-right: 1rem;
+            }
+
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .btn-submit,
+            .btn-google {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .faq-question {
+                font-size: 0.9rem;
+                padding: 0.6rem 1.2rem 0.6rem 0.3rem;
+                line-height: 1.4;
+            }
+
+            .faq-answer {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.3rem 0.9rem 0.3rem;
+                line-height: 1.5;
+            }
+
+            .terms-label {
+                font-size: 0.75rem;
+                line-height: 1.4;
+            }
+
+            .terms-label input[type="checkbox"] {
+                min-width: 10px;
+                min-height: 10px;
+            }
+
+            .expert-areas-heading,
+            .expert-areas-list {
+                font-size: 0.7rem;
+            }
+
+            .expert-areas-heading1,
+            .expert-areas-list1 {
+                font-size: 0.85rem;
+            }
+
+            .divider {
+                font-size: 0.8rem;
+                margin: 1rem 0;
+            }
+
+            .error-message,
+            .success-message {
+                font-size: 0.8rem;
+                padding: 0.6rem;
+            }
+
+            .profile-dropdown {
+                right: -40px;
+                min-width: 140px;
+            }
+
+            .profile-dropdown-item {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+
+            .profile-info .profile-name {
+                font-size: 0.9rem;
+            }
+
+            .profile-info .profile-email {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Very Small Mobile Devices (320px and below) */
+        @media (max-width: 320px) {
+            .navbar {
+                padding: 0.3rem;
+                min-height: 50px;
+            }
+
+            .navbar-brand span {
+                font-size: 1rem;
+            }
+
+            .navbar-brand img {
+                height: 30px !important;
+                margin-right: 3px;
+            }
+
+            .navbar-buttons {
+                gap: 5px;
+            }
+
+            .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+                min-width: 60px;
+            }
+
+            .main-content {
+                padding: 0.3rem;
+            }
+
+            .auth-container {
+                padding: 0.6rem;
+                margin: 0 0.2rem;
+                border-radius: 6px;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.1rem;
+                line-height: 1.2;
+                margin-bottom: 0.6rem;
+            }
+
+            .public-experts-grid {
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .public-expert-card {
+                width: 99vw;
+                max-width: 260px;
+                padding: 0.6rem;
+            }
+
+            .public-expert-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .public-expert-name {
+                font-size: 0.9rem;
+                margin-bottom: 0.2rem;
+            }
+
+            .public-expert-title {
+                font-size: 0.75rem;
+            }
+
+            .auth-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .auth-header p {
+                font-size: 0.8rem;
+            }
+
+            .auth-tab {
+                padding: 0.6rem 0.3rem;
+                font-size: 0.8rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .first-name {
+                margin-right: 1rem;
+            }
+
+
+            .form-group input {
+                padding: 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .btn-submit,
+            .btn-google {
+                padding: 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .form-options {
+                font-size: 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .faq-question {
+                font-size: 0.85rem;
+                padding: 0.5rem 1rem 0.5rem 0.25rem;
+                line-height: 1.3;
+            }
+
+            .faq-answer {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.25rem 0.8rem 0.25rem;
+                line-height: 1.4;
+            }
+
+            .terms-label {
+                font-size: 0.7rem;
+                line-height: 1.3;
+                gap: 0.3rem;
+            }
+
+            .terms-label input[type="checkbox"] {
+                min-width: 10px;
+                min-height: 10px;
+            }
+
+            .expert-areas-heading,
+            .expert-areas-list {
+                font-size: 0.65rem;
+            }
+
+            .expert-areas-heading1,
+            .expert-areas-list1 {
+                font-size: 0.8rem;
+            }
+
+            .divider {
+                font-size: 0.75rem;
+                margin: 0.8rem 0;
+            }
+
+            .error-message,
+            .success-message {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
+
+            .profile-dropdown {
+                right: -50px;
+                min-width: 120px;
+            }
+
+            .profile-dropdown-item {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+            }
+
+            .profile-info {
+                padding: 10px;
+            }
+
+            .profile-info .profile-name {
+                font-size: 0.85rem;
+            }
+
+            .profile-info .profile-email {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Landscape orientation adjustments for mobile */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            .main-content {
+                padding: 1rem 0.5rem;
+            }
+
+            .welcome-section {
+                margin-bottom: 1rem;
+            }
+
+            .welcome-section h1 {
+                font-size: 1.3rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .public-experts-grid {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                gap: 1rem;
+            }
+
+            .public-expert-card {
+                padding: 1rem;
+            }
+
+            .auth-container {
+                max-width: 350px;
+                padding: 1rem;
+            }
+
+            .experts-container {
+                margin-top: -2rem;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2),
+        (min-resolution: 192dpi) {
+            .navbar-brand img {
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+            }
+
+            .profile-image {
+                image-rendering: auto;
+            }
+
+            .expert-image,
+            .public-expert-image {
+                image-rendering: auto;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (pointer: coarse) {
+
+            .btn,
+            .auth-tab,
+            .faq-question,
+            .expert-card,
+            .public-expert-card {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            .form-group input {
+                min-height: 44px;
+            }
+
+            .password-group .password-toggle {
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .profile-dropdown-item {
+                min-height: 40px;
+            }
+        }
+
+        /* Accessibility improvements for mobile */
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <div class="loading-spinner">
         <div class="spinner"></div>
@@ -1539,11 +1680,11 @@ body {
                 <img src="/static/logo.png" alt="Logo" style="height: 64px; margin-right: 10px;">
             </a>
         </div>
-        
+
         <div class="navbar-buttons">
             <!-- Chat button (only shown when logged in) -->
             <a href="/chat" class="btn btn-secondary" id="chat-button" style="display: none;">
-                 Go to Chat
+                Go to Chat
             </a>
 
             <!-- Profile dropdown (shown when logged in) -->
@@ -1551,15 +1692,15 @@ body {
                 <button class="profile-button" id="profile-button">
                     <img src="/static/default-profile.png" alt="Profile" class="profile-image" id="profile-image">
                 </button>
-                
+
                 <div class="profile-dropdown" id="profile-dropdown">
                     <div class="profile-info">
                         <div class="profile-name" id="profile-name">User Name</div>
                         <div class="profile-email" id="profile-email">user@example.com</div>
                     </div>
-                   
+
                     <a href="#" class="profile-dropdown-item" id="logout-button">
-                      Logout
+                        Logout
                     </a>
                 </div>
             </div>
@@ -1568,186 +1709,283 @@ body {
 
     <!-- Welcome Text and Main Home Content -->
     <div id="home-main-content">
-        <div id="mentormate-welcome" style="max-width: 100%; margin: 2rem auto -0.2rem auto; text-align: center; padding: 0;">
-            <h2 style="font-size: 2rem; font-weight: 700; color: var(--neutral-dark); margin-bottom: 1rem;">Welcome to Mentormate, your gateway to instant expertise!</h2>
-            <p style="font-size: 1.15rem; color: var(--neutral-dark); margin-bottom: 0.7rem; margin-left: auto; margin-right: auto; max-width: 1100px; text-align: center;">
-                Mentormate is a tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.
+        <div id="mentormate-welcome"
+            style="max-width: 100%; margin: 2rem auto -0.2rem auto; text-align: center; padding: 0;">
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--neutral-dark); margin-bottom: 1rem;">Welcome to
+                Mentormate, your gateway to instant expertise!</h2>
+            <p
+                style="font-size: 1.15rem; color: var(--neutral-dark); margin-bottom: 0.7rem; margin-left: auto; margin-right: auto; max-width: 1100px; text-align: center;">
+                Mentormate is a tool designed to provide specialised instant expertise to built environment
+                professionals. It offers locally relevant advice across various knowledge areas, including geotechnical,
+                water management, concrete construction, environmental management, structural design and more.
             </p>
-            <p style="font-size: 1.15rem; color: var(--neutral-dark); margin-bottom: 0.7rem; margin-left: auto; margin-right: auto; max-width: 1100px; text-align: center;">
-                Each expert persona represents a different discipline and is built using accurate Southern Africa contextual data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors. Start your conversation now!
+            <p
+                style="font-size: 1.15rem; color: var(--neutral-dark); margin-bottom: 0.7rem; margin-left: auto; margin-right: auto; max-width: 1100px; text-align: center;">
+                Each expert persona represents a different discipline and is built using accurate Southern Africa
+                contextual data, legislation, and case studies. They're designed to simulate conversations with seasoned
+                local mentors. Start your conversation now!
             </p>
         </div>
     </div>
     <!-- Main Content -->
+
     <div class="main-content">
         <!-- Before-auth flex layout -->
         <div id="before-auth-flex-wrapper">
-          <div class="before-auth-flex">
-            <!-- Left: Expert grid + FAQ -->
-            <div class="before-auth-left">
-              <!-- Public Expert Grid (before-auth) -->
-              <div id="public-experts-section" style="width:100%;display:flex;flex-direction:column;align-items:left;">
-                <h2 style="font-size:1.45rem;font-weight:700;color:var(--neutral-dark);margin-bottom:0.1rem;margin-top:0.1rem;">Meet our experts</h2>
-                <div class="public-experts-grid">
-                 
-                  <div class="public-expert-card">
-                    <img src="/static/character3.png" alt="Mama Dudu" class="public-expert-image">
-                    <div class="public-expert-name">Mama Dudu</div>
-                    <div class="expert-areas-heading">Areas of expertise include:</div>
-                    <ul class="expert-areas-list">
-                        <li>Environmental Engineering</li>
-                        <li>Water Management</li>
-                        <li>Wastewater treatment</li>
-                    </ul>
-                  </div>
-                  <div class="public-expert-card">
-                    <img src="/static/character.png" alt="Oom Piet" class="public-expert-image">
-                    <div class="public-expert-name">Oom Piet</div>
-                    <div class="expert-areas-heading">Areas of expertise include:</div>
-                    <ul class="expert-areas-list">
-                        <li>Soil mechanics</li>
-                        <li>Geology and hydrogeology</li>
-                        <li>Tailings Engineering</li>
-                    </ul>
-                  </div>
-                  <div class="public-expert-card">
-                    <img src="/static/charcater2.png" alt="Bra Vusi" class="public-expert-image">
-                    <div class="public-expert-name">Bra Vusi</div>
-                    <div class="expert-areas-heading">Areas of expertise include:</div>
-                    <ul class="expert-areas-list">
-                        <li>Concrete construction</li>
-                        <li>Structural design</li>
-                        <li>Foundations</li>
-                    </ul>
-                  </div>
+            <div class="before-auth-flex">
+                <!-- Left: Expert grid + FAQ -->
+                <div class="before-auth-left">
+                    <!-- Public Expert Grid (before-auth) -->
+                    <div id="public-experts-section"
+                        style="width:100%;display:flex;flex-direction:column;align-items:left;">
+                        <h2
+                            style="font-size:1.45rem;font-weight:700;color:var(--neutral-dark);margin-bottom:0.1rem;margin-top:0.1rem;">
+                            Meet our experts</h2>
+                        <div class="public-experts-carousel">
+                            <div class="public-expert-grid">
+
+                                <div class="public-expert-card">
+                                    <img src="/static/character3.png" alt="Mama Dudu" class="public-expert-image mama">
+                                    <div class="public-expert-name">Mama Dudu</div>
+                                    <div class="expert-areas-heading">Areas of expertise include:</div>
+                                    <ul class="expert-areas-list">
+                                        <li>Environmental Engineering</li>
+                                        <li>Water Management</li>
+                                        <li>Wastewater treatment</li>
+                                    </ul>
+                                </div>
+                                <div class="public-expert-card">
+                                    <img src="/static/character.png" alt="Oom Piet" class="public-expert-image oom">
+                                    <div class="public-expert-name">Oom Piet</div>
+                                    <div class="expert-areas-heading">Areas of expertise include:</div>
+                                    <ul class="expert-areas-list">
+                                        <li>Soil mechanics</li>
+                                        <li>Geology and hydrogeology</li>
+                                        <li>Tailings Engineering</li>
+                                    </ul>
+                                </div>
+                                <div class="public-expert-card">
+                                    <img src="/static/charcater2.png" alt="Bra Vusi" class="public-expert-image">
+                                    <div class="public-expert-name">Bra Vusi</div>
+                                    <div class="expert-areas-heading">Areas of expertise include:</div>
+                                    <ul class="expert-areas-list">
+                                        <li>Concrete construction</li>
+                                        <li>Structural design</li>
+                                        <li>Foundations</li>
+                                    </ul>
+                                </div>
+                                <div class="public-expert-card">
+                                    <img src="/static/character4.png" alt="Mr Rakesh" class="public-expert-image">
+                                    <div class="public-expert-name">Mr Rakesh</div>
+                                    <div class="expert-areas-heading">Areas of expertise include:</div>
+                                    <ul class="expert-areas-list">
+                                        <li>Electrical power systems</li>
+                                        <li>Integrated energy planning</li>
+                                        <li>Renewables</li>
+                                    </ul>
+                                </div>
+                                <div class="public-expert-card">
+                                    <img src="/static/character5.png" alt="Sis Nandi" class="public-expert-image">
+                                    <div class="public-expert-name">Sis Nandi</div>
+                                    <div class="expert-areas-heading">Areas of expertise include:</div>
+                                    <ul class="expert-areas-list">
+                                        <li>Metallurgical processes</li>
+                                        <li>Resource characterisation</li>
+                                        <li>Mining Engineering</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Public Expert Grid -->
+                    <!-- FAQ Section (only when not logged in, below the card) -->
+
+                    <div id="faq-section" style="max-width: 600px;">
+                        <h2
+                            style="font-size:1.45rem;font-weight:700;color:var(--neutral-dark);margin-bottom:0.1rem;margin-top:0.1rem;">
+                            Learn more about us</h2>
+
+                        <div class="faq-accordion">
+                            <div class="faq-item">
+                                <button class="faq-question" aria-expanded="false">What is mentormate?<span
+                                        class="faq-arrow">&#9660;</span></button>
+                                <div class="faq-answer" style="display:none;">Mentormate is a South African-developed
+                                    tool designed to provide specialised instant expertise to built environment
+                                    professionals. It offers locally relevant advice across various knowledge areas,
+                                    including geotechnical, water management, concrete construction, environmental
+                                    management, structural design and more.</div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question" aria-expanded="false">Who are the experts behind
+                                    mentormate?<span class="faq-arrow">&#9660;</span></button>
+                                <div class="faq-answer" style="display:none;">Each expert persona (e.g., Oom Piet, Mama
+                                    Dudu, Bra Vusi) represents a different discipline and is built using accurate
+                                    Southern African data, legislation, and case studies. They're designed to simulate
+                                    conversations with seasoned local mentors.</div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question" aria-expanded="false">How is mentormate different from
+                                    ChatGPT or other AI tools?<span class="faq-arrow">&#9660;</span></button>
+                                <div class="faq-answer" style="display:none;">Unlike other popular AI models, Mentormate
+                                    is specifically developed for factual content instead of creative content. The
+                                    models are specifically designed to support you with engineering queries. We have
+                                    also split the areas of expertise so the models learn jargon within a specific area
+                                    and there is less chance of misunderstanding or inaccurate information.</div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question" aria-expanded="false">Who can use mentormate?<span
+                                        class="faq-arrow">&#9660;</span></button>
+                                <div class="faq-answer" style="display:none;">Anyone can use Mentormate. Mentormate
+                                    supports both students and professionals, offering guidance on design, licensing,
+                                    ethics, and environmental compliance. It also helps individuals in fields like
+                                    project management, policy, or finance understand engineering concepts for
+                                    collaboration and growth.</div>
+                            </div>
+                            <div class="faq-item">
+                                <button class="faq-question" aria-expanded="false">How do I get started?<span
+                                        class="faq-arrow">&#9660;</span></button>
+                                <div class="faq-answer" style="display:none;">Simply sign up on the right side and start
+                                    chatting with one of our expert personas! All users will get a free trial on the
+                                    Premium service before any subscription commences.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End FAQ Section -->
                 </div>
-              </div>
-              <!-- End Public Expert Grid -->
-              <!-- FAQ Section (only when not logged in, below the card) -->
-              
-              <div id="faq-section" style="max-width: 600px;">
-                <h2 style="font-size:1.45rem;font-weight:700;color:var(--neutral-dark);margin-bottom:0.1rem;margin-top:0.1rem;">Learn more about us</h2>
-               
-                <div class="faq-accordion">
-                  <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">What is mentormate?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Mentormate is a South African-developed tool designed to provide specialised instant expertise to built environment professionals. It offers locally relevant advice across various knowledge areas, including geotechnical, water management, concrete construction, environmental management, structural design and more.</div>
-                  </div>
-                  <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">Who are the experts behind mentormate?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Each expert persona (e.g., Oom Piet, Mama Dudu, Bra Vusi) represents a different discipline and is built using accurate Southern African data, legislation, and case studies. They're designed to simulate conversations with seasoned local mentors.</div>
-                  </div>
-                  <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">How is mentormate different from ChatGPT or other AI tools?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Unlike other popular AI models, Mentormate is specifically developed for factual content instead of creative content. The models are specifically designed to support you with engineering queries. We have also split the areas of expertise so the models learn jargon within a specific area and there is less chance of misunderstanding or inaccurate information.</div>
-                  </div>
-                  <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">Who can use mentormate?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Anyone can use Mentormate. Mentormate supports both students and professionals, offering guidance on design, licensing, ethics, and environmental compliance. It also helps individuals in fields like project management, policy, or finance understand engineering concepts for collaboration and growth.</div>
-                  </div>
-                  <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">How do I get started?<span class="faq-arrow">&#9660;</span></button>
-                    <div class="faq-answer" style="display:none;">Simply sign up on the right side and start chatting with one of our expert personas! All users will get a free trial on the Premium service before any subscription commences.</div>
-                  </div>
+                <!-- Right: Auth Container -->
+                <div class="before-auth-right">
+                    <div class="auth-container" id="auth-container">
+                        <!-- Auth Tabs -->
+                        <div class="auth-tabs">
+                            <button class="auth-tab active" id="signin-tab">Sign In</button>
+                            <button class="auth-tab" id="signup-tab">Sign Up</button>
+                        </div>
+                        <!-- Error/Success Messages -->
+                        <div id="message-container"></div>
+                        <!-- Sign In Form -->
+                        <form class="auth-form active" id="signin-form">
+                            <div class="auth-header">
+                                <h2>Sign in</h2>
+                                <p>Log in to unlock instant expertise</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="signin-email">Email</label>
+                                <input type="email" id="signin-email" placeholder="Email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="signin-password">Password</label>
+                                <div class="password-group">
+                                    <input type="password" id="signin-password" placeholder="Password" required>
+                                    <button type="button" class="password-toggle" data-target="signin-password">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-options">
+                                <label>
+                                    <input type="checkbox" id="keep-signed-in">
+                                    Keep me signed in
+                                </label>
+                                <a href="#" id="forgot-password">Forgot password?</a>
+                            </div>
+
+                            <button type="submit" class="btn-submit">Sign in</button>
+
+                            <div class="divider">
+                                <span>or</span>
+                            </div>
+
+                            <a href="/login" class="btn-google">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4="
+                                    alt="Google">
+                                Continue with Google
+                            </a>
+                            <br>
+                            <a href="/login" class="btn-google">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjguOTUiIGhlaWdodD0iOC45NSIgZmlsbD0iI0Y0NDQzNiIvPjxyZWN0IHg9IjEyLjA1IiB5PSIzIiB3aWR0aD0iOC45NSIgaGVpZ2h0PSI4Ljk1IiBmaWxsPSIjN0NCRUZBIi8+PHJlY3QgeD0iMyIgeT0iMTIuMDUiIHdpZHRoPSI4Ljk1IiBoZWlnaHQ9IjguOTUiIGZpbGw9IiNGQkJCMDYiLz48cmVjdCB4PSIxMi4wNSIgeT0iMTIuMDUiIHdpZHRoPSI4Ljk1IiBoZWlnaHQ9IjguOTUiIGZpbGw9IiM0MzkzRjQiLz4KPC9zdmc+Cg=="
+                                    alt="Microsft">
+                                Continue with Microsoft
+                            </a>
+
+                        </form>
+
+                        <!-- Sign Up Form -->
+                        <form class="auth-form" id="signup-form">
+                            <div class="auth-header">
+                                <h2>Sign up</h2>
+                                <p>Create your account to unlock instant expertise</p>
+                            </div>
+                            <div class="form-group" style="display: flex; margin: 12px 0;">
+                                <div class="first-name">
+                                    <label for="signup-email">First name</label>
+                                    <input type="text" id="signup-first-name" placeholder="First name" required>
+                                </div>
+                                <div>
+                                    <label for="signup-email">Last name</label>
+                                    <input type="text" id="signup-last-name" placeholder="Last name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-birthdate">Birthdate</label>
+                                <input type="date" id="signup-birthdate" placeholder="Birthdate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-phone">Phone number</label>
+                                <input type="text" id="signup-phone" placeholder="Phone number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-email">Email</label>
+                                <input type="email" id="signup-email" placeholder="Email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-password">Password</label>
+                                <div class="password-group">
+                                    <input type="password" id="signup-password" placeholder="Password" required>
+                                    <button type="button" class="password-toggle"
+                                        data-target="signup-password">👁️</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-confirm-password">Confirm Password</label>
+                                <div class="password-group">
+                                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password"
+                                        required>
+                                    <button type="button" class="password-toggle"
+                                        data-target="signup-confirm-password">👁️</button>
+                                </div>
+                            </div>
+                            <div class="form-options" style="margin-bottom: 1.2rem;">
+                                <label
+                                    style="display: flex; align-items: center; color: var(--neutral-medium); cursor: pointer; font-size: 0.93rem;">
+                                    <input type="checkbox" id="accept-terms" style="margin-right: 0.5rem; width: auto;">
+                                    <span style="color: var(--neutral-dark); font-weight: 400;">Accept&nbsp;</span>
+                                    <a href="/terms" target="_blank"
+                                        style="color: #1d78a3; text-decoration: underline; font-size: 0.93rem; font-weight: 400;">Terms
+                                        and Conditions</a>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn-submit" id="signup-btn" disabled>Sign up</button>
+                            <div class="divider">
+                                <span>or</span>
+                            </div>
+                            <a href="/login" class="btn-google">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4="
+                                    alt="Google">
+                                Continue with Google
+                            </a>
+                            <br>
+                            <a href="/login" class="btn-google">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjguOTUiIGhlaWdodD0iOC45NSIgZmlsbD0iI0Y0NDQzNiIvPjxyZWN0IHg9IjEyLjA1IiB5PSIzIiB3aWR0aD0iOC45NSIgaGVpZ2h0PSI4Ljk1IiBmaWxsPSIjN0NCRUZBIi8+PHJlY3QgeD0iMyIgeT0iMTIuMDUiIHdpZHRoPSI4Ljk1IiBoZWlnaHQ9IjguOTUiIGZpbGw9IiNGQkJCMDYiLz48cmVjdCB4PSIxMi4wNSIgeT0iMTIuMDUiIHdpZHRoPSI4Ljk1IiBoZWlnaHQ9IjguOTUiIGZpbGw9IiM0MzkzRjQiLz4KPC9zdmc+Cg=="
+                                    alt="Microsoft">
+                                Continue with Microsoft
+                            </a>
+                        </form>
+                    </div>
                 </div>
-              </div>
-              <!-- End FAQ Section -->
             </div>
-            <!-- Right: Auth Container -->
-            <div class="before-auth-right">
-              <div class="auth-container" id="auth-container">
-                <!-- Auth Tabs -->
-                <div class="auth-tabs">
-                    <button class="auth-tab active" id="signin-tab">Sign In</button>
-                    <button class="auth-tab" id="signup-tab">Sign Up</button>
-                </div>
-                <!-- Error/Success Messages -->
-                <div id="message-container"></div>
-                <!-- Sign In Form -->
-                <form class="auth-form active" id="signin-form">
-                    <div class="auth-header">
-                        <h2>Sign in</h2>
-                        <p>Log in to unlock instant expertise</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="signin-email">Email</label>
-                        <input type="email" id="signin-email" placeholder="Email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="signin-password">Password</label>
-                        <div class="password-group">
-                            <input type="password" id="signin-password" placeholder="Password" required>
-                            <button type="button" class="password-toggle" data-target="signin-password">
-                                👁️
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-options">
-                        <label>
-                            <input type="checkbox" id="keep-signed-in">
-                            Keep me signed in
-                        </label>
-                        <a href="#" id="forgot-password">Forgot password?</a>
-                    </div>
-
-                    <button type="submit" class="btn-submit">Sign in</button>
-
-                    <div class="divider">
-                        <span>or</span>
-                    </div>
-
-                    <a href="/login" class="btn-google">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
-                        Continue with Google
-                    </a>
-                </form>
-
-                <!-- Sign Up Form -->
-                <form class="auth-form" id="signup-form">
-                    <div class="auth-header">
-                        <h2>Sign up</h2>
-                        <p>Create your account to unlock instant expertise</p>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-email">Email</label>
-                        <input type="email" id="signup-email" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-password">Password</label>
-                        <div class="password-group">
-                            <input type="password" id="signup-password" placeholder="Password" required>
-                            <button type="button" class="password-toggle" data-target="signup-password">👁️</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-confirm-password">Confirm Password</label>
-                        <div class="password-group">
-                            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
-                            <button type="button" class="password-toggle" data-target="signup-confirm-password">👁️</button>
-                        </div>
-                    </div>
-                    <div class="form-options" style="margin-bottom: 1.2rem;">
-                        <label style="display: flex; align-items: center; color: var(--neutral-medium); cursor: pointer; font-size: 0.93rem;">
-                            <input type="checkbox" id="accept-terms" style="margin-right: 0.5rem; width: auto;">
-                            <span style="color: var(--neutral-dark); font-weight: 400;">Accept&nbsp;</span>
-                            <a href="/terms" target="_blank" style="color: #1d78a3; text-decoration: underline; font-size: 0.93rem; font-weight: 400;">Terms and Conditions</a>
-                        </label>
-                    </div>
-                    <button type="submit" class="btn-submit" id="signup-btn" disabled>Sign up</button>
-                    <div class="divider">
-                        <span>or</span>
-                    </div>
-                    <a href="/login" class="btn-google">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNC4xMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=" alt="Google">
-                        Continue with Google
-                    </a>
-                </form>
-              </div>
-            </div>
-          </div>
         </div>
         <!-- End Before-auth flex layout -->
 
@@ -1757,11 +1995,12 @@ body {
                 <h1>Choose your expert below!</h1>
             </div>
             <div class="experts-grid">
-              
+
                 <div class="expert-card" onclick="window.location.href='/chat_water'">
-                    <img src="/static/character3.png" alt="Mama Dudu" class="expert-image">
+                    <img src="/static/character3.png" alt="Mama Dudu" class="expert-image mama">
                     <div class="expert-name">Mama Dudu</div>
-                    <div class="expert-areas-heading1"><span  style="padding-right: 1.2rem;"> Areas of expertise include:</span></div>
+                    <div class="expert-areas-heading1"><span style="padding-right: 1.2rem;"> Areas of expertise
+                            include:</span></div>
                     <ul class="expert-areas-list1">
                         <li>Environmental Engineering</li>
                         <li>Water Management</li>
@@ -1769,9 +2008,10 @@ body {
                     </ul>
                 </div>
                 <div class="expert-card" onclick="window.location.href='/chat'">
-                    <img src="/static/character.png" alt="Oom Piet" class="expert-image">
+                    <img src="/static/character.png" alt="Oom Piet" class="expert-image oom">
                     <div class="expert-name">Oom Piet</div>
-                    <div class="expert-areas-heading1"><span  style="padding-right: 1.2rem;"> Areas of expertise include:</span></div>
+                    <div class="expert-areas-heading1"><span style="padding-right: 1.2rem;"> Areas of expertise
+                            include:</span></div>
                     <ul class="expert-areas-list1">
                         <li>Soil mechanics</li>
                         <li>Geology and hydrogeology</li>
@@ -1781,11 +2021,34 @@ body {
                 <div class="expert-card" onclick="window.location.href='/chat_concrete'">
                     <img src="/static/charcater2.png" alt="Bra Vusi" class="expert-image">
                     <div class="expert-name">Bra Vusi</div>
-                    <div class="expert-areas-heading1"><span  style="padding-left: 1.3rem;"> Areas of expertise include:</span> </div>
+                    <div class="expert-areas-heading1"><span style="padding-left: 1.3rem;"> Areas of expertise
+                            include:</span> </div>
                     <ul class="expert-areas-list1">
                         <li>Concrete construction</li>
                         <li>Structural design</li>
                         <li>Foundations</li>
+                    </ul>
+                </div>
+                <div class="expert-card" onclick="window.location.href='/chat_electrical'">
+                    <img src="/static/character4.png" alt="Mr Rakesh" class="expert-image">
+                    <div class="public-expert-name">Mr Rakesh</div>
+                    <div class="expert-areas-heading1"><span style="padding-right: 1.2rem;">Areas of expertise
+                            include:</span></div>
+                    <ul class="expert-areas-list1">
+                        <li>Electrical power systems</li>
+                        <li>Integrated energy planning</li>
+                        <li>Renewables</li>
+                    </ul>
+                </div>
+                <div class="expert-card" onclick="window.location.href='/chat_mining'">
+                    <img src="/static/character5.png" alt="Sis Nandi" class="expert-image">
+                    <div class="public-expert-name">Sis Nandi</div>
+                    <div class="expert-areas-heading1"><span style="padding-right: 1.2rem;">Areas of expertise
+                            include:</span></div>
+                    <ul class="expert-areas-list1">
+                        <li>Metallurgical processes</li>
+                        <li>Resource characterisation</li>
+                        <li>Mining Engineering</li>
                     </ul>
                 </div>
             </div>
@@ -1795,214 +2058,220 @@ body {
         <!-- FAQ Section and Links -->
         <div id="home-links-section" style="max-width: 600px; margin: 2.5rem auto 0 auto; text-align: center;">
             <p style="font-size: 1.15rem; color: #090909; margin-bottom: 0.5rem;">
-                Learn how to get the most out of your Mentormate experts 
+                Learn how to get the most out of your Mentormate experts
                 <a href="/detail" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">here</a>
             </p>
             <p style="font-size: 1.08rem; color: #333; margin-top: 0.7rem;margin-bottom: 5rem;">
-                <a href="mailto:office@intailings.com" style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a>
+                <a href="mailto:office@intailings.com"
+                    style="color: #1d78a3; text-decoration: underline; font-weight: 600;">Contact us</a>
             </p>
         </div>
 
-<script>
-document.querySelectorAll('.faq-question').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        const expanded = btn.getAttribute('aria-expanded') === 'true';
-        // Collapse all
-        document.querySelectorAll('.faq-question').forEach(b => b.setAttribute('aria-expanded', 'false'));
-        document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
-        // Expand this one if it was not already expanded
-        if (!expanded) {
-            btn.setAttribute('aria-expanded', 'true');
-            btn.parentElement.querySelector('.faq-answer').style.display = 'block';
-        }
-    });
-});
-</script>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Elements
-    const authContainer = document.getElementById('auth-container');
-    const welcomeContainer = document.getElementById('welcome-container');
-    const chatButton = document.getElementById('chat-button');
-    const profileContainer = document.getElementById('profile-container');
-    const signinTab = document.getElementById('signin-tab');
-    const signupTab = document.getElementById('signup-tab');
-    const signinForm = document.getElementById('signin-form');
-    const signupForm = document.getElementById('signup-form');
-    const messageContainer = document.getElementById('message-container');
-    const loadingSpinner = document.querySelector('.loading-spinner');
-    const profileButton = document.getElementById('profile-button');
-    const profileDropdown = document.getElementById('profile-dropdown');
-    const logoutButton = document.getElementById('logout-button');
-    const profileImage = document.getElementById('profile-image');
-    const profileName = document.getElementById('profile-name');
-    const profileEmail = document.getElementById('profile-email');
-    const signupBtn = document.getElementById('signup-btn');
-    const acceptTermsCheckbox = document.getElementById('accept-terms');
-    const expertsContainer = document.getElementById('experts-container');
-    const publicExpertsSection = document.getElementById('public-experts-section');
-
-    // Check login status on page load
-    checkLoginStatus();
-
-    // Tab switching
-    signinTab.addEventListener('click', () => switchTab('signin'));
-    signupTab.addEventListener('click', () => switchTab('signup'));
-
-    // Password toggle
-    document.querySelectorAll('.password-toggle').forEach(button => {
-        button.addEventListener('click', togglePassword);
-    });
-
-    // Form submissions
-    signinForm.addEventListener('submit', handleSignin);
-    signupForm.addEventListener('submit', handleSignup);
-
-    // Profile dropdown
-    if (profileButton) {
-        profileButton.addEventListener('click', function() {
-            profileDropdown.classList.toggle('show');
-        });
-    }
-
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            logout();
-        });
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (profileButton && !profileButton.contains(e.target) && 
-            profileDropdown && !profileDropdown.contains(e.target)) {
-            profileDropdown.classList.remove('show');
-        }
-    });
-
-    // Sign up button state
-    acceptTermsCheckbox.addEventListener('change', function() {
-        signupBtn.disabled = !this.checked;
-    });
-
-    // Functions
-    function switchTab(tab) {
-        const tabs = [signinTab, signupTab];
-        const forms = [signinForm, signupForm];
-
-        tabs.forEach(t => t.classList.remove('active'));
-        forms.forEach(f => f.classList.remove('active'));
-
-        if (tab === 'signin') {
-            signinTab.classList.add('active');
-            signinForm.classList.add('active');
-        } else {
-            signupTab.classList.add('active');
-            signupForm.classList.add('active');
-        }
-
-        clearMessages();
-    }
-
-    function togglePassword(e) {
-        const targetId = e.target.getAttribute('data-target');
-        const input = document.getElementById(targetId);
-        
-        if (input.type === 'password') {
-            input.type = 'text';
-            e.target.textContent = '🙈';
-        } else {
-            input.type = 'password';
-            e.target.textContent = '👁️';
-        }
-    }
-
-    function handleSignup(e) {
-        e.preventDefault();
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-        const confirmPassword = document.getElementById('signup-confirm-password').value;
-        const acceptTerms = document.getElementById('accept-terms').checked;
-        if (!acceptTerms) {
-            showError('You must accept the Terms and Conditions to sign up.');
-            return;
-        }
-        if (password !== confirmPassword) {
-            showError('Passwords do not match');
-            return;
-        }
-        if (password.length < 6) {
-            showError('Password must be at least 6 characters long');
-            return;
-        }
-        showLoading();
-        fetch('/api/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoading();
-            if (data.success) {
-                // Switch to sign in tab
-                switchTab('signin');
-                showSuccess(data.message || 'Account created successfully! Please sign in.');
-            } else {
-                showError(data.error || 'Failed to create account');
-            }
-        })
-        .catch(error => {s
-            hideLoading();
-            console.error('Signup error:', error);
-            showError('An error occurred. Please try again.');
-        });
-    }
-
-    // OTP Modal Logic
-   
-    function handleSignin(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('signin-email').value;
-                const password = document.getElementById('signin-password').value;
-
-                showLoading();
-
-                fetch('/api/signin', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    hideLoading();
-                    if (data.success) {
-                        showLoggedInState();
-                        updateProfileUI(data.user);
-                    } else if (data.error === 'session_conflict') {
-                        // Show session conflict modal
-                        showSessionConflictModal(data.message, data.session_info, email, password);
-                    } else {
-                        showError(data.error || 'Invalid email or password');
+        <script>
+            document.querySelectorAll('.faq-question').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const expanded = btn.getAttribute('aria-expanded') === 'true';
+                    // Collapse all
+                    document.querySelectorAll('.faq-question').forEach(b => b.setAttribute('aria-expanded', 'false'));
+                    document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
+                    // Expand this one if it was not already expanded
+                    if (!expanded) {
+                        btn.setAttribute('aria-expanded', 'true');
+                        btn.parentElement.querySelector('.faq-answer').style.display = 'block';
                     }
-                })
-                .catch(error => {
-                    hideLoading();
-                    console.error('Signin error:', error);
-                    showError('An error occurred. Please try again.');
                 });
-            }
+            });
+        </script>
 
-            function showSessionConflictModal(message, sessionInfo, email, password) {
-                // Create modal HTML
-                const modalHTML = `
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Elements
+                const authContainer = document.getElementById('auth-container');
+                const welcomeContainer = document.getElementById('welcome-container');
+                const chatButton = document.getElementById('chat-button');
+                const profileContainer = document.getElementById('profile-container');
+                const signinTab = document.getElementById('signin-tab');
+                const signupTab = document.getElementById('signup-tab');
+                const signinForm = document.getElementById('signin-form');
+                const signupForm = document.getElementById('signup-form');
+                const messageContainer = document.getElementById('message-container');
+                const loadingSpinner = document.querySelector('.loading-spinner');
+                const profileButton = document.getElementById('profile-button');
+                const profileDropdown = document.getElementById('profile-dropdown');
+                const logoutButton = document.getElementById('logout-button');
+                const profileImage = document.getElementById('profile-image');
+                const profileName = document.getElementById('profile-name');
+                const profileEmail = document.getElementById('profile-email');
+                const signupBtn = document.getElementById('signup-btn');
+                const acceptTermsCheckbox = document.getElementById('accept-terms');
+                const expertsContainer = document.getElementById('experts-container');
+                const publicExpertsSection = document.getElementById('public-experts-section');
+
+                // Check login status on page load
+                checkLoginStatus();
+
+                // Tab switching
+                signinTab.addEventListener('click', () => switchTab('signin'));
+                signupTab.addEventListener('click', () => switchTab('signup'));
+
+                // Password toggle
+                document.querySelectorAll('.password-toggle').forEach(button => {
+                    button.addEventListener('click', togglePassword);
+                });
+
+                // Form submissions
+                signinForm.addEventListener('submit', handleSignin);
+                signupForm.addEventListener('submit', handleSignup);
+
+                // Profile dropdown
+                if (profileButton) {
+                    profileButton.addEventListener('click', function () {
+                        profileDropdown.classList.toggle('show');
+                    });
+                }
+
+                if (logoutButton) {
+                    logoutButton.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        logout();
+                    });
+                }
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (profileButton && !profileButton.contains(e.target) &&
+                        profileDropdown && !profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.remove('show');
+                    }
+                });
+
+                // Sign up button state
+                acceptTermsCheckbox.addEventListener('change', function () {
+                    signupBtn.disabled = !this.checked;
+                });
+
+                // Functions
+                function switchTab(tab) {
+                    const tabs = [signinTab, signupTab];
+                    const forms = [signinForm, signupForm];
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    forms.forEach(f => f.classList.remove('active'));
+
+                    if (tab === 'signin') {
+                        signinTab.classList.add('active');
+                        signinForm.classList.add('active');
+                    } else {
+                        signupTab.classList.add('active');
+                        signupForm.classList.add('active');
+                    }
+
+                    clearMessages();
+                }
+
+                function togglePassword(e) {
+                    const targetId = e.target.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        e.target.textContent = '🙈';
+                    } else {
+                        input.type = 'password';
+                        e.target.textContent = '👁️';
+                    }
+                }
+
+                function handleSignup(e) {
+                    e.preventDefault();
+                    const firstName = document.getElementById('signup-first-name').value.trim();
+                    const lastName = document.getElementById('signup-last-name').value.trim();
+                    const birthdate = document.getElementById('signup-birthdate').value.trim();
+                    const phoneNumber = document.getElementById('signup-phone').value.trim();
+                    const email = document.getElementById('signup-email').value;
+                    const password = document.getElementById('signup-password').value;
+                    const confirmPassword = document.getElementById('signup-confirm-password').value;
+                    const acceptTerms = document.getElementById('accept-terms').checked;
+                    if (!acceptTerms) {
+                        showError('You must accept the Terms and Conditions to sign up.');
+                        return;
+                    }
+                    if (password !== confirmPassword) {
+                        showError('Passwords do not match');
+                        return;
+                    }
+                    if (password.length < 6) {
+                        showError('Password must be at least 6 characters long');
+                        return;
+                    }
+                    showLoading();
+                    fetch('/api/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ firstName, lastName, birthdate, phoneNumber, email, password })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoading();
+                            if (data.success) {
+                                // Switch to sign in tab
+                                switchTab('signin');
+                                showSuccess(data.message || 'Account created successfully! Please sign in.');
+                            } else {
+                                showError(data.error || 'Failed to create account');
+                            }
+                        })
+                        .catch(error => {
+                            s
+                            hideLoading();
+                            console.error('Signup error:', error);
+                            showError('An error occurred. Please try again.');
+                        });
+                }
+
+                // OTP Modal Logic
+
+                function handleSignin(e) {
+                    e.preventDefault();
+
+                    const email = document.getElementById('signin-email').value;
+                    const password = document.getElementById('signin-password').value;
+
+                    showLoading();
+
+                    fetch('/api/signin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoading();
+                            if (data.success) {
+                                showLoggedInState();
+                                updateProfileUI(data.user);
+                            } else if (data.error === 'session_conflict') {
+                                // Show session conflict modal
+                                showSessionConflictModal(data.message, data.session_info, email, password);
+                            } else {
+                                showError(data.error || 'Invalid email or password');
+                            }
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            console.error('Signin error:', error);
+                            showError('An error occurred. Please try again.');
+                        });
+                }
+
+                function showSessionConflictModal(message, sessionInfo, email, password) {
+                    // Create modal HTML
+                    const modalHTML = `
                     <div id="session-conflict-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
                         <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:500px;width:95%;animation:fadeIn 0.5s ease-out;">
                             <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
@@ -2039,282 +2308,387 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 `;
-                
-                // Add modal to page
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-                
-                // Add event listeners
-                document.getElementById('force-login-btn').addEventListener('click', () => {
-                    handleForceLogin(email, password);
-                });
-                
-                document.getElementById('cancel-login-btn').addEventListener('click', () => {
-                    document.getElementById('session-conflict-modal').remove();
-                });
-            }
 
-            function handleForceLogin(email, password) {
-                console.log('handleForceLogin called with email:', email);
-                
-                const loading = document.getElementById('force-login-loading');
-                const error = document.getElementById('force-login-error');
-                const buttons = document.querySelector('#session-conflict-modal .buttons');
-                
-                console.log('Found elements:', { loading, error, buttons });
-                
-                // Show loading
-                loading.style.display = 'flex';
-                if (buttons) buttons.style.display = 'none';
-                error.style.display = 'none';
-                
-                console.log('Making force login API call...');
-                
-                // Make API call to force login
-                fetch('/api/force-login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email })
-                })
-                .then(response => {
-                    console.log('Force login response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Force login response data:', data);
-                    if (data.success) {
-                        // Remove modal and update UI
+                    // Add modal to page
+                    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+                    // Add event listeners
+                    document.getElementById('force-login-btn').addEventListener('click', () => {
+                        handleForceLogin(email, password);
+                    });
+
+                    document.getElementById('cancel-login-btn').addEventListener('click', () => {
                         document.getElementById('session-conflict-modal').remove();
-                        showLoggedInState();
-                        updateProfileUI(data.user);
-                    } else {
-                        throw new Error(data.error || 'Force login failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Force login error:', error);
-                    // Show error and restore buttons
-                    document.getElementById('force-login-error').textContent = 'An error occurred. Please try again.';
-                    document.getElementById('force-login-error').style.display = 'block';
-                    loading.style.display = 'none';
-                    if (buttons) buttons.style.display = 'flex';
-                });
-            }
-
-            function formatTimeAgo(timestamp) {
-                try {
-                    const date = new Date(timestamp);
-                    const now = new Date();
-                    const diffMs = now - date;
-                    const diffMins = Math.floor(diffMs / 60000);
-                    const diffHours = Math.floor(diffMs / 3600000);
-                    
-                    if (diffMins < 1) {
-                        return 'Just now';
-                    } else if (diffMins < 60) {
-                        return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-                    } else if (diffHours < 24) {
-                        return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-                    } else {
-                        return date.toLocaleString();
-                    }
-                } catch (e) {
-                    return timestamp;
+                    });
                 }
-            }
 
-            function checkLoginStatus() {
-                fetch('/check-login-status')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.loggedIn) {
-                            showLoggedInState();
-                            fetchUserProfile();
-                            // Ensure we're on the index page
-                            if (window.location.pathname !== '/') {
-                                window.location.href = '/';
+                function handleForceLogin(email, password) {
+                    console.log('handleForceLogin called with email:', email);
+
+                    const loading = document.getElementById('force-login-loading');
+                    const error = document.getElementById('force-login-error');
+                    const buttons = document.querySelector('#session-conflict-modal .buttons');
+
+                    console.log('Found elements:', { loading, error, buttons });
+
+                    // Show loading
+                    loading.style.display = 'flex';
+                    if (buttons) buttons.style.display = 'none';
+                    error.style.display = 'none';
+
+                    console.log('Making force login API call...');
+
+                    // Make API call to force login
+                    fetch('/api/force-login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email })
+                    })
+                        .then(response => {
+                            console.log('Force login response status:', response.status);
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
                             }
-                        } else {
-                            showLoggedOutState();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking login status:', error);
-                        showLoggedOutState();
-                    });
-            }
-
-            function fetchUserProfile() {
-                fetch('/api/user-profile')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to fetch user profile');
-                        }
-                        return response.json();
-                    })
-                    .then(user => {
-                        updateProfileUI(user);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching user profile:', error);
-                        updateProfileUI({
-                            name: 'User',
-                            email: 'user@example.com',
-                            picture: '/static/default-profile.png'
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Force login response data:', data);
+                            if (data.success) {
+                                // Remove modal and update UI
+                                document.getElementById('session-conflict-modal').remove();
+                                showLoggedInState();
+                                updateProfileUI(data.user);
+                            } else {
+                                throw new Error(data.error || 'Force login failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Force login error:', error);
+                            // Show error and restore buttons
+                            document.getElementById('force-login-error').textContent = 'An error occurred. Please try again.';
+                            document.getElementById('force-login-error').style.display = 'block';
+                            loading.style.display = 'none';
+                            if (buttons) buttons.style.display = 'flex';
                         });
-                    });
-            }
+                }
 
-            function updateProfileUI(user) {
-                if (profileName) profileName.textContent = user.name || 'User';
-                if (profileEmail) profileEmail.textContent = user.email || 'user@example.com';
-                if (profileImage) profileImage.src = user.picture || '/static/default-profile.png';
-            }
+                function formatTimeAgo(timestamp) {
+                    try {
+                        const date = new Date(timestamp);
+                        const now = new Date();
+                        const diffMs = now - date;
+                        const diffMins = Math.floor(diffMs / 60000);
+                        const diffHours = Math.floor(diffMs / 3600000);
 
-            function showLoggedInState() {
-                if (authContainer) authContainer.style.display = 'none';
-                if (expertsContainer) expertsContainer.style.display = 'block';
-                if (publicExpertsSection) publicExpertsSection.style.display = 'none';
-                if (chatButton) chatButton.style.display = 'none';
-                if (profileContainer) profileContainer.style.display = 'block';
-                if (document.getElementById('home-main-content')) {
-                    document.getElementById('home-main-content').style.display = 'block';
-                }
-                // Hide FAQ when logged in
-                if (document.getElementById('faq-section')) {
-                    document.getElementById('faq-section').style.display = 'none';
-                }
-                // Show home links section when logged in
-                if (document.getElementById('home-links-section')) {
-                    document.getElementById('home-links-section').style.display = 'block';
-                }
-            }
-            function showLoggedOutState() {
-                if (authContainer) authContainer.style.display = 'block';
-                if (expertsContainer) expertsContainer.style.display = 'none';
-                if (publicExpertsSection) publicExpertsSection.style.display = 'flex';
-                if (chatButton) chatButton.style.display = 'none';
-                if (profileContainer) profileContainer.style.display = 'none';
-                if (document.getElementById('home-main-content')) {
-                    document.getElementById('home-main-content').style.display = 'none';
-                }
-                // Show FAQ when logged out
-                if (document.getElementById('faq-section')) {
-                    document.getElementById('faq-section').style.display = 'block';
-                }
-                // Hide home links section when logged out
-                if (document.getElementById('home-links-section')) {
-                    document.getElementById('home-links-section').style.display = 'none';
-                }
-            }
-
-            function logout() {
-                showLoading();
-                fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+                        if (diffMins < 1) {
+                            return 'Just now';
+                        } else if (diffMins < 60) {
+                            return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+                        } else if (diffHours < 24) {
+                            return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                        } else {
+                            return date.toLocaleString();
+                        }
+                    } catch (e) {
+                        return timestamp;
                     }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        showLoggedOutState();
-                        hideLoading();
-                        showSuccess('Logged out successfully');
-                    } else {
-                        throw new Error('Logout failed');
+                }
+
+                function checkLoginStatus() {
+                    fetch('/check-login-status')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.loggedIn) {
+                                showLoggedInState();
+                                fetchUserProfile();
+                                // Ensure we're on the index page
+                                if (window.location.pathname !== '/') {
+                                    window.location.href = '/';
+                                }
+                            } else {
+                                showLoggedOutState();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error checking login status:', error);
+                            showLoggedOutState();
+                        });
+                }
+
+                function fetchUserProfile() {
+                    fetch('/api/user-profile')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch user profile');
+                            }
+                            return response.json();
+                        })
+                        .then(user => {
+                            updateProfileUI(user);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching user profile:', error);
+                            updateProfileUI({
+                                name: 'User',
+                                email: 'user@example.com',
+                                picture: '/static/default-profile.png'
+                            });
+                        });
+                }
+
+                function updateProfileUI(user) {
+                    if (profileName) profileName.textContent = user.name || 'User';
+                    if (profileEmail) profileEmail.textContent = user.email || 'user@example.com';
+                    if (profileImage) profileImage.src = user.picture || '/static/default-profile.png';
+                }
+
+                function showLoggedInState() {
+                    if (authContainer) authContainer.style.display = 'none';
+                    if (expertsContainer) expertsContainer.style.display = 'block';
+                    if (publicExpertsSection) publicExpertsSection.style.display = 'none';
+                    if (chatButton) chatButton.style.display = 'none';
+                    if (profileContainer) profileContainer.style.display = 'block';
+                    if (document.getElementById('home-main-content')) {
+                        document.getElementById('home-main-content').style.display = 'block';
                     }
-                })
-                .catch(error => {
-                    console.error('Error during logout:', error);
-                    hideLoading();
-                    showError('Logout failed. Please try again.');
+                    // Hide FAQ when logged in
+                    if (document.getElementById('faq-section')) {
+                        document.getElementById('faq-section').style.display = 'none';
+                    }
+                    // Show home links section when logged in
+                    if (document.getElementById('home-links-section')) {
+                        document.getElementById('home-links-section').style.display = 'block';
+                    }
+                }
+                function showLoggedOutState() {
+                    if (authContainer) authContainer.style.display = 'block';
+                    if (expertsContainer) expertsContainer.style.display = 'none';
+                    if (publicExpertsSection) publicExpertsSection.style.display = 'flex';
+                    if (chatButton) chatButton.style.display = 'none';
+                    if (profileContainer) profileContainer.style.display = 'none';
+                    if (document.getElementById('home-main-content')) {
+                        document.getElementById('home-main-content').style.display = 'none';
+                    }
+                    // Show FAQ when logged out
+                    if (document.getElementById('faq-section')) {
+                        document.getElementById('faq-section').style.display = 'block';
+                    }
+                    // Hide home links section when logged out
+                    if (document.getElementById('home-links-section')) {
+                        document.getElementById('home-links-section').style.display = 'none';
+                    }
+                }
+
+                function logout() {
+                    showLoading();
+                    fetch('/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                showLoggedOutState();
+                                hideLoading();
+                                showSuccess('Logged out successfully');
+                            } else {
+                                throw new Error('Logout failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error during logout:', error);
+                            hideLoading();
+                            showError('Logout failed. Please try again.');
+                        });
+                }
+
+                function showLoading() {
+                    if (loadingSpinner) loadingSpinner.style.display = 'flex';
+                }
+
+                function hideLoading() {
+                    if (loadingSpinner) loadingSpinner.style.display = 'none';
+                }
+
+                function showError(message) {
+                    clearMessages();
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.textContent = message;
+                    messageContainer.appendChild(errorDiv);
+                }
+
+                function showSuccess(message) {
+                    clearMessages();
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'success-message';
+                    successDiv.textContent = message;
+                    messageContainer.appendChild(successDiv);
+                }
+
+                function clearMessages() {
+                    messageContainer.innerHTML = '';
+                }
+
+                // Forgot password handler
+                document.getElementById('forgot-password').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    handleForgotPassword();
                 });
-            }
 
-            function showLoading() {
-                if (loadingSpinner) loadingSpinner.style.display = 'flex';
-            }
+                function handleForgotPassword() {
+                    const email = document.getElementById('signin-email').value.trim();
 
-            function hideLoading() {
-                if (loadingSpinner) loadingSpinner.style.display = 'none';
-            }
+                    if (!email) {
+                        showError('Please enter your email address first');
+                        return;
+                    }
 
-            function showError(message) {
-                clearMessages();
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = message;
-                messageContainer.appendChild(errorDiv);
-            }
+                    if (!isValidEmail(email)) {
+                        showError('Please enter a valid email address');
+                        return;
+                    }
 
-            function showSuccess(message) {
-                clearMessages();
-                const successDiv = document.createElement('div');
-                successDiv.className = 'success-message';
-                successDiv.textContent = message;
-                messageContainer.appendChild(successDiv);
-            }
+                    showLoading();
+                    clearMessages();
 
-            function clearMessages() {
-                messageContainer.innerHTML = '';
-            }
+                    fetch('/api/forgot-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoading();
 
-            // Forgot password handler
-            document.getElementById('forgot-password').addEventListener('click', function(e) {
-                e.preventDefault();
-                handleForgotPassword();
+                            if (data.success) {
+                                showSuccess(data.message);
+                            } else {
+                                showError(data.error || 'An error occurred while processing your request');
+                            }
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            console.error('Error:', error);
+                            showError('An error occurred while processing your request');
+                        });
+                }
+
+                function isValidEmail(email) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(email);
+                }
             });
+        </script>
+        <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const wrapper   = document.querySelector('.public-experts-carousel');
+    const grid      = wrapper.querySelector('.public-expert-grid');
+    const cards     = Array.from(grid.querySelectorAll('.public-expert-card'));
+    if (!cards.length) return;
 
-            function handleForgotPassword() {
-                const email = document.getElementById('signin-email').value.trim();
-                
-                if (!email) {
-                    showError('Please enter your email address first');
-                    return;
-                }
-                
-                if (!isValidEmail(email)) {
-                    showError('Please enter a valid email address');
-                    return;
-                }
-                
-                showLoading();
-                clearMessages();
-                
-                fetch('/api/forgot-password', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email: email })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    hideLoading();
-                    
-                    if (data.success) {
-                        showSuccess(data.message);
-                    } else {
-                        showError(data.error || 'An error occurred while processing your request');
-                    }
-                })
-                .catch(error => {
-                    hideLoading();
-                    console.error('Error:', error);
-                    showError('An error occurred while processing your request');
-                });
-            }
 
-            function isValidEmail(email) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(email);
-            }
-        });
-    </script>
+    const original = [...cards];
+    original.forEach(c => grid.appendChild(c.cloneNode(true)));
+    original.forEach(c => grid.appendChild(c.cloneNode(true)));
+
+
+    const getSetWidth = () => {
+      const style = window.getComputedStyle(cards[0]);
+      const cardW = cards[0].offsetWidth;
+      const ml = parseFloat(style.marginLeft);
+      const mr = parseFloat(style.marginRight);
+      const gap = parseFloat(window.getComputedStyle(grid).gap) || 0;
+      return (cardW + ml + mr + gap) * cards.length - gap;
+    };
+    let setWidth = getSetWidth();
+
+    
+    let offset = 0;
+    const speed = 0.5;          
+    let rafId;
+    let dragging = false;
+    let startX = 0;
+    let startOffset = 0;
+    let hasDragged = false;
+
+    
+    const onResize = () => {
+      setWidth = getSetWidth();
+      offset = offset % setWidth;   
+    };
+    window.addEventListener('resize', onResize);
+
+    
+    const animate = () => {
+      offset += speed;
+      if (offset >= setWidth) offset = 0;
+      grid.style.transform = `translateX(-${offset}px)`;
+      rafId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    
+    const start = e => {
+      dragging = true;
+      hasDragged = false;
+      startX = e.pageX || e.touches[0].pageX;
+      startOffset = offset;
+      grid.style.transition = 'none';
+      cancelAnimationFrame(rafId);
+    };
+    const move = e => {
+      if (!dragging) return;
+      const x = e.pageX || e.touches[0].pageX;
+      const walk = x - startX;
+      if (Math.abs(walk) > 5) hasDragged = true;
+
+      offset = startOffset - walk;
+
+    
+      const max = setWidth * 2;
+      if (offset < 0) offset = max + (offset % setWidth);
+      if (offset >= max) offset = offset % setWidth;
+
+      grid.style.transform = `translateX(-${offset}px)`;
+    };
+    const end = () => {
+      if (!dragging) return;
+      dragging = false;
+      grid.style.transition = 'transform 0.05s linear';
+      animate();
+    };
+
+    grid.addEventListener('mousedown', start);
+    grid.addEventListener('mousemove', move);
+    grid.addEventListener('mouseup', end);
+    grid.addEventListener('mouseleave', end);
+
+    grid.addEventListener('touchstart', start, {passive:true});
+    grid.addEventListener('touchmove', move, {passive:false});
+    grid.addEventListener('touchend', end);
+
+    
+    grid.querySelectorAll('.public-expert-card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (hasDragged) { e.preventDefault(); return; }
+        if (window.innerWidth < 768) {
+          document.getElementById('auth-container')?.scrollIntoView({behavior:'smooth'});
+        }
+      });
+    });
+
+    
+    return () => {
+      window.removeEventListener('resize', onResize);
+      cancelAnimationFrame(rafId);
+    };
+  });
+</script>
 </body>
 </html>

@@ -361,7 +361,7 @@ body {
     justify-content: center;
     align-items: center;
     font-weight: 600;
-    color: var( --neutral-dark);
+    color: var( --primary-green);
     flex-shrink: 0;
 }
 
@@ -494,7 +494,7 @@ body {
 .chat-loading-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--neutral-dark);
+    background-color: var(--primary-green);
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
 }
@@ -535,7 +535,7 @@ body {
 /* Responsive styles */
 @media (max-width: 768px) {
     .navbar {
-        padding: 1rem;
+        padding: 0.5rem;
     }
     
     .navbar-brand {
@@ -555,12 +555,21 @@ body {
         max-width: 90%;
     }
     
+    .message-content {
+    padding: 0.75rem;
+    }
+    
     .character-container {
         position: relative;
         top: 0;
         right: 0;
         width: 80px;
         margin: 0 auto 1rem;
+    }
+
+    .character-title{
+        width: max-content;
+        transform: translateX(-20px);
     }
     
     .chat-messages {
@@ -754,7 +763,7 @@ body {
                         <div class="message-content">
                             Howzit! I'm Bra Vusi, your go-to structural fundi. I kicked off my journey as a batch plant operator, mastering the perfect mix and getting my hands dirty with hardcore site operations.  Over time, I shifted gears into structural designs, turning blueprints into buildings and bridges. From Jozi’s skyline to national highways, I’ve tackled shaky foundations, tight timelines, and every curveball the site could throw. Let’s build it strong, safe, and sound together.
                         </div>
-                        <div class="message-time">12:00 PM</div>
+                        <div class="message-time" id="initial-assistant-time"></div>
                     </div>
                 </div>
             </div>
@@ -790,6 +799,11 @@ body {
             const chatSendBtn = document.getElementById('chat-send-btn');
             const chatMessages = document.getElementById('chat-messages');
             const loadingSpinner = document.querySelector('.loading-spinner');
+            const initialTimeEl = document.getElementById('initial-assistant-time');
+
+            if (initialTimeEl) {
+                initialTimeEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
             // Add this to your JavaScript after the document is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Set the character image from the one you provided

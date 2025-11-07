@@ -9,23 +9,25 @@
   
                             @import url('https://fonts.cdnfonts.com/css/pabasing');
                             :root {
-    /* Primary Colors */
-    --primary-blue: #1d78a3;
-    --primary-blue-80: #4a93b5;
-    --primary-blue-60: #77aec8;
-    --primary-blue-40: #a5cadb;
-    --primary-blue-20: #d2e4ed;
-    --primary-green: #3db54b;
-    --primary-green-80: #63c36e;
-    --primary-green-60: #89d191;
-    --primary-green-40: #aee0b4;
-    --primary-green-20: #d6efd8;
-    /* Secondary Colors */
-    --secondary-navy: #163c66;
-    --secondary-navy-80: #456385;
-    --secondary-navy-60: #748aa3;
-    --secondary-navy-40: #a2b0c2;
-    --secondary-navy-20: #d1d8e0;
+    /* Primary Colors - Light Teal / Soft Aqua Theme */
+    --primary-teal: #9bcae9;         /* Actual circle fill */
+  --primary-teal-80: #C2E1DC;      /* 80% tint */
+  --primary-teal-60: #D3EAE5;      /* 60% tint */
+  --primary-teal-40: #E5F3EF;      /* 40% tint */
+  --primary-teal-20: #F5FBFA;      /* 20% tint */
+
+  /* Accent (darker shades for contrast) */
+  --accent-teal: #5CA89A;          /* Base accent */
+  --accent-teal-80: #70B7AA;       /* 80% tint */
+  --accent-teal-60: #8CC9BE;       /* 60% tint */
+  --accent-teal-40: #B1DED4;       /* 40% tint */
+    --accent-teal-20: #E8F9F6;
+    /* Secondary Colors (for contrast, buttons, etc.) */
+    --secondary-navy: #2B4C59;
+    --secondary-navy-80: #3E6B7A;
+    --secondary-navy-60: #5A8CA0;
+    --secondary-navy-40: #8CB5C2;
+    --secondary-navy-20: #C7DDE5;
     /* Neutrals */
     --neutral-dark: #333333;
     --neutral-medium: #666666;
@@ -35,12 +37,16 @@
     /* Utility Colors */
     --white: #ffffff;
     --black: #000000;
-    --success: var(--primary-green);
-    --info: var(--primary-blue);
+    --success: var(--accent-teal);
+    --info: var(--primary-teal);
     --warning: #f0ad4e;
     --danger: #d9534f;
+    --primary-green: #3db54b;
+    --primary-green-80: #63c36e;
+    --primary-green-60: #89d191;
+    --primary-green-40: #aee0b4;
+    --primary-green-20: #d6efd8;
 }
-
 /* Reset and base styles */
 * {
     margin: 0;
@@ -60,7 +66,7 @@ body {
 
 .streaming-cursor {
     animation: blink 1s infinite;
-    color: var(--primary-green);
+    color: var(--primary-teal);
     font-weight: bold;
 }
 
@@ -99,7 +105,7 @@ body {
     font-size: 2.1rem;
     font-weight: 600;
     font-family: 'Pabasing', sans-serif;
-    color: var(--primary-blue);
+    color: var(--accent-teal);
     display: flex;
     align-items: center;
 
@@ -131,21 +137,21 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-green);
+    background-color: var(--primary-teal);
     color: var(--white);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-green-80);
+    background-color: var(--primary-teal-80);
 }
 
 .btn-secondary {
-    background-color: var(--accent-green);
+    background-color: var(--accent-teal);
     color: var(--white);
 }
 
 .btn-secondary:hover {
-    background-color: var(--accent-green-80);
+    background-color: var(--accent-teal-80);
 }
 
 .btn img {
@@ -172,7 +178,7 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--primary-blue);
+    border: 2px solid var(--primary-teal);
 }
 
 .profile-dropdown {
@@ -261,7 +267,7 @@ body {
 .chat-header-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--secondary-indigo);
+    color: var(--accent-teal);
 }
 
 .chat-header-status {
@@ -301,6 +307,7 @@ body {
     z-index: 20;
     pointer-events: auto;
 }
+
 
 
 .character-image {
@@ -349,12 +356,12 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: var(--primary-blue-20);
+    background-color: var(--primary-teal);
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 600;
-    color: var(--primary-blue);
+    color: navy;
     flex-shrink: 0;
 }
 
@@ -366,7 +373,7 @@ body {
 .message-content {
     padding: 0.75rem 1.8rem;
     border-radius: 18px;
-    background-color: var(--primary-blue-20);
+    background-color: var(--primary-teal);
     color: var(--neutral-dark);
     font-size: 0.95rem;
     line-height: 1.5;
@@ -421,7 +428,7 @@ body {
 }
 
 .chat-input:focus {
-    border-color: var(--primary-blue);
+    border-color: var(--primary-teal);
 }
 
 .chat-send-btn {
@@ -466,7 +473,7 @@ body {
     width: 50px;
     height: 50px;
     border: 5px solid var(--neutral-lighter);
-    border-top: 5px solid var(--primary-green);
+    border-top: 5px solid var(--primary-teal);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -487,7 +494,7 @@ body {
 .chat-loading-dot {
     width: 8px;
     height: 8px;
-    background-color: var(--primary-blue);
+    background-color: navy;
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
 }
@@ -519,7 +526,12 @@ body {
         font-size: 0.95rem;
         margin: 0 0.5rem 0 0;
     }
-}
+    .character-image {
+    width: 100%;
+    border-radius: 50%;
+    padding-top: 10px;
+ 
+}}
 /* Responsive styles */
 @media (max-width: 768px) {
     .navbar {
@@ -538,16 +550,7 @@ body {
     .main-content {
         padding: 1rem;
     }
-    .character-image {
-    width: 100%;
-    border-radius: 50%;
-    padding-top: 10px;
- 
-    }
-    .character-title{
-        width: max-content;
-        transform: translateX(-27px);
-    }
+    
     .message {
         max-width: 90%;
     }
@@ -562,6 +565,11 @@ body {
         right: 0;
         width: 80px;
         margin: 0 auto 1rem;
+    }
+
+    .character-title{
+        width: max-content;
+        transform: translateX(-27px);
     }
     
     .chat-messages {
@@ -661,21 +669,21 @@ body {
 }
 
 .api-mode-btn.selected {
-    background: var(--primary-green, #e67e22);
+    background: var(--primary-teal, #e67e22);
     color: #fff;
     border: none;
     border-radius: 6px;
 }
 .api-mode-btn {
     background: #fff;
-    color: var(--primary-green, #e67e22);
-    border: none;
+    color: var(--primary-teal, #e67e22);
+    border: 1px solid var(--primary-teal, #e67e22);
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 .api-mode-btn:not(.selected):hover {
-    background: var(--primary-green-20, #fae9d8);
+    background: var(--primary-teal-20, #fae9d8);
 }
 #chat-main-content {
   display: none;
@@ -683,16 +691,15 @@ body {
     </style>
 </head>
 <body>
-    <!-- API mode modal (must be first in body, outside any hidden containers) -->
+    <!-- API Mode Modal (must be first in body, outside any hidden containers) -->
     <div id="api-mode-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px);">
         <div style="background:#fff;padding:2.5rem;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.2);text-align:center;max-width:700px;width:95%;animation:fadeIn 0.5s ease-out;">
           <p style="margin-bottom:2rem;color:var(--neutral-medium);font-size:1.5rem;">You are currently enjoying the Premium Plan</p>
           
        
-          <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-blue);color:white;">Continue</button>
+          <button id="modal-premium-btn" class="api-mode-btn" style="width:100%;padding:0.8rem;font-weight:600;font-size:1rem;border-radius:8px;background:var(--primary-teal);color:black;">Continue</button>
             </div>
           </div>
-    
     <!-- Only this is hidden initially -->
     <div id="chat-main-content" style="display:none;">
     <!-- Page loading spinner (visible on initial load) -->
@@ -715,7 +722,8 @@ body {
                     Login with Google
                 </button>
             </div>
-            
+           
+            <!-- Profile dropdown (shown when logged in) -->
             <div class="profile-container" id="profile-container">
                 <button class="profile-button" id="profile-button">
                     <img src="/static/default-profile.png" alt="Profile" class="profile-image" id="profile-image">
@@ -741,19 +749,19 @@ body {
            
             <!-- Character Image -->
             <div class="character-container">
-                
-                <img src="/static/character3.png" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
-                <div class="character-title">Mama Dudu</div>
+               
+                <img src="/static/character4.png" alt="Geotechnical Engineering Assistant Character" class="character-image" id="character-image">
+                <div class="character-title">Mr Rakesh</div>
             </div>
             
             <!-- Chat Messages -->
             <div class="chat-messages" id="chat-messages">
                 <!-- Assistant Message -->
                 <div class="message">
-                    <div class="message-avatar">MD</div>
+                    <div class="message-avatar">MR</div>
                     <div>
                         <div class="message-content">
-                            Sanibonani! I’m Mama Dudu, a devoted advocate for clean water, climate resilience, and thriving ecosystems. My journey has taken me from grassroots wetlands restoration to national catchment management plans, always guided by the principle that nature and communities can flourish together. From the Vaal catchment to Tsitsikamma forest, I’ve led initiatives to safeguard our shared resources for generations to come. I bring a thoughtful approach grounded in science and sustainability. Let’s engineer with care — the kind that listens, learns, and lasts.
+                            Hello and welcome—I'm Mr. Rakesh. I work at the intersection of power, possibility, and precision. Whether it's utility-scale generation or rooftop renewables, I help design and integrate energy systems that are safe, efficient, and future-ready. My experience spans transmission networks, embedded generation, energy storage, and smart technologies, always guided by a deep respect for standards, safety, and sustainability. I believe in calm leadership, clear communication, and engineering that empowers.
                         </div>
                         <div class="message-time" id="initial-assistant-time"></div>
                     </div>
@@ -774,7 +782,7 @@ body {
     </div>
     </div>
 
-  
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Profile dropdown functionality
@@ -957,7 +965,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create chat loading indicator
     const loadingHTML = `
         <div class="message" id="loading-message">
-            <div class="message-avatar">MD</div>
+            <div class="message-avatar">MR</div>
             <div>
                 <div class="message-content chat-loading">
                     <div class="chat-loading-indicator">
@@ -1157,9 +1165,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
 // Replace the existing callRagApi and displayAssistantResponse functions with these:
 
-const collectionName = "Water_docs";
+const collectionName = "Electrical_docs";
 
 function callRagApi(query) {
+    // For the first 10 messages, always use hybrid_rag
     let endpoint;
     if (usageCount < 1000) {
         endpoint = 'https://oompiet.space/rag';
@@ -1168,6 +1177,7 @@ function callRagApi(query) {
             ? 'https://oompiet.space/rag'
             : 'https://oompiet.space/hybrid_rag';
     }
+
     let conversationId = sessionStorage.getItem('conversation_id');
     const requestBody = {
         query: query,
@@ -1216,7 +1226,7 @@ function displayAssistantResponseWithStreaming(message) {
     // Create the message container with feedback UI
     const assistantMessageHTML = `
         <div class="message" id="${messageId}">
-            <div class="message-avatar">MD</div>
+            <div class="message-avatar">MR</div>
             <div>
                 <div class="message-content" id="${messageId}-content">
                     <span class="streaming-cursor">|</span>
@@ -1396,7 +1406,7 @@ function displayErrorMessage(errorText) {
     
     const errorMessageHTML = `
         <div class="message">
-            <div class="message-avatar">MD</div>
+            <div class="message-avatar">MR</div>
             <div>
                 <div class="message-content">
                     <span style="color: var(--danger);">${errorText}</span>
@@ -1435,7 +1445,7 @@ document.addEventListener('click', function(e) {
     
     const assistantMessageHTML = `
         <div class="message">
-            <div class="message-avatar">MD</div>
+            <div class="message-avatar">BV</div>
             <div>
                 <div class="message-content">
                     ${message.replace(/\n/g, '<br>')}
@@ -1456,7 +1466,7 @@ function showFreeVersionBanner(user) {
         banner.innerHTML = `
             <span style="color: var(--neutral-dark); font-size: 1rem; font-weight: 500; vertical-align: middle;">
                 You're in Free version – 
-                <a href="#" id="go-premium-link" style="color: var(--primary-green); text-decoration: underline; font-weight: 600;">go premium!</a>
+                <a href="#" id="go-premium-link" style="color: var(--accent-teal); text-decoration: underline; font-weight: 600;">go premium!</a>
             </span>
         `;
         banner.style.display = 'flex';
